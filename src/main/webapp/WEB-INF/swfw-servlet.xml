@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:oscache="http://www.springmodules.org/schema/oscache" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	   					   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+	   					   http://www.springframework.org/schema/context 
+	   					   http://www.springframework.org/schema/context/spring-context-3.1.xsd 
+	   					   http://www.springframework.org/schema/aop 
+	   					   http://www.springframework.org/schema/aop/spring-aop-3.1.xsd 
+	   					   http://www.springframework.org/schema/tx 
+	   					   http://www.springframework.org/schema/tx/spring-tx-3.1.xsd 
+	   					   http://www.springmodules.org/schema/oscache 
+	   					   http://www.springmodules.org/schema/cache/springmodules-oscache.xsd
+	   					   http://www.springframework.org/schema/mvc
+						   http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
+						   
+	<!-- 规约所有进行扫描的类，以完成Bean创建和自动依赖注入的功能-->  
+	<context:component-scan base-package="com.sw.core" resource-pattern="/**/*.class" />      
+	<context:component-scan base-package="com.sw.plugins" resource-pattern="/**/Mysql*.class" />      
+	<context:component-scan base-package="com.sw.plugins" resource-pattern="/**/*Controller.class" /> 
+	<context:component-scan base-package="com.sw.util" resource-pattern="/**/*.class" /> 
+	
+		
+	<!-- 配置哪些类的方法需要进行事务管理 -->
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="servicePointcut" expression="execution(* com.sw.plugins..*Service.*(..))" />
+		<aop:advisor pointcut-ref="servicePointcut" advice-ref="transactionAdvice" />
+	</aop:config>
+	
+	<!-- 
+	spring mvc validator页面验证配置(<mvc:annotation-driven />) 
+	Enable annotation driven controllers, validation etc
+	-->
+	<!-- Initializing Spring FrameworkServlet 'annomvc'时实例化bean，并自动依赖注入 -->  
+	<mvc:annotation-driven />
+	<mvc:interceptors>
+		<bean class="com.sw.core.interceptor.CommonInterceptor"></bean>
+	</mvc:interceptors>
+
+	<!-- 扩展名至mimeType的映射,即 /user.json => application/json -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    	<property name="ignoreAcceptHeader" value="true"/>
+		<property name="defaultContentType" value="text/html"/>
+		<property name="mediaTypes">
+			<map>
+				<entry key="json" value="application/json" />
+				<entry key="xml" value="application/xml" />
+			</map>
+		</property>
+		<property name="viewResolvers">
+			<list>
+				<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+			    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+			        <property name="prefix" value="/WEB-INF/pages/"/>
+			        <property name="suffix" value=".jsp"></property>
+			    </bean>
+			</list>
+		</property>
+		<property name="defaultViews">
+			<list>
+				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+				<bean class="org.springframework.web.servlet.view.xml.MarshallingView" >
+					<property name="marshaller">
+						<bean class="org.springframework.oxm.xstream.XStreamMarshaller"/>
+					</property>
+				</bean>
+			</list>
+		</property>
+    </bean>
+	<!-- Configure the multipart file resolver 50M-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="1073741824"/>
+	</bean>  
+</beans>  
