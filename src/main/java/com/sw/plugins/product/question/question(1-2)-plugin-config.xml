@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<product name="产品中心" icon="images/menu/product-center.png">
+		<question isNav="true" isSetAuth="sub" isStatus="true" name="产品咨询" icon="images/menu/consultive-management-CON TEL.png">
+			<language>
+				<value>/lanaguage/questionMessages_zh_CN.properties</value>
+			</language>
+			<reply isNav="true" isLog="true" name="回复" icon="" />
+			<check isNav="true" isLog="true" name="审核" icon=""/>
+			<released isNav="true" isLog="true" name="发布" icon=""/>
+			<delete isNav="true" isLog="true" name="删除" icon="" />
+			<repeal isNav="true" isLog="true" name="撤回" icon="" />
+			<modify isNav="true" isLog="true" name="修改" icon="" />
+		</question>
+	</product>
+</plugins>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="questionReply">
+	<parameterMap id="questionReply" type="com.sw.plugins.product.question.entity.QuestionReply"/>
+	
+	<!-- 咨询回复结果集 -->
+	<resultMap id="questionReplyResult" type="com.sw.plugins.product.question.entity.QuestionReply">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="questionID" column="QuestionID" />
+		<result property="userType" column="UserType" />
+		<result property="userID" column="UserID" />
+		<result property="reply" column="Reply" />
+		<result property="replyTime" column="ReplyTime" />
+		<result property="creatorUserId" column="CreatorUserID"/>
+	</resultMap>
+	
+	<!-- 咨询回复内容通用查询查询 -->
+	<select id="select_paginated" resultMap="questionReplyResult" parameterMap="questionReply">
+			select * FROM  MM_QuestionReply
+			<where>
+				<trim prefixOverrides="and">
+					<if test="replyTime!=null and replyTime!=''">
+					and ReplyTime between ${replyTime1} and ${replyTime2}
+					</if>
+					<if test="userType!=null">
+					and UserType = ${userType}
+					</if>
+					<if test="userID!=null">
+					and UserID = ${creatorUserId}
+					</if>
+					<if test="id!=null">
+					and ID = ${id}
+					</if>
+					<if test="questionID!=null">
+					and QuestionID = ${questionID}
+					</if>
+				</trim>
+			</where>
+		limit ${start},${offset}
+	</select>
+	
+	<select id="select_one" resultMap="questionReplyResult" parameterMap="questionReply">
+		select * from MM_QuestionReply where QuestionID = ${questionID}
+	</select>
+	
+		<update id="update" parameterMap="questionReply">
+			update MM_QuestionReply
+		<set> 
+			<trim prefixOverrides="," >
+				<if test="reply!=null and reply!=''">,Reply = #{reply}</if>
+				,ReplyTime = now()
+				,UserID = ${creatorUserId}
+			</trim>
+		</set>
+		<where>
+			QuestionID = ${questionID}
+		</where>	
+	</update>
+	
+	<insert id="insert" parameterMap="questionReply">
+		insert into MM_QuestionReply
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="questionID!=null">, QuestionID</if>
+			,UserID
+			<if test="reply!=null and reply!= ''">,Reply</if>
+			,ReplyTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="questionID!=null">,${questionID}</if>
+			,${creatorUserId}
+			<if test="reply!=null and reply!= ''">,#{reply}</if>
+			,now()
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>		
+	</insert>
+	
+	<update id="update_reply" parameterMap="questionReply">
+		update MM_QuestionReply set Reply = ${reply} , ReplyTime = now() where QuestionID = ${id} 
+	</update>
+</mapper>

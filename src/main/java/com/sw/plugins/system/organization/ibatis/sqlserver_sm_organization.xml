@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   ID                   bigint not null auto_increment comment '父机构ID：机构树状结构父节点标识',
+   ParentID             bigint comment '父机构ID',
+   ParentName           varbinary(255) comment '父机构名称',
+   Code                 varchar(50) comment '机构代码',
+   TreePath                 varchar(200) comment '树形结构描述关系',
+   IsChildNode            int comment '子结点',
+   Relation             varchar(2000) comment '父机构描述：由于机构具有树型机构的特点，要遍历树就要用递归的办法，为了提高系统数据库的查询效率，把此机构所有父机构的ID信息，以逗号相隔的方式存放在此字段，以备以后方便查询。',
+   Name                 varchar(100) not null comment '机构名称：定义记录机构的名称。',
+   Grade                bigint comment '机构级别',
+   Phone                varchar(30) comment '机构电话：机构的联系的电话。',
+   Fax                  varchar(30) comment '机构传真：机构的传真的号码。',
+   PostCode             varchar(10) comment '机构邮政编码：机构所在地区的邮政编码。',
+   Address              varchar(500) comment '机构地址：机构的具体的地址。',
+   Description          varchar(500) comment '机构描述：机构相关信息的说明或者描述。',
+   Status               bigint comment '机构状态：0.启用 1.禁用',
+   CreateTime           datetime comment '创建时间：机构创建的时间，以备后来跟踪查询',
+   ModifyTime           datetime comment '更新时间',
+   CreatorUserID              varchar(50) comment '创建者：机构信息创建者名称的记录。',
+ -->
+<mapper namespace="organization">
+
+	<parameterMap id="organization" type="com.sw.plugins.system.organization.entity.Organization" />
+		
+	<!-- 机构结果集 -->
+	<resultMap id="organizationResult" type="com.sw.plugins.system.organization.entity.Organization">
+		<result property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="code" column="Code" />
+		<result property="name" column="Name" />
+		<result property="phone" column="Phone" />
+		<result property="fax" column="Fax" />
+		<result property="postCode" column="PostCode" />
+		<result property="address" column="Address" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="parentId" column="ParentId" />
+		<result property="parentName" column="ParentName" />
+		<result property="treeLevel" column="TreeLevel" />
+		<result property="treePath" column="TreePath" />
+		<result property="isChildNode" column="IsChildNode" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+	</resultMap>
+
+	<!-- 机构通用查询 -->
+	<select id="select" resultMap="organizationResult" parameterMap="organization">
+		select * from SM_Organization g
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="status!=null">and Status=${status}</if>
+				<if test="treeLevel!=null">and TreeLevel=${treeLevel}</if>
+				<if test="treePath!=null and treePath!= ''">and g.TreePath like '${treePath}%'</if>
+				<if test="isChildNode!=null">and IsChildNode=${isChildNode}</if>
+				<if test="parentId!=null">and ParentId=${parentId}</if>
+				<if test="parentName!=null and parentName!= ''">and ParentName=#{parentName}</if>
+				<if test="code!=null and code!= ''">and Code=#{code}</if>
+				<if test="name!=null and name!= ''">and Name=#{name}</if>
+				<if test="phone!=null and phone!= ''">and Phone=#{phone}</if>
+				<if test="fax!=null and fax!= ''">and Fax=#{fax}</if>
+				<if test="postCode!=null and postCode!= ''">and PostCode=#{postCode}</if>
+				<if test="address!=null and address!= ''">and Address=#{address}</if>
+				<if test="description!=null and description!= ''">and Description=#{description}</if>
+				<if test="createTime!=null">and CreateTime=#{createTime}</if>
+				<if test="modifyTime!=null">and ModifyTime=#{modifyTime}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 只能展示两级数据 -->
+	<select id="select_by_level" resultMap="organizationResult" parameterMap="organization">
+		select * from SM_Organization where TreeLevel = 1 or TreeLevel = 2
+	</select>
+	
+	<select id="select_by_code" resultMap="organizationResult" parameterMap="organization">
+		select * from SM_Organization where Code = #{code}
+	</select>	
+	
+	<select id="count_for_org_duplication" resultType="long" parameterMap="organization">
+		select count(id) from SM_Organization g 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id !=null ">and ID != ${id}</if>
+				<if test="code!=null and code!= ''">and Code=#{code}</if>
+				<if test="name!=null and name!= ''">and Name=#{name}</if>
+				<if test="parentId!=null">and ParentID=${parentId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<select id="select_sub_count_by_parentid" resultType="java.lang.Long" parameterMap="organization">
+		select count(*) from SM_Organization
+		<where>
+			<trim prefixOverrides="and">
+				<if test="parentId!=null">and ParentId=${parentId}</if>
+			</trim>
+		</where>
+	</select>	
+	
+	<select id="select_by_path" resultMap="organizationResult" parameterMap="organization">
+		select * from SM_Organization where TreePath like '%,${parentId},%'
+	</select>	
+	
+	<select id="select_org_for_business" resultMap="organizationResult" parameterMap="organization">
+		select * from SM_Organization where TreeLevel = 1 or TreeLevel = 2
+	</select>
+	
+	<!-- 获取相匹配的二级机构 -->
+	<select id="select_2ndorg_by_ids" resultMap="organizationResult" parameterMap="organization">
+		select * from SM_Organization where TreeLevel = 2 
+		<![CDATA[ and ID in ]]> 
+			<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		         ${item}
+		    </foreach> 
+		<![CDATA[]]>
+	</select>
+
+
+	<!-- 新增机构 -->
+	<insert id="insert" parameterMap="organization">
+		insert into SM_Organization
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="treeLevel!=null">, TreeLevel</if>
+			,Status
+			<if test="treePath!=null and treePath!= ''">,TreePath</if>
+			<if test="isChildNode!=null">,IsChildNode</if>
+			<if test="parentId!=null">,ParentId</if>
+			<if test="parentName!=null and parentName!= ''">,ParentName</if>
+			<if test="code!=null and code!= ''">,Code</if>
+			<if test="name!=null and name!= ''">,Name</if>
+			<if test="phone!=null and phone!= ''">,Phone</if>
+			<if test="fax!=null and fax!= ''">,Fax</if>
+			<if test="postCode!=null and postCode!= ''">,PostCode</if>
+			<if test="address!=null and address!= ''">,Address</if>
+			<if test="description!=null and description!= ''">,Description</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="treeLevel!=null">,${treeLevel}</if>
+			,1
+			<if test="treePath!=null and treePath!= ''">,#{treePath}</if>
+			<if test="isChildNode!=null">,${isChildNode}</if>
+			<if test="parentId!=null">,${parentId}</if>
+			<if test="parentName!=null and parentName!= ''">,#{parentName}</if>
+			<if test="code!=null and code!= ''">,#{code}</if>
+			<if test="name!=null and name!= ''">,#{name}</if>
+			<if test="phone!=null and phone!= ''">,#{phone}</if>
+			<if test="fax!=null and fax!= ''">,#{fax}</if>
+			<if test="postCode!=null and postCode!= ''">,#{postCode}</if>
+			<if test="address!=null and address!= ''">,#{address}</if>
+			<if test="description!=null and description!= ''">,#{description}</if>
+			,GETDATE()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			SELECT IDENT_CURRENT('SM_Organization')  
+		</selectKey>		
+	</insert>
+
+	<!-- 更新机构 -->
+	<update id="update" parameterMap="organization">
+		update SM_Organization
+		<set>
+			<trim prefixOverrides=",">
+				<if test="treeLevel!=null">,TreeLevel=${treeLevel}</if>
+				<if test="status!=null">, Status=${status}</if>
+				<if test="treePath!=null and treePath!= ''">,TreePath=#{treePath}</if>
+				<if test="isChildNode!=null">,IsChildNode=${isChildNode}</if>
+				<if test="parentId!=null">,ParentId=${parentId}</if>
+				<if test="parentName!=null and parentName!= ''">,ParentName=#{parentName}</if>
+				<if test="code!=null and code!= ''">,Code=#{code}</if>
+				<if test="name!=null and name!= ''">,Name=#{name}</if>
+				<if test="phone!=null and phone!= ''">,Phone=#{phone}</if>
+				<if test="fax!=null and fax!= ''">,Fax=#{fax}</if>
+				<if test="postCode!=null and postCode!= ''">,PostCode=#{postCode}</if>
+				<if test="address!=null and address!= ''">,Address=#{address}</if>
+				<if test="description!=null and description!= ''">,Description=#{description}</if>
+				,ModifyTime=GETDATE()
+				<if test="creatorUserId!=null">,CreatorUserID=#{creatorUserId}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+
+	<update id="update_by_code" parameterMap="organization">
+		update SM_Organization
+		<set>
+			<trim prefixOverrides=",">
+				<if test="treeLevel!=null">,TreeLevel=${treeLevel}</if>
+				<if test="status!=null">, Status=${status}</if>
+				<if test="treePath!=null and treePath!= ''">,TreePath=#{treePath}</if>
+				<if test="isChildNode!=null">,IsChildNode=${isChildNode}</if>
+				<if test="parentId!=null">,ParentId=${parentId}</if>
+				<if test="parentName!=null and parentName!= ''">,ParentName=#{parentName}</if>
+				<if test="code!=null and code!= ''">,Code=#{code}</if>
+				<if test="name!=null and name!= ''">,Name=#{name}</if>
+				<if test="phone!=null and phone!= ''">,Phone=#{phone}</if>
+				<if test="fax!=null and fax!= ''">,Fax=#{fax}</if>
+				<if test="postCode!=null and postCode!= ''">,PostCode=#{postCode}</if>
+				<if test="address!=null and address!= ''">,Address=#{address}</if>
+				<if test="description!=null and description!= ''">,Description=#{description}</if>
+				,ModifyTime=GETDATE()
+				<if test="creatorUserId!=null">,CreatorUserID=#{creatorUserId}</if>
+			</trim>
+		</set>
+		where Code=#{code}
+	</update>
+
+	<update id="update_tree_path_by_code" parameterMap="organization">
+		update SM_Organization set TreePath=#{treePath} where Code=#{code}
+	</update>
+
+	<!-- 删除机构 -->
+	<delete id="delete" parameterMap="organization">
+		delete from SM_Organization
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+			</trim>
+		</where>
+	</delete>
+	
+	<!--  查询用户已授权的机构 -->
+	<select id="select_org_with_user" resultMap="organizationResult" parameterMap="organization">
+		select 
+			o.* 
+		from 
+			SM_UserOrgMapping uom,SM_Organization o
+		<where>
+			uom.OrgID = o.ID
+			<if test="id!=null">
+				 and uom.UserID=${id}
+			</if>
+		</where>
+	</select>
+	
+	
+</mapper>

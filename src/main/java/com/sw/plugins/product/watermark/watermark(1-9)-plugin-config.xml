@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<product name="产品中心" icon="images/menu/product-center.png">
+		<watermark isNav="true" isSetAuth="sub" isStatus="true" name="水印设置" icon="images/menu/product-center-product management.png">
+			<language>
+				<value>/language/watermarkMessages_zh_CN.properties</value>
+				<value>/language/watermarkMessages_en_US.properties</value>
+			</language>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+			<save isNav="true" isLog="true" name="保存" icon="images/icon/save.png"/>
+			<reset isNav="true" isLog="true" name="取消" icon="images/icon/restore.png"/>
+		</watermark>
+	</product>
+</plugins>

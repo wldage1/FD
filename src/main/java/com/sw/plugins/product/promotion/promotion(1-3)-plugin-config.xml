@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<product name="产品中心" icon="images/menu/product-center.png">
+		<promotion isNav="true" isStatus="true" name="产品推荐" icon="images/menu/product-center-product recommendation.png">
+			<language>
+				<value>/language/promotionMessages_zh_CN.properties</value>
+				<value>/language/promotionMessages_en_US.properties</value>
+			</language>
+			<seckill isNav="true" isLog="true" name="设置秒杀" icon="images/icon/delete.png"/>
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+		</promotion>
+	</product>
+</plugins>

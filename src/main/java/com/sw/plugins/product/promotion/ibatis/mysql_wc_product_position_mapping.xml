@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productPositionMapping">
+
+	<parameterMap id="productPositionMapping" type="com.sw.plugins.product.promotion.entity.ProductPositionMapping" />
+
+	<resultMap id="productPositionMappingResult" type="com.sw.plugins.product.promotion.entity.ProductPositionMapping">
+		<result property="id" column="ID" />
+		<result property="productId" column="ProductID" />
+		<result property="positionId" column="PositionID" />
+		<result property="positionOrder " column="PositionMappingRatio" />
+	</resultMap>
+	
+	<select id="select" resultMap="productPositionMappingResult" parameterMap="productPositionMapping">
+		select * from WC_ProductPositionMapping
+		<where>
+			<if test="id != null">ID = ${id}</if>
+		</where>
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insert" parameterMap="productPositionMapping">
+		insert into WC_ProductPositionMapping
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" productId !=null ">,ProductID</if>
+			<if test=" positionId !=null ">,PositionID</if>
+			<if test=" positionOrder  !=null ">,PositionOrder</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" productId !=null ">,${productId}</if>
+			<if test=" positionId !=null ">,${positionId}</if>
+			<if test=" positionOrder  !=null ">,${positionOrder }</if>
+		</trim>
+	</insert>
+	
+	
+	<!-- 更新产品 -->
+	<update id="update" parameterMap="productPositionMapping">
+		update WC_ProductPositionMapping
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" positionOrder  !=null ">,PositionOrder = ${positionOrder }</if>
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterMap="productPositionMapping">
+		delete from WC_ProductPositionMapping Where ID=${id}
+	</delete>
+	
+	<delete id="delete_by_productid" parameterMap="productPositionMapping">
+		delete from WC_ProductPositionMapping Where ProductID=${productId}
+	</delete>
+	
+	
+	
+</mapper>

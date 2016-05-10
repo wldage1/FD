@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="promotion">
+
+	<parameterMap id="promotion" type="com.sw.plugins.product.promotion.entity.Promotion" />
+
+	<resultMap id="promotionResult" type="com.sw.plugins.product.promotion.entity.Promotion">
+		<result property="id" column="ProductID" />
+		<result property="positionMappingId" column="PositionMappingID" />
+		<result property="productName" column="ProductName" />
+		<result property="providerShortName" column="ProviderShortName" />
+		<result property="positionOrder" column="PositionOrder" />
+	</resultMap>
+	
+	<!-- 查询位置下的推荐产品 -->
+	<select id="select_product_by_positionid_paginated" resultMap="promotionResult"  parameterMap="promotion">
+		select 
+			p.ID ProductID,pom.ID PositionMappingID ,p.ShortName ProductName,pom.PositionOrder,p.SellStatus,pv.ShortName as ProviderShortName
+		from  
+			PM_Product p left join WC_ProductPositionMapping pom on pom.ProductID = p.ID and  pom.PositionID = ${positionId}
+			left join PC_Provider pv on p.ProviderID = pv.ID
+		where (p.SellStatus = 1 or p.SellStatus = 2 or p.SellStatus = 5 or p.SellStatus = 6 or p.SellStatus = 9) and p.Status = 2 and p.Released = 1 and p.IsSpecialProvisionProduct = 0
+		<if test="OrgID != null">and p.OrgID=${OrgID}</if>
+		order by p.SellStatus=5 asc,
+			pom.PositionOrder desc 
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 查询位置下的推荐产品 -->
+	<select id="count_product_by_positionid" resultType="Long"  parameterMap="promotion">
+		select 
+			count(p.ID)
+		from 
+			PM_Product p left join WC_ProductPositionMapping pom on pom.ProductID = p.ID
+			and  pom.PositionID = ${positionId}
+		where (p.SellStatus = 1 or p.SellStatus = 2 or p.SellStatus = 5 or p.SellStatus = 6 or p.SellStatus = 9) and p.Status = 2 and p.Released = 1 and p.IsSpecialProvisionProduct = 0
+		<if test="OrgID != null">and p.OrgID=${OrgID}</if>
+	</select>
+	
+	<!-- 更新 -->
+	<update id="update_position_order" parameterMap="promotion">
+		update PM_ProductPositionMapping
+		set PositionOrder = ${positionOrder }
+		Where ID=${positionMappingId}
+	</update>
+	
+	
+</mapper>

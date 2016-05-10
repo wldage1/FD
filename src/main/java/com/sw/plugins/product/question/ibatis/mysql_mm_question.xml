@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="question">
+	<parameterMap id="question" type="com.sw.plugins.product.question.entity.Question"/>
+	
+	<resultMap id="questionResult" type="com.sw.plugins.product.question.entity.Question">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="memberID" column="MemberID" />
+		<result property="question" column="Question" />
+		<result property="askTime" column="AskTime" />
+		<result property="isAudited" column="IsAudited" />
+		<result property="type" column="Type" />
+		<result property="isReleased" column="IsReleased" />
+		<result property="reply" column="Reply" />
+		<result property="ip" column="IP" />
+		<result property="solved" column="Solved" />
+		<result property="productName" column="ProductName" />
+		<result property="name" column="Name" />
+		<result property="email" column="Email" />
+		<result property="phone" column="Phone" />
+		<result property="branch" column="Branch" />
+	</resultMap>
+	
+	<select id="select_paginated" resultMap="questionResult" parameterMap="question">
+			select * FROM  MM_Question 
+			<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null">
+					and ID = ${id} 
+					</if>
+					<if test="memberID!=null">
+					and MemberID = ${memberID}
+					</if>
+					<if test="askTime!=null and askTime!=''">
+					and AskTime between ${askTime1} and ${askTime2}
+					</if>
+					<if test="isAudited!=null and isAudited!=''">
+					and IsAudited = ${isAudited}
+					</if>
+					<if test="type!=null">
+					and Type = ${type}
+					</if>
+				</trim>
+			</where>
+		limit ${start},${offset}
+	</select>
+	
+	<select id="select_web_paginated" resultMap="questionResult" parameterMap="question">
+		select * from MM_Question where Type = 1 limit ${start},${offset}
+	</select>
+	
+	<select id="web_count" resultType="Long" parameterMap="question">
+		select count(ID) from MM_Question where Type= 1 
+	</select>
+	
+	<select id="select_web_undisposed" resultMap="questionResult" parameterMap="question">
+		select * from MM_Question where Type = 1 and IsReleased = 0 limit ${start},${offset}		
+	</select>
+	
+	<select id="web_undisposed_count" resultType="Long" parameterMap="question">
+		select count(ID) from MM_Question where Type = 1 and IsReleased = 0;
+	</select>
+	
+	<!-- 已回复的产品问题 -->
+	<select id="select_product_undisposed" resultMap="questionResult" parameterMap="question">
+		select mm.name as MemberName ,mm.nickName as NickName ,qr.reply as Reply ,qr.replyTime as replyTime,pm.shortName ProductName,q.* from MM_Question q
+		left join MM_QuestionReply qr on  q.ID = qr.QuestionID 
+		left join MC_Member mm on mm.ID = q.memberID
+		left join PM_Product pm on pm.ID = q.productID
+		where q.Type = 2 and q.IsReleased = 0 and q.Solved = 1 
+		<if test="orgId!=null">and q.OrgID = ${orgId}</if>
+		order by q.askTime desc limit ${start},${offset}		
+	</select>
+	
+	<select id="product_undisposed_count" resultType="Long" parameterMap="question">
+		select count(ID) from MM_Question where Type = 2 and IsReleased = 0 and Solved = 1
+		<if test="orgId!=null">and OrgID = ${orgId}</if>
+	</select>
+	<!-- 未回复的产品问题  -->
+	<select id="select_product_pending" resultMap="questionResult" parameterMap="question">
+		select mm.name as MemberName,mm.nickName as NickName ,pm.shortName ProductName,q.* from MM_Question q 
+		left join  MM_QuestionReply qr on  q.ID = qr.QuestionID 
+		left join MC_Member mm on mm.ID = q.memberID
+		left join PM_Product pm on pm.ID = q.ProductID
+		where q.Type = 2 and q.IsReleased = 0 and q.Solved = 0 
+		<if test="orgId!=null">and q.OrgID = ${orgId}</if>
+		order by q.askTime desc limit ${start},${offset}		
+	</select>
+	
+	<select id="product_pending_count" resultType="Long" parameterMap="question">
+		select count(ID) from MM_Question where Type = 2 and IsReleased = 0 and Solved = 0
+		<if test="orgId!=null">and OrgID = ${orgId}</if>
+	</select>
+	
+	<select id="select_web_disposed" resultMap="questionResult" parameterMap="question">
+		select * from MM_Question where Type = 1 and IsReleased = 1	order by askTime desc limit ${start},${offset}
+	</select>
+	
+	<select id="web_disposed_count" resultType="long" parameterMap="question">
+		select count(ID) from MM_Question where Type = 1 and IsReleased = 1
+	</select>
+	
+	<select id="select_product_disposed" resultMap="questionResult" parameterMap="question">
+		select mm.name as memberName ,mm.nickName as NickName ,qr.reply as Reply ,qr.replyTime as replyTime,pm.shortName ProductName,q.* from MM_Question q 
+		left join MM_QuestionReply qr on q.ID = qr.QuestionID 
+		left join  MC_Member mm on mm.ID = q.memberID
+		left join PM_Product pm on pm.ID = q.productID
+		where q.Type = 2 and q.IsReleased = 1 
+		<if test="orgId!=null">and q.OrgID = ${orgId}</if>
+		order by qr.replyTime desc limit ${start},${offset}		
+	</select>
+	
+	<select id="product_disposed_count" resultType="Long" parameterMap="question">
+		select count(ID) from MM_Question where Type = 2 and IsReleased = 1
+		<if test="orgId!=null">and OrgID = ${orgId}</if>
+	</select>
+	
+	<select id="select_one_product" resultMap="questionResult" parameterMap="question">
+		select p.shortName as ProductName,q.askTime,q.question,qr.reply as Reply 
+		from MM_Question q 
+		left join MM_QuestionReply qr on q.ID = qr.questionID
+		left join PM_Product p on q.productID = p.ID
+		where q.ID = ${id}
+	</select>
+	
+	<update id="isReleased" parameterMap="question">
+		update MM_Question set IsReleased = 1 where ID = ${id}
+	</update>
+	
+	<update id="update_repeal" parameterMap="question">
+		update MM_Question set IsReleased = 0 where ID = ${id}
+	</update>
+	
+	<update id="update_status" parameterMap="question">
+		update MM_Question 
+		<set>
+			<trim prefixOverrides="," >
+				<if test="isReleased!=null">,IsReleased = #{isReleased}</if>
+				<if test="solved!=null">,Solved = #{solved}</if>
+			</trim>
+		</set> 
+		<where>
+			ID = #{id}
+		</where>
+	</update>
+	
+	<delete id="delete" parameterMap="question">
+		delete from MM_Question where ID = ${id}
+	</delete>
+</mapper>
