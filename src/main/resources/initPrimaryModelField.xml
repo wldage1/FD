@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 主模型初始化字段 -->
+<primarymodelField>
+	<field>
+		<name>数据项</name>
+		<code>DataItemID</code>
+		<type>4</type>
+		<length>null</length>
+		<defaultValue>null</defaultValue>
+		<isKey>1</isKey>
+		<isEmpty>1</isEmpty>
+		<sortNumber>1</sortNumber>
+	</field>
+	
+	<field>
+		<name>导入批次号</name>
+		<code>BatchNo</code>
+		<type>1</type>
+		<length>50</length>
+		<defaultValue>null</defaultValue>
+		<isKey>0</isKey>
+		<isEmpty>0</isEmpty>
+		<sortNumber>2</sortNumber>
+	</field>
+	
+	<field>
+		<name>任务ID</name>
+		<code>taskID</code>
+		<type>4</type>
+		<length>null</length>
+		<defaultValue>null</defaultValue>
+		<isKey>0</isKey>
+		<isEmpty>0</isEmpty>
+		<sortNumber>3</sortNumber>
+	</field>
+	
+	<field>
+		<name>任务数据分配ID</name>
+		<code>TaskDataDistributeID</code>
+		<type>4</type>
+		<length>null</length>
+		<defaultValue>null</defaultValue>
+		<isKey>0</isKey>
+		<isEmpty>0</isEmpty>
+		<sortNumber>4</sortNumber>
+	</field>
+</primarymodelField>
+
+	
+

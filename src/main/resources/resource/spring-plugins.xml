@@ -1,0 +1,860 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+   					   http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+   					   http://www.springframework.org/schema/context 
+   					   http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+   					   
+   	<bean id="initData" class="com.sw.core.initialize.InitData">	
+   	
+		<!-- SYSTEM PARAMETERS -->
+		   	
+		<property name="organizations">
+			<list value-type="java.util.List">
+				<map value-type="java.lang.String">
+					<entry key="code" value="10000" />
+					<entry key="name" value="财富圈" />
+					<entry key="phone" value="" />
+					<entry key="fax" value="" />
+					<entry key="postCode" value="" />
+					<entry key="address" value="" />
+					<entry key="description" value="" />
+					<entry key="status" value="1" />
+					<entry key="parentId" value="0" />
+					<entry key="parentName" value="" />
+					<entry key="treeLevel" value="1" />
+					<entry key="treePath" value=",0," />
+					<entry key="isChildNode" value="0" />					
+				</map>
+			</list>
+		</property>
+		
+		<!-- 异步任务处理器配置 -->
+		<property name="taskFactory">
+			<map value-type="java.lang.String">
+				<!-- 任务执行目录 -->
+				<entry key="excutepath" value="taskfactory/excute/"/> 
+				<!-- 任务备份目录 -->
+				<entry key="backpath" value="taskfactory/back/"/>
+				<!-- 异常任务目录 -->
+				<entry key="errorpath" value="taskfactory/error/"/>
+			 </map>
+		</property>
+		
+		<property name="user">
+			<map value-type="java.lang.String">
+				<entry key="account" value="admin"/> 
+				<entry key="password" value="admin"/> 
+			 </map>
+		</property>
+		
+		<property name="pageShowType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="文本框"/> 
+				<entry key="2" value="下拉框"/> 
+				<entry key="3" value="单选"/> 
+				<entry key="4" value="多选"/> 
+				<entry key="5" value="文本域"/> 
+				<entry key="6" value="时间"/>
+			<!-- 	<entry key="7" value="纯文本"/>
+				<entry key="8" value="隐藏域"/> -->
+				<entry key="9" value="富文本"/> 
+			 </map>
+		</property>
+		
+		<property name="modelFieldShowType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="字符串"/> 
+				<entry key="2" value="小整数"/> 
+				<entry key="3" value="整数"/> 
+				<entry key="4" value="大整数"/> 
+				<entry key="5" value="单精度"/> 
+				<entry key="6" value="日期时间"/> 
+				<entry key="7" value="文本域"/> 
+			 </map>
+		</property>
+		
+		<property name="charsetType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="US-ASCII"/> 
+				<entry key="2" value="ISO-8859-1"/> 
+				<entry key="3" value="UTF-8"/>
+				<entry key="4" value="UTF-16BE"/>
+				<entry key="5" value="UTF-16LE"/>
+				<entry key="6" value="UTF-16"/>
+				<entry key="7" value="GBK"/>
+				<entry key="8" value="GB2312"/>
+			 </map>
+		</property>
+		
+		<!--// SYSTEM PARAMETERS END-->
+		
+		<!-- BUSINESS PARAMETERS START-->
+		<!-- 理财师机构状态 -->
+		<property name="teamOrOrgStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="创建中"/> 
+				<entry key="1" value="启用"/> 
+				<entry key="2" value="暂停"/> 
+				<entry key="3" value="注销"/>
+				<entry key="4" value="审核未通过"/>
+			 </map>
+		</property>
+		<!-- 理财师机构删除状态 -->
+		<property name="teamOrOrgDelStatus">
+			<map value-type="java.lang.String">
+				<entry key="1" value="正常"/> 
+				<entry key="2" value="删除"/> 
+			 </map>
+		</property>
+		<!-- 理财师机构申请类型 -->
+		<property name="teamOrOrgApplicationType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="申请创建组织"/> 
+				<entry key="2" value="申请变更机构管理员"/> 
+				<entry key="3" value="申请年检"/> 
+				<entry key="4" value="申请注销组织"/>
+				<entry key="5" value="团队升级机构"/>
+			</map>
+		</property>
+		<!-- 理财师机构申请状态 -->
+		<property name="teamOrOrgApplicationStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="申请"/> 
+				<entry key="1" value="通过"/> 
+				<entry key="2" value="不通过"/> 
+			</map>
+		</property>
+		<!-- 理财师申请机构类型 -->
+		<property name="memberApplicationType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="申请加入机构"/> 
+				<entry key="2" value="申请退出机构"/> 
+				<entry key="3" value="机构邀请理财师加入机构"/> 
+			</map>
+		</property>
+		<!-- 理财师申请机构状态 -->
+		<property name="memberApplicationStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="申请"/> 
+				<entry key="1" value="通过"/> 
+				<entry key="2" value="不通过"/>
+				<entry key="3" value="延期"/>
+			</map>
+		</property>
+		<!-- 会员（理财师）状态 -->
+		<property name="memberStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="组织原因暂停业务"/> 
+				<entry key="1" value="注册未认证"/> 
+				<entry key="2" value="已认证"/> 
+				<entry key="3" value="暂停业务"/> 
+				<entry key="4" value="销户"/>
+				<entry key="5" value="认证不通过"/>     
+			</map>
+		</property>
+		<!-- 会员（理财师）删除状态 -->
+		<property name="memberDelStatus">
+			<map value-type="java.lang.String">
+				<entry key="1" value="正常"/> 
+				<entry key="2" value="删除"/> 
+			</map>
+		</property>
+		<!-- 会员（理财师）性别 -->
+		<property name="memberGender">
+			<map value-type="java.lang.String">
+				<entry key="1" value="男性"/> 
+				<entry key="2" value="女性"/> 
+				<entry key="3" value="保密"/>    
+			</map>
+		</property>
+		<!-- 会员（理财师）证件类型 -->
+		<property name="memberIDCardType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="身份证"/> 
+				<entry key="2" value="护照"/> 
+				<entry key="3" value="军官证"/> 
+				<entry key="4" value="台胞证"/> 
+				<entry key="5" value="港澳身份证"/> 
+			 </map>
+		</property>
+		<!-- 会员（理财师）类型 -->
+		<property name="memberType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="普通理财师"/>   
+				<entry key="2" value="管理者"/> 
+			</map>
+		</property>
+		<!-- 理财师变更明细表申请类型 -->
+		<property name="memberChangeApplicationType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="申请认证"/> 
+				<entry key="2" value="申请注销 "/> 
+			</map>
+		</property>
+		<!-- 理财师变更明细表申请状态 -->
+		<property name="memberChangeApplicationStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="申请"/> 
+				<entry key="1" value="通过"/> 
+				<entry key="2" value="未通过 "/> 
+			</map>
+		</property>
+		<!-- 供应商表状态 -->
+		<property name="providerStatus">
+		    <map value-type="java.lang.String">
+		        <entry key="0" value="创建中"/>
+		        <entry key="1" value="正常"/>
+		        <entry key="2" value="停用"/>
+		    </map>
+		</property>
+		<!-- 供应商表删除状态 -->
+		<property name="providerDelStatus">
+		    <map value-type="java.lang.String">
+		        <entry key="1" value="正常"/>
+		        <entry key="2" value="删除"/>
+		    </map>
+		</property>
+		<!-- 理财师客户表客户类别 -->
+		<property name="clientType">
+		    <map value-type="java.lang.String">
+		        <entry key="1" value="个人"/>
+		        <entry key="2" value="企业"/>
+		    </map>
+		</property>
+		<!-- 理财师客户表客户状态 -->
+		<property name="clientStatus">
+		    <map value-type="java.lang.String">
+		        <entry key="1" value="正常"/>
+		        <entry key="2" value="删除"/>
+		    </map>
+		</property>
+		<!-- 理财师客户表婚姻状况 -->
+		<property name="clientMarried">
+		    <map value-type="java.lang.String">
+		        <entry key="0" value="未婚"/>
+		        <entry key="2" value="已婚"/>
+		    </map>
+		</property>
+		<!-- 供应商用户类型 -->
+		<property name="providerUserAuthorization">
+		    <map value-type="java.lang.String">
+		        <entry key="1" value="超级管理员"/>
+		        <entry key="2" value="用户管理员"/>
+		        <entry key="3" value="产品管理员"/>
+		    </map>
+		</property>
+		<!-- 供应商用户性别 -->
+		<property name="providerUserGender">
+		    <map value-type="java.lang.String">
+		        <entry key="1" value="男"/>
+		        <entry key="2" value="女"/>
+		        <entry key="3" value="保密"/>
+		    </map>
+		</property>
+		<!-- 供应商用户状态 -->
+		<property name="providerUserStatus">
+		    <map value-type="java.lang.String">
+		        <entry key="0" value="禁用"/>
+		        <entry key="1" value="启用"/>
+		    </map>
+		</property>
+		<!-- 网签协议状态 -->
+		<property name="agreementStatus">
+			<map value-type="java.lang.String">
+				<entry key="1" value="创建中"/> 
+				<entry key="2" value="启用"/> 
+				<entry key="3" value="停用"/> 
+			 </map>
+		</property>
+		<!-- 合同状态 -->
+		<property name="contractStatus">
+			<map value-type="java.lang.String">
+				<entry key="1" value="创建中"/> 
+				<entry key="2" value="启用"/> 
+				<entry key="3" value="停用"/> 
+			 </map>
+		</property>
+		<!-- 合同类型 -->
+		<property name="contractType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="产品投资合同"/> 
+				<entry key="2" value="长期有效合同"/> 
+				<entry key="3" value="伞形合同"/> 
+			 </map>
+		</property>
+		<!--// BUSINESS PARAMETERS END-->
+		
+		<!--// market order start-->
+		
+		<!-- 小额投资人条件设定 -->
+		<property name="investLimit">
+			<map value-type="java.lang.String">
+				<entry key="amountLimit" value="300"/>
+				<entry key="clientLimit" value="50"/> 
+			 </map>
+		</property>
+		<!-- 资金状态 -->
+		<property name="payProgress">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未打款"/>
+				<entry key="1" value="部分到账"/> 
+				<entry key="2" value="全部到账"/> 
+				<entry key="3" value="超额打款"/>
+			 </map>
+		</property>
+		<!-- 交易状态 -->
+		<property name="tradeStatus">
+			<list value-type="java.util.Map">
+				<!-- 在途补录页面订单交易状态 -->
+				<map value-type="java.lang.String">
+					<entry key="1" value="预约提交"/> 
+					<entry key="2" value="份额确认"/> 
+<!-- 					<entry key="3" value="单证归集"/> -->
+					<entry key="4" value="资金到帐"/>
+<!-- 					<entry key="5" value="单证归集&amp;资金到帐"/> -->
+					<entry key="7" value="成功订单"/>
+					<entry key="9" value="理财顾问取消预约"/>
+					<entry key="11" value="撤销中"/>
+					<entry key="12" value="额度重分配中"/>
+					<entry key="13" value="失败订单"/>
+				</map>	
+				<!-- 全部订单交易状态 -->
+				<map value-type="java.lang.String">
+					<entry key="1" value="预约提交"/> 
+					<entry key="2" value="份额确认"/> 
+					<entry key="3" value="合同归集"/>
+					<entry key="4" value="资金到帐"/>
+					<entry key="5" value="合同归集&amp;资金到帐"/>
+					<entry key="6" value="超期未打款"/>
+					<entry key="7" value="成功订单"/>
+					<entry key="8" value="产品未成立被取消"/>
+					<entry key="9" value="理财顾问取消预约"/>
+					<entry key="10" value="平台方取消预约"/>
+					<entry key="11" value="撤销中"/>
+					<entry key="12" value="额度重分配中"/>
+					<entry key="13" value="失败订单"/>
+				</map>	
+				<!-- 在途查询页面订单交易状态 -->
+				<map value-type="java.lang.String">
+					<entry key="1" value="预约提交"/> 
+					<entry key="2" value="份额确认"/> 
+<!-- 					<entry key="3" value="单证归集"/> -->
+					<entry key="4" value="资金到帐"/>
+<!-- 					<entry key="5" value="单证归集&amp;资金到帐"/> -->
+					<entry key="6" value="超期未打款"/>
+					<entry key="7" value="成功订单"/>
+					<entry key="11" value="撤销中"/>
+					<entry key="12" value="额度重分配中"/>
+				</map>
+				<!-- 赎回订单交易状态 -->	
+				<map value-type="java.lang.String">
+				    <entry key="1" value="预约提交"/> 
+					<entry key="2" value="份额确认"/> 
+					<entry key="3" value="合同归集"/>
+					<entry key="4" value="资金到帐"/>
+<!-- 					<entry key="5" value="单证归集&amp;资金到帐"/> -->
+					<entry key="6" value="赎回完成"/>
+					<entry key="7" value="理财顾问取消"/>
+					<entry key="8" value="平台取消"/>
+					<entry key="9" value="成功订单"/>
+					<entry key="10" value="失败订单"/>
+				</map>
+				<!-- 赎回订单查询条件交易状态 -->	
+				<map value-type="java.lang.String">
+				    <entry key="1" value="预约提交"/> 
+					<entry key="2" value="份额确认"/> 
+					<entry key="3" value="合同归集"/>
+					<entry key="11" value="撤销中"/>
+					<entry key="12" value="额度重分配中"/>
+				</map>
+				<!-- 赎回订单补录交易状态 -->	
+				<map value-type="java.lang.String">
+				    <entry key="1" value="预约提交"/> 
+					<entry key="2" value="份额确认"/> 
+					<entry key="3" value="合同归集"/>
+					<entry key="9" value="成功订单"/>
+				</map>
+			</list>
+		</property>
+		<!-- 单证状态 -->
+		<property name="docStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未归集"/> 
+				<entry key="1" value="已归集"/> 
+			 </map>
+		</property>
+		<!-- 单证邮寄状态 -->
+		<property name="documentStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未寄出"/> 
+				<entry key="1" value="已寄出"/> 
+				<entry key="2" value="已收到"/> 
+			 </map>
+		</property>
+		<!-- 交易类型 -->
+		<property name="tradeType">
+			<list value-type="java.util.Map">
+				<map value-type="java.lang.String">
+					<entry key="1" value="认购"/>
+					<entry key="2" value="新申购"/>
+					<entry key="3" value="追加申购"/>
+				</map>
+				<map value-type="java.lang.String">
+					<entry key="1" value="认购"/>
+				</map>
+				<map value-type="java.lang.String">
+					<entry key="2" value="新申购"/>
+					<entry key="3" value="追加申购"/>
+				</map>
+			</list>
+		</property>
+		<!-- 居间费支付状态  -->
+		<property name="payStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未核定"/>
+				<entry key="1" value="核定通过"/>
+				<entry key="2" value="核定未通过"/>
+				<entry key="3" value="重新核算未核定"/>
+				<entry key="4" value="审核通过"/>
+				<entry key="5" value="审核未通过"/>
+				<entry key="6" value="拒付"/>
+				<entry key="7" value="部分支付"/>
+				<entry key="8" value="全部支付"/>
+			</map>
+		</property>
+		<!-- 导出状态  -->
+		<property name="exportStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未导出"/>
+				<entry key="1" value="已导出"/>
+			</map>
+		</property>
+		<!-- 配给状态  -->
+		<property name="pushStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未配给"/>
+				<entry key="1" value="待确认"/>
+				<entry key="2" value="已接受"/>
+				<entry key="3" value="部分接受"/>
+				<entry key="4" value="已拒绝"/>
+			</map>
+		</property>
+		<!-- 打款凭证处理状态  -->
+		<property name="proofStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未处理"/>
+				<entry key="1" value="已处理"/>
+			</map>
+		</property>
+		<!-- 资金确认处理类型 -->
+		<property name="proofType">
+			<map value-type="java.lang.String">
+				<entry key="0" value="银行流水确认"/>
+				<entry key="1" value="打款凭证确认"/>
+			</map>
+		</property>
+		<!-- 操作类型  -->
+		<property name="operateType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="金额确认"/>
+				<entry key="2" value="复核"/>
+				<entry key="3" value="修改"/>
+			</map>
+		</property>
+		<!--// market order end-->
+		
+		<!-- product center start -->
+		<!-- 产品状态 -->
+		<property name="productType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="信托"/>
+				<entry key="2" value="阳光私募"/>
+				<entry key="3" value="基金子公司资管"/>
+				<entry key="4" value="券商资管"/>
+				<entry key="5" value="跨市场货币基金"/>
+			</map>
+		</property>
+		<!-- 预期收益类型 -->
+		<property name="profitType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="浮动"/>
+				<entry key="2" value="固定"/>
+			</map>
+		</property>
+		<!-- 期限类型 -->
+		<property name="deadlineType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="固定"/>
+				<entry key="2" value="不固定"/>
+			</map>
+		</property>
+		<!-- 销售类型 -->
+		<property name="sellType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="全款先到先得"/>
+				<entry key="2" value="预约"/>
+				<entry key="3" value="定向推送"/>
+			</map>
+		</property>
+		<!-- 产品状态 -->
+		<property name="productStatus">
+			<map value-type="java.lang.String">
+				<entry key="1" value="待审核"/>
+				<entry key="2" value="审核通过"/>
+				<entry key="3" value="审核未通过"/>
+			</map>
+		</property>
+		<!-- 产品销售状态 -->
+		<property name="sellStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="创建中"/>
+				<entry key="1" value="计划投放"/>
+				<entry key="2" value="在售"/>
+		   <!-- <entry key="3" value="停止销售"/> -->
+				<entry key="4" value="发行失败"/>
+				<entry key="5" value="已成立"/>
+				<entry key="6" value="已成立且在售"/>
+				<entry key="7" value="已清算"/>
+				<entry key="8" value="取消投放"/>
+				<entry key="9" value="产品封帐"/>
+			</map>
+		</property>
+		<!-- 产品封闭类型 -->
+		<property name="closeType">
+			<map value-type="java.lang.String">
+				<entry key="2" value="非全程封闭"/>
+				<entry key="1" value="全程封闭"/>
+			</map>
+		</property>
+		<!-- 产品发布状态 -->
+		<property name="released">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未发布"/>
+				<entry key="1" value="发布"/>
+			</map>
+		</property>
+		<!-- 佣金支付状态 -->
+		<property name="payWay">
+			<map value-type="java.lang.String">
+				<entry key="1" value="打款即支付"/>
+				<entry key="2" value="预约即支付"/>
+				<entry key="3" value="资金到账即支付"/>
+				<entry key="4" value="交易完成后按月累计支付"/>
+			</map>
+		</property>
+		<!-- 产品资料下载权限 -->
+		<property name="downloadPermission">
+			<map value-type="java.lang.String">
+				<entry key="0" value="不能下载"/>
+				<entry key="1" value="网签会员"/>
+				<entry key="2" value="注册未网签"/>
+			</map>
+		</property>
+		<!-- 产品问卷推送状态 -->
+		<property name="productPushStatus">
+			<map value-type="java.lang.String">
+				<entry key="0" value="未推送"/>
+				<entry key="1" value="已推送"/>
+			</map>
+		</property>
+		<!--// product center end -->
+		<!-- 字典表初始化数据配置 -->
+		<property name="dictionaryConfig" >
+			<map value-type="java.lang.String">
+				<entry key="profitRatio" value="产品预期收益率"/>
+				<entry key="deadline" value="产品期限"/>
+				<entry key="orgType" value="机构类型 "/>
+			</map>
+		</property>
+		<!-- 系统全局参数配置 -->
+		<property name="globalParameter" >
+			<map value-type="java.lang.String">
+				<entry key="isNotice" value="是否通知"/>
+				<entry key="youkuPassword" value="优酷密码" />
+				<entry key="accessToken" value="优酷访问授权码" />
+				<entry key="freshToken" value="优酷刷新授权码" />
+			</map>
+		</property>
+        <!-- 产品预期收益率 -->
+		<property name="profitRatio" >
+			<map value-type="java.lang.String">
+				<entry key="1" value="5%（含）以下"/>
+				<entry key="2" value="5%~8%（含）"/>
+				<entry key="3" value="8%~12%（含）"/>
+				<entry key="4" value="12%以上"/>
+				<entry key="5" value="浮动"/>
+			</map>
+		</property>
+		<!-- 产品期限 -->
+		<property name="deadline">
+			<map value-type="java.lang.String">
+				<entry key="1" value="1年（含）以下"/>
+				<entry key="2" value="1~2年（含）"/>
+				<entry key="3" value="2年以上"/>
+				<entry key="4" value="无固定期"/>
+			</map>
+		</property>
+		<!-- 机构类型  -->
+		<property name="orgType">
+			<map value-type="java.lang.String">
+				<entry key="1" value="信托公司"/>
+				<entry key="2" value="证券公司"/>
+				<entry key="3" value="基金公司"/>
+				<entry key="4" value="银行"/>
+				<entry key="5" value="有限合伙企业"/>
+				<entry key="6" value="基金子公司"/>
+				<entry key="7" value="证券子公司"/>
+				<entry key="8" value="私募基金公司"/>
+				<entry key="9" value="资产管理公司"/>
+				<entry key="10" value="其他"/>
+			</map>
+		</property>
+		
+		<!-- 募集方所在区域  -->
+		<property name="raiseArea">
+			<map value-type="java.lang.String">
+				<entry key="11" value="北京" />
+				<entry key="31" value="上海" />
+				<entry key="12" value="天津" />
+				<entry key="50" value="重庆" />
+				<entry key="13" value="河北省"/>
+				<entry key="14" value="山西省"/>
+				<entry key="21" value="辽宁省"/>
+				<entry key="22" value="吉林省"/>
+				<entry key="23" value="黑龙江省"/>
+				<entry key="32" value="江苏省"/>
+				<entry key="33" value="浙江省"/>
+				<entry key="34" value="安徽省"/>
+				<entry key="35" value="福建省"/>
+				<entry key="36" value="江西省"/>
+				<entry key="37" value="山东省"/>
+				<entry key="41" value="河南省"/>
+				<entry key="42" value="湖北省"/>
+				<entry key="43" value="湖南省"/>
+				<entry key="44" value="广东省"/>
+				<entry key="46" value="海南省"/>
+				<entry key="51" value="四川省"/>
+				<entry key="52" value="贵州省"/>
+				<entry key="53" value="云南省"/>
+				<entry key="61" value="陕西省"/>
+				<entry key="62" value="甘肃省"/>
+				<entry key="63" value="青海省"/>
+				<entry key="71" value="台湾省"/>
+				<entry key="15" value="内蒙古"/>
+				<entry key="54" value="西藏"/>
+				<entry key="45" value="广西"/>
+				<entry key="64" value="宁夏"/>
+				<entry key="65" value="新疆"/>
+				<entry key="81" value="香港"/>
+				<entry key="82" value="澳门"/>
+			</map>
+		</property>
+		
+		<!-- 网站位置 -->
+		<property name="sitePosition">
+			<list >
+				<bean class="com.sw.plugins.config.position.entity.Position">  
+			        <property name="code" value="p1"/>  
+			        <property name="name" value="首页轮播图"/>
+			        <property name="url" value="http://www.baidu.com/"/>  
+		    	</bean> 
+				<bean class="com.sw.plugins.config.position.entity.Position">  
+			        <property name="code" value="p2"/>  
+			        <property name="name" value="登陆后首页通栏"/>
+			        <property name="url" value="http://www.baidu.com/"/>  
+		    	</bean> 
+				<bean class="com.sw.plugins.config.position.entity.Position">  
+			        <property name="code" value="p3"/>  
+			        <property name="name" value="登陆后首页推荐产品"/>
+			        <property name="url" value="http://www.baidu.com/"/>  
+		    	</bean> 
+			</list>
+		</property>
+		
+		<!-- 网站设置 -->
+		<property name="websiteSetting">
+			<map value-type="java.lang.String">
+				<entry key="Websites" value="网站网址"/>
+				<entry key="Name" value="网站名称"/>
+				<entry key="Status" value="网站状态"/>
+				<entry key="KeyWord" value="关键词"/>
+				<entry key="Record" value="备案编号"/>
+				<entry key="Copyright" value="版权"/>
+				<entry key="CloseMessage" value="网站关闭消息"/>
+				<entry key="Discription" value="描述"/>
+				<entry key="Logo" value="登录页Logo"/>
+				<entry key="Phone" value="联系电话"/>
+				<entry key="Address" value="地址"/>
+				<entry key="Email" value="Email"/>
+				<entry key="AddresserEmail" value="发件人邮箱"/>
+				<entry key="SMTPIP" value="SMTP服务器地址"/>
+				<entry key="SMTPPort" value="SMTP服务器端口"/>
+				<entry key="SMTPUserName" value="SMTP服务器用户名"/>
+				<entry key="SMTPPassword" value="SMTP服务器密码"/>
+				<entry key="AboutUs" value="财富圈儿介绍"/>
+				<entry key="ContactUs" value="联系我们"/>
+				<entry key="Declare" value="网站声明"/>
+				<entry key="Logo2" value="登录后Logo"/>
+				<entry key="ParameterMemberRegisterState" value="参数会员注册声明" />
+				<entry key="PostCode" value="邮政编码" />
+			</map>
+		</property>
+		
+		<!-- 业绩激励所需参数设置值 -->
+		<property name="stageParameter">
+			<map value-type="java.lang.String">
+				<entry key="1" value="StageDate"/>
+				<entry key="2" value="BeginTime"/>
+		<!--		<entry key="1" value="MinRat" />
+				<entry key="2" value="MaxRat" />
+				<entry key="3" value="IncreaseRat" />
+				<entry key="5" value="RecommandRewardScore"/>
+		-->
+			</map>
+		</property>
+		
+		<property name="stageParameterName">
+			<map value-type="java.lang.String">
+				<entry key="StageDate" value="阶段统计时长(月)"/> 
+				<entry key="BeginTime" value="起始日期设置"/>
+		<!--		<entry key="MinRat" value="	最小值"/> 
+				<entry key="MaxRat" value="	最大值"/> 
+				<entry key="IncreaseRat" value="阶梯系数"/> 
+				<entry key="RecommandRewardScore" value="推荐人奖励分值"/>
+		-->
+			</map>
+		</property>
+		
+		<!-- INFORMATION PARAMETERS START -->
+		<!-- 资讯类别 -->
+		<property name="informationType">
+		    <list value-type="java.util.List">
+			    <map value-type="java.lang.String">
+			       <entry key="id" value="1"/>
+			        <entry key="name" value="市场资讯"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="2"/>
+			        <entry key="name" value="公告"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="3"/>
+			        <entry key="name" value="知识库"/>
+			    </map>
+			    <!-- <map value-type="java.lang.String">
+			        <entry key="id" value="4"/>
+			        <entry key="name" value="培训"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="5"/>
+			        <entry key="name" value="活动"/>
+			    </map> -->
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="6"/>
+			        <entry key="name" value="研究报告"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="7"/>
+			        <entry key="name" value="法律法规"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="8"/>
+			        <entry key="name" value="产品公告"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="9"/>
+			        <entry key="name" value="规则"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="10"/>
+			        <entry key="name" value="交易"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="11"/>
+			        <entry key="name" value="居间费"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="12"/>
+			        <entry key="name" value="其他"/>
+			    </map>
+		    </list>
+		</property>
+		<!-- 资讯是否发布 -->
+		<property name="informationReleased">
+		    <map value-type="java.lang.String">
+		        <entry key="0" value="否"/>
+		        <entry key="1" value="是"/>
+		    </map>
+		</property>
+		
+		<!-- INFORMATION PARAMETERS END -->
+		
+		<!-- PRODUCTEVALUATE PARAMETERS START -->
+		<!-- 产品评价指标 -->
+		<property name="productEvaluate">
+		    <map value-type="java.lang.String">
+		        <entry key="1" value="好评"/>
+		        <entry key="2" value="差评"/>
+		    </map>
+		</property>
+		<!-- PRODUCTEVALUATE PARAMETERS END -->
+		
+		<!-- ACTIVITY PARAMETERS START -->
+		<!-- 活动类别 -->
+		<property name="activityType">
+		    <list value-type="java.util.List">
+			    <map value-type="java.lang.String">
+			    	<entry key="id" value="1"/>
+			    	<entry key="name" value="抽奖活动"/>
+			    </map>
+			    <map value-type="java.lang.String">
+			        <entry key="id" value="2"/>
+			        <entry key="name" value="报名活动"/>
+			    </map>
+		    </list>
+		</property>
+		<!-- 活动状态 -->
+		<property name="activityStatus">
+		    <map value-type="java.lang.String">
+		        <entry key="1" value="未开始"/>
+		        <entry key="2" value="已开始"/>
+		        <entry key="3" value="已结束"/>
+		    </map>
+		</property>
+		<!-- ACTIVITY PARAMETERS END -->
+		
+		<!-- 订单导出上传的路径 -->
+		<property name="uploadDir" value="upload" />
+		<property name="uploadTmpDir" value="tmp" />
+		
+		<!-- 银行流水匹配状态 -->
+		<property name="matchingStatus">
+		    <map value-type="java.lang.String">
+		        <entry key="0" value="未匹配"/>
+		        <entry key="1" value="已匹配"/>
+		    </map>
+		</property>		
+   	</bean>   	
+   	<!-- SMTP邮件服务配置 -->	
+	<!-- 这里的参数(如用户名、密码)都是针对邮件发送者的 -->  
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">  
+        <property name="host">  
+            <value>smtp.bestwealth.com</value>  
+        </property>  
+        <property name="javaMailProperties">  
+            <props>  
+               <prop key="mail.smtp.auth">true</prop>  
+                <prop key="mail.smtp.timeout">25000</prop>  
+            </props>  
+        </property>  
+        <property name="username">  
+            <value>service@bestwealth.com</value>  
+        </property>  
+        <property name="password">  
+            <value>cxzdsaewq140728</value>  
+        </property>  
+    </bean> 
+</beans>

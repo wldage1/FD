@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messageTask>
+<!-- 
+任务配置说明：name:任务名称,code:任务代码,sendType:任务发送类型1-立即发送2-定时发送,status:任务状态1-未启用2-启用3-暂停,isConfigReceiver:是否配置接收人员0-否1-是
+消息模板配置说明：name:模板名称,code:模板代码,type: 模板类型1-站内,2-短信,3-邮件,4-IM,模板状态0-无效1-有效
+模板code规则说明：模板类型为前缀，sys-站内消息,sms-手机短信,eml-电子邮件,微信-im; +  前台触发-website,后台触发-manage,供应商系统触发-provider + 
+模块名（参考菜单配置说明文档，精确到一级菜单）+ 业务操作拼音简写,模板code在此文档中必须唯一,不能有重复值。举例:发起赎回站内消息 sys_website_market_fqsh
+模板内容编写说明: 模板内容中关于用户姓名的参数名必须定义为${userName},其他的参数名可以自定义
+  -->
+<task name="注册成功后" code="task_sys_website_homepage_zccg"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="首次注册成功模板" type="1" status="1" code="sys_website_homepage_zccg">
+      	   恭喜您成功注册财富圈平台，助您业务欣荣。
+    </template>
+</task> 
+<task name="忘记密码" code="task_eml_website_homepage_wjmm"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="忘记密码站内消息模板" type="3" status="1" code="eml_website_homepage_wjmm">
+     <![CDATA[
+         <html><head></head><body>尊敬的会员您好！</br></br>请点击下面的链接重置您的密码：<a href="${websiteDomainAddress}/member/forgetPassword?code=${emailcode}">${websiteDomainAddress}/member/forgetPassword?code=${emailcode}&ssid=<ssid></a></br></br>
+		如果浏览器不能自动打开，可以复制地址到浏览器地址栏中手动打开。</body></html>
+     ]]>     
+   </template>
+</task>
+<task name="登陆后提示认证" code="task_sys_website_homepage_tsrz"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="登陆后提示认证站内消息模板" type="1" status="1" code="sys_website_homepage_tsrz">
+     <![CDATA[
+  		   尊敬的会员您好！您还尚未完成信息认证，信息认证后可创建团队和机构等操作。<a style="text-decoration:underline;" href="${websiteDomainAddress}/member/personal_data.html?ssid=<ssid>">现在去认证。</a>
+     ]]>     
+   </template>
+</task>
+<task name="登陆后提示网签" code="task_sys_website_homepage_tswq"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="登陆后提示网签站内消息模板" type="1" status="1" code="sys_website_homepage_tswq">
+     <![CDATA[
+      	尊敬的会员您好！您还尚未完成签约，完成签约后可进行预约认购产品等操作，<a style="text-decoration:underline;" href="${websiteDomainAddress}/member/personal_data.html?mark=1&ssid=<ssid>">现在就去签约。</a>
+     ]]>     
+   </template>
+</task>
+<task name="申请认证" code="task_sys_website_customer_sqrz"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="申请认证站内消息模板" type="1" status="1" code="sys_website_customer_sqrz">
+     <![CDATA[    
+    	  尊敬的会员${memberName}，您好！您提交的信息认证已处理， <a href="${adminDomainAddress}/customer/member/checklist?c=40101&id=${memberID}&ssid=<ssid>">马上查看。</a>
+     ]]>     
+   </template>
+</task>
+<task name="创建机构" code="task_sys_website_customer_cjjg"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="创建机构站内消息模板" type="1" status="1" code="sys_website_customer_cjjg">
+     <![CDATA[    
+      	 您好，会员${memberName}提交了申请创建机构信息，<a style="text-decoration:underline;" href="${adminDomainAddress}/customer/organization/checklist?c=40301&id=${orgID}&ssid=<ssid>">马上处理。</a>
+     ]]>     
+   </template>
+</task>
+<task name="创建团队" code="task_sys_website_customer_cjtd"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="创建团队站内消息模板" type="1" status="1" code="sys_website_customer_cjtd">
+     <![CDATA[
+      	您好，会员${memberName}提交了申请创建团队信息，<a style="text-decoration:underline;"  href="${adminDomainAddress}/customer/team/checklist?c=40201&id=${orgID}&ssid=<ssid>">马上处理。</a>
+     ]]>     
+   </template>
+</task>
+<task name="RM挂靠机构或团队" code="task_sys_website_customer_gkjg"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="RM挂靠机构或团队站内消息模板" type="1" status="1" code="sys_website_customer_gkjg">
+     <![CDATA[
+      	尊敬的会员您好！${memberName}申请加入您的机构/团队，<a style="text-decoration:underline;" href="${websiteDomainAddress}/member/member_manage.html?ssid=<ssid>">查看详细。</a>
+     ]]>     
+   </template>
+</task>
+<task name="团队理财顾问是否同意升级为机构" code="task_sys_website_customer_isornotagree"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="团队理财顾问是否同意升级为机构" type="1" status="1" code="sys_website_customer_isornotagree">
+     <![CDATA[
+      	尊敬的会员您好！您所在的团队已经申请升级为机构，请确认是否同意升级，<a style="text-decoration:underline;" href="${websiteDomainAddress}/organization/organization_maintenance.html?ssid=<ssid>">马上处理。</a>
+     ]]>     
+   </template>
+</task>
+<task name="RM成功挂靠机构或团队" code="task_sys_website_customer_cggk"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="RM成功挂靠机构或团队站内消息模板" type="1" status="1" code="sys_website_customer_cggk">
+   	尊敬的会员您好！您已成功加入${teamororgname}机构/团队，感谢您的使用。（加入机构后居间费由机构发放）
+   </template>
+</task>
+<task name="RM挂靠机构/团队申请未通过" code="task_sys_website_customer_gkwtg"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="RM挂靠机构/团队申请未通过站内消息模板" type="1" status="1" code="sys_website_customer_gkwtg">
+   	尊敬的会员您好！您加入${teamororgname}机构/团队申请未通过，您还可以申请加入其它机构或团队，感谢您的支持。
+   </template>
+</task>
+<task name="RM退出机构或团队" code="task_sys_website_customer_tcjg"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="RM退出机构或团队站内消息模板" type="1" status="1" code="sys_website_customer_tcjg">
+     <![CDATA[
+ 	 	尊敬的会员您好！${memberName}申请退出您的机构/团队，<a style="text-decoration:underline;"  href="${websiteDomainAddress}/member/member_manage.html?ssid=<ssid>">详细请查看.</a>
+     ]]>     
+   </template>
+</task>
+<task name="理财师认证通过" code="task_sys_manage_customer_rztg"  sendType="1" status="2" >
+   <template name="理财师认证通过消息模板" type="1" status="1" code="sys_manage_customer_rztg">
+     <![CDATA[
+      	尊敬的会员您好！恭喜您成功完成信息认证，祝您使用愉快！
+     ]]>     
+   </template>
+</task>
+<task name="理财师认证不通过" code="task_sys_manage_customer_rzbtg"  sendType="1" status="2" >
+   <template name="理财师认证不通过消息模板" type="1" status="1" code="sys_manage_customer_rzbtg">
+     <![CDATA[
+      	尊敬的会员您好！您的认证尚未成功;${re! ''}
+     ]]>     
+   </template>
+</task>
+<task name="理财师注销不通过" code="task_sys_manage_customer_lcszxbtg"  sendType="1" status="2" >
+   <template name="理财师注销不通过消息模板" type="1" status="1" code="sys_manage_customer_lcszxbtg">
+     <![CDATA[
+      	尊敬的会员您好！您的注销申请失败，请确认注销并重新提交，感谢您的支持。
+     ]]>     
+   </template>
+</task>
+<task name="理财师暂停业务" code="task_sys_manage_customer_lcsztyw"  sendType="1" status="2" >
+   <template name="理财师暂停业务消息模板" type="1" status="1" code="sys_manage_customer_lcsztyw">
+     <![CDATA[
+     	尊敬的会员您好！一些违规操作原因，您的账号已暂停服务，有疑问请联系客服。     
+     ]]>     
+   </template>
+</task>
+<task name="理财师恢复业务" code="task_sys_manage_customer_lcshfyw"  sendType="1" status="2" >
+   <template name="理财师恢复业务消息模板" type="1" status="1" code="sys_manage_customer_lcshfyw">
+     <![CDATA[
+      	尊敬的会员您好！您的账号服务已经恢复，祝您使用愉快！
+     ]]>     
+   </template>
+</task>
+<task name="团队创建通过" code="task_sys_manage_team_tdcjtg"  sendType="1" status="2" >
+   <template name="团队创建通过消息模板" type="1" status="1" code="sys_manage_team_tdcjtg">
+     <![CDATA[
+      	您的团队创建申请已经通过审核。
+     ]]>     
+   </template>
+</task>
+<task name="团队创建不通过" code="task_sys_manage_team_tdcjbtg"  sendType="1" status="2" >
+   <template name="团队创建不通过消息模板" type="1" status="1" code="sys_manage_team_tdcjbtg">
+     <![CDATA[
+      	尊敬的会员您好！您创建的团队已经通过审核，祝您使用愉快！
+     ]]>     
+   </template>
+</task>
+<task name="团队注销通过" code="task_sys_manage_team_tdzxtg"  sendType="1" status="2" >
+   <template name="团队注销通过消息模板" type="1" status="1" code="sys_manage_team_tdzxtg">
+     <![CDATA[
+      	尊敬的会员您好！您的团队已经注销成功，感谢您的使用！
+     ]]>     
+   </template>
+</task>
+
+<task name="团队注销不通过" code="task_sys_manage_team_tdzxbtg"  sendType="1" status="2" >
+   <template name="团队注销不通过消息模板" type="1" status="1" code="sys_manage_team_tdzxbtg">
+     <![CDATA[
+      	尊敬的会员您好！您的团队尚未注销成功，请重新申请！
+     ]]>     
+   </template>
+</task>
+<task name="团队管理人变更通过" code="task_sys_manage_team_tdglrbgtg"  sendType="1" status="2" >
+   <template name="团队管理人变更通过消息模板" type="1" status="1" code="sys_manage_team_tdglrbgtg">
+     <![CDATA[
+    	 尊敬的会员您好！团队管理者变更成功，请知悉！
+     ]]>     
+   </template>
+</task>
+<task name="团队管理人变更不通过" code="task_sys_manage_team_tdglrbgbtg"  sendType="1" status="2" >
+   <template name="团队管理人变更不通过消息模板" type="1" status="1" code="sys_manage_team_tdglrbgbtg">
+     <![CDATA[
+      	尊敬的会员您好！团队管理者变更审核未通，请知悉！
+     ]]>     
+   </template>
+</task>
+<task name="团队升级通过" code="task_sys_manage_team_tdsjtg"  sendType="1" status="2" >
+   <template name="团队升级通过消息模板" type="1" status="1" code="sys_manage_team_tdsjtg">
+     <![CDATA[
+      	尊敬的会员您好！恭喜您的团队已升级为机构，感谢您的使用！
+     ]]>     
+   </template>
+</task>
+<task name="团队升级不通过" code="task_sys_manage_team_tdsjbtg"  sendType="1" status="2" >
+   <template name="团队升级不通过消息模板" type="1" status="1" code="sys_manage_team_tdsjbtg">
+     <![CDATA[
+     	尊敬的会员您好！您尚未完成团队升级，审核未通过，请知悉！
+     ]]>     
+   </template>
+</task>
+<task name="后台直接注销团队" code="task_sys_manage_team_htzjzxtd"  sendType="1" status="2" >
+   <template name="后台直接注销团队消息模板" type="1" status="1" code="sys_manage_team_htzjzxtd">
+     <![CDATA[
+     	尊敬的会员您好！您所在团队的一些违规操作，您所在的团队已注销，您可以重新选择加入其它团队，感谢您的使用！ 
+     ]]>     
+   </template>
+</task>
+<task name="机构创建通过" code="task_sys_manage_organization_jgcjtg"  sendType="1" status="2" >
+   <template name="机构创建通过消息模板" type="1" status="1" code="sys_manage_organization_jgcjtg">
+     <![CDATA[
+     	尊敬的会员您好！您创建的机构已经通过审核，祝您使用愉快！     
+     ]]>     
+   </template>
+</task>
+<task name="机构创建不通过" code="task_sys_manage_organization_jgcjbtg"  sendType="1" status="2" >
+   <template name="机构创建不通过消息模板" type="1" status="1" code="sys_manage_organization_jgcjbtg">
+     <![CDATA[
+   	  尊敬的会员您好！由于您提交的信息有误，您创新的机构暂时未通过审核;${re! ''}     
+     ]]>     
+   </template>
+</task>
+<task name="机构注销通过" code="task_sys_manage_organization_jgzxtg"  sendType="1" status="2" >
+   <template name="机构注销通过消息模板" type="1" status="1" code="sys_manage_organization_jgzxtg">
+     <![CDATA[
+    	 尊敬的会员您好！您的机构已注销成功，感谢您的使用！    
+     ]]>     
+   </template>
+</task>
+<task name="机构注销不通过" code="task_sys_manage_organization_jgzxbtg"  sendType="1" status="2" >
+   <template name="机构注销不通过消息模板" type="1" status="1" code="sys_manage_organization_jgzxbtg">
+     <![CDATA[
+     	尊敬的会员您好！您的机构尚未注销成功，请重新补充注销申请资料！     
+     ]]>     
+   </template>
+</task>
+<task name="机构管理人变更通过" code="task_sys_manage_organization_jgglrbgtg"  sendType="1" status="2" >
+   <template name="机构管理人变更通过消息模板" type="1" status="1" code="sys_manage_organization_jgglrbgtg">
+     <![CDATA[
+   	  	尊敬的会员您好！您已成功完成机构管理者变更，请知悉！
+     ]]>     
+   </template>
+</task>
+<task name="机构管理人变更不通过" code="task_sys_manage_organization_jgglrbgbtg"  sendType="1" status="2" >
+   <template name="机构管理人变更不通过消息模板" type="1" status="1" code="sys_manage_organization_jgglrbgbtg">
+     <![CDATA[
+     	尊敬的会员您好！您尚未完成机构管理者变更，请知悉！
+     ]]>     
+   </template>
+</task>
+<task name="机构年检通过" code="task_sys_manage_organization_jgnjtg"  sendType="1" status="2" >
+   <template name="机构年检通过消息模板" type="1" status="1" code="sys_manage_organization_jgnjtg">
+     <![CDATA[
+     	尊敬的会员您好！您已成功完成机构年检，祝您使用愉快。
+     ]]>     
+   </template>
+</task>
+<task name="机构年检不通过" code="task_sys_manage_organization_jgnjbtg"  sendType="1" status="2" >
+   <template name="机构年检不通过消息模板" type="1" status="1" code="sys_manage_organization_jgnjbtg">
+     <![CDATA[
+     	尊敬的会员您好！您的机构年检申请失败，请重新提交准确完整的信息，感谢您的使用。
+     ]]>     
+   </template>
+</task>
+<task name="后台直接注销机构" code="task_sys_manage_organization_htzjzxjg"  sendType="1" status="2" >
+   <template name="后台直接注销机构消息模板" type="1" status="1" code="sys_manage_organization_htzjzxjg">
+     <![CDATA[
+     	尊敬的会员您好！由于一些违规操作，您所在的机构已注销，您可以重新选择加入其它团队，感谢您的使用！     
+     ]]>     
+   </template>
+</task>
+<task name="机构暂停业务" code="task_sys_manage_organization_jgztyw"  sendType="1" status="2" >
+   <template name="机构暂停业务消息模板" type="1" status="1" code="sys_manage_organization_jgztyw">
+     <![CDATA[
+    	 尊敬的会员您好！很抱歉您所在的机构已被暂停业务，您暂时不能进行产品预约等操作。     
+     ]]>     
+   </template>
+</task>
+<task name="机构恢复业务" code="task_sys_manage_organization_jghfyw"  sendType="1" status="2" >
+   <template name="机构恢复业务消息模板" type="1" status="1" code="sys_manage_organization_jghfyw">
+     <![CDATA[
+      	尊敬的会员您好！您所在的机构已恢复业，您已恢复产品预约等操作，感谢您的使用。
+     ]]>     
+   </template>
+</task>
+
+<task name="理财顾问居间费发放成功" code="task_sys_manage_commission_fagrant_ffcg"  sendType="1" status="2" >
+   <template name="理财顾问居间费发放成功消息模板" type="1" status="1" code="sys_manage_commission_fagrant_ffcg">
+     <![CDATA[ 
+		尊敬的会员您好！您本月的居间费已发放，<a style="text-decoration:underline;"  href="${websiteDomainAddress}/order/commission.html?ssid=<ssid>">查收并确认。</a>
+     ]]>     
+   </template>
+</task>
+<task name="理财顾问居间费发放失败" code="task_sys_manage_commission_fagrant_ffsb"  sendType="1" status="2" >
+   <template name="理财顾问居间费发放失败站内消息模板" type="1" status="1" code="sys_manage_commission_fagrant_ffsb">
+     <![CDATA[
+      	尊敬的会员您好！由于您的账号信息有误，本月居间费发放失败，请及时修改账号信息，感谢您的配合。
+     ]]>     
+   </template>
+</task>
+<task name="理财顾问重新发放居间费" code="task_sys_website_commission_fagrant_cxff"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="理财顾问重新发放居间费消息模板" type="1" status="1" code="sys_website_commission_fagrant_cxff">
+     <![CDATA[     
+      	您好，会员${sendName! ''}修改了账号信息，申请再次发放居间费。详情请查看：<a href="${adminDomainAddress! ''}/commission/fagrant?c=303&ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+
+<task name="机构居间费发放成功" code="task_sys_manage_commission_organizationgrant_ffcg"  sendType="1" status="2" >
+   <template name="机构居间费发放成功消息模板" type="1" status="1" code="sys_manage_commission_organizationgrant_ffcg">
+     <![CDATA[
+      	<a style="text-decoration:underline;"  href="${websiteDomainAddress}/organization/organization_commission.html?ssid=<ssid>">尊敬的会员您好！您的机构居间费已发放，请查收并确认。</a>
+     ]]>     
+   </template>
+</task>
+<task name="机构居间费发放失败" code="task_sys_manage_commission_organizationgrant_ffsb"  sendType="1" status="2" >
+   <template name="机构居间费发放失败站内消息模板" type="1" status="1" code="sys_manage_commission_organizationgrant_ffsb">
+     <![CDATA[
+      	尊敬的会员您好！由于您的机构账号信息有误，本月居间费发放失败，请及时修改账号信息，感谢您的配合。
+     ]]>     
+   </template>
+</task>
+<task name="机构重新发放居间费" code="task_sys_website_commission_organizationgrant_cxff"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="机构重新发放居间费消息模板" type="1" status="1" code="sys_website_commission_organizationgrant_cxff">
+     <![CDATA[
+      	您好，机构管理员${sendName! ''}修改了账号信息，申请再次发放居间费。详情请查看：<a href="${adminDomainAddress! ''}/commission/organizationgrant?c=304&ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+<task name="机构居间费发票通知" code="task_sys_manage_commission_organizationgrant_fptz"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="机构居间费发票通知消息模板" type="1" status="1" code="sys_manage_commission_organizationgrant_fptz">
+     <![CDATA[
+      	尊敬的机构管理员您好，请尽快邮寄您本月居间费的发票。
+     ]]>     
+   </template>
+</task>
+
+<!-- 销售管控相关消息 -->
+<task name="销售管控业务-开启预约" code="task_sys_manage_market_kqyy"  sendType="1" status="2" >
+   <template name="开启预约消息模板" type="1" status="1" code="sys_manage_market_kqyy">
+     <![CDATA[
+      	尊敬的会员您好，产品"${pj.productName}"已开放预约。
+     ]]>     
+   </template>
+    <template name="开启预约消息模板" type="2" status="1" code="sms_manage_market_kqyy">
+     <![CDATA[
+      	尊敬的会员您好，产品"${pj.productName}"已开放预约。
+     ]]>     
+   </template>
+</task>
+
+<task name="销售管控业务-开启打款" code="task_sys_manage_market_kqdk"  sendType="1" status="2" >
+   <template name="开启打款消息模板" type="1" status="1" code="sys_manage_market_kqdk">
+     <![CDATA[
+     	尊敬的会员您好！${pj.productName}产品已开启打款，请知悉。     
+     ]]>     
+   </template>
+    <template name="开启打款消息模板" type="2" status="1" code="sms_manage_market_kqdk">
+     <![CDATA[
+     	尊敬的会员您好！${pj.productName}产品已开启打款，请知悉。     
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-停止打款" code="task_sys_manage_market_gbdk"  sendType="1" status="2" >
+   <template name="停止打款消息模板" type="1" status="1" code="sys_manage_market_gbdk">
+     <![CDATA[
+     	尊敬的会员您好！${pj.productName}产品已停止打款，请知悉。
+     ]]>     
+   </template>
+   <template name="停止打款消息模板" type="2" status="1" code="sms_manage_market_gbdk">
+     <![CDATA[
+     	尊敬的会员您好！${pj.productName}产品已停止打款，请知悉。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-产品封账" code="task_sys_manage_market_cpfz"  sendType="1" status="2" >
+   <template name="产品封账消息模板" type="1" status="1" code="sys_manage_market_cpfz">
+     <![CDATA[
+    	 尊敬的会员您好！${pj.productName}产品已产品封账，请知悉。
+     ]]>     
+   </template>
+   <template name="产品封账消息模板" type="2" status="1" code="sms_manage_market_cpfz">
+     <![CDATA[
+    	 尊敬的会员您好！${pj.productName}产品已产品封账，请知悉。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-产品成立" code="task_sys_manage_market_cpcl"  sendType="1" status="2" >
+   <template name="产品成立消息模板" type="1" status="1" code="sys_manage_market_cpcl">
+     <![CDATA[
+     	尊敬的会员您好！${pj.productName}产品已成立，请知悉。     
+     ]]>     
+   </template>
+   <template name="产品成立消息模板" type="2" status="1" code="sms_manage_market_cpcl">
+     <![CDATA[
+      	尊敬的会员您好！${pj.productName}产品已成立，请知悉。     
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-发行失败" code="task_sys_manage_market_fxsb"  sendType="1" status="2" >
+   <template name="发行失败消息模板" type="1" status="1" code="sys_manage_market_fxsb">
+     <![CDATA[
+      	尊敬的会员您好，${pj.productName}产品发行失败，请知悉。
+     ]]>     
+   </template>
+   <template name="发行失败消息模板" type="2" status="1" code="sms_manage_market_fxsb">
+     <![CDATA[
+      	尊敬的会员您好，${pj.productName}产品发行失败，请知悉。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-取消投放" code="task_sys_manage_market_qxtf"  sendType="1" status="2" >
+   <template name="取消投放消息模板" type="1" status="1" code="sys_manage_market_qxtf">
+     <![CDATA[
+      	尊敬的会员您好，${pj.productName}产品已取消投放。
+     ]]>     
+   </template>
+    <template name="取消投放消息模板" type="2" status="1" code="sms_manage_market_qxtf">
+     <![CDATA[
+      	尊敬的会员您好，${pj.productName}产品已取消投放。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-额度分配" code="task_sys_manage_market_edfp"  sendType="1" status="2" >
+   <template name="额度分配消息模板" type="1" status="1" code="sys_manage_market_edfp">
+     <![CDATA[
+      	尊敬的会员您好，您的${pj.orderNumber}订单分配了${pj.share}额度，详细请查看：<a href="${websiteDomainAddress}/order/order_detail-${pj.orderId! '0'}-0.html?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+   <template name="额度分配消息模板" type="2" status="1" code="sms_manage_market_edfp">
+     <![CDATA[
+      	尊敬的会员您好，您的${pj.orderNumber}订单已分配${pj.share}万额度。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-取消配额" code="task_sys_manage_market_qxpe"  sendType="1" status="2" >
+   <template name="取消配额消息模板" type="1" status="1" code="sys_manage_market_qxpe">
+     <![CDATA[
+      	尊敬的会员您好，您的${pj.orderNumber}订单已取消了配额。
+     ]]>     
+   </template>
+    <template name="取消配额消息模板" type="2" status="1" code="sms_manage_market_qxpe">
+     <![CDATA[
+      	尊敬的会员您好，您的${pj.orderNumber}订单已取消了配额。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-修改配额" code="task_sys_manage_market_xgpe"  sendType="1" status="2" >
+   <template name="修改配额消息模板" type="1" status="1" code="sys_manage_market_xgpe">
+     <![CDATA[
+      	尊敬的会员您好，您的${pj.orderNumber}订单已修改分配额度，详细请查看：<a href="${websiteDomainAddress}/order/order_detail-${pj.orderId! '0'}-0.html?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+   <template name="修改配额消息模板" type="2" status="1" code="sms_manage_market_xgpe">
+     <![CDATA[
+      	尊敬的会员您好，您的${pj.orderNumber}订单已修改分配额度。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-退款" code="task_sys_manage_market_tk"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="退款消息模板" type="1" status="1" code="sys_manage_market_tk">
+     <![CDATA[
+     	尊敬的会员您好！您的退款申请（${pj.orderNumber}）已处理完毕，请提醒客户及时查看，感谢您的配合。
+     ]]>     
+   </template>
+   <template name="退款消息模板" type="2" status="1" code="sms_manage_market_tk">
+     <![CDATA[
+      	尊敬的会员您好！您的退款申请（${pj.orderNumber}）已处理完毕，请提醒客户及时查看，感谢您的配合。
+     ]]>     
+   </template>
+</task>
+<task name="销售管控业务-催款" code="task_sys_manage_market_ck"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="催款消息模板" type="1" status="1" code="sys_manage_market_ck">
+     <![CDATA[
+      	尊敬的会员您好，您的${pj.orderNumber}订单还未打款。
+     ]]>     
+   </template>
+   <template name="催款消息模板" type="2" status="1" code="sms_manage_market_ck">
+     <![CDATA[
+     	尊敬的会员您好！您预约的${pj.orderNumber}产品即将结束募集，请尽快安排协助客户打款，感谢您的配合。
+     ]]>     
+   </template>
+</task>
+<!--// 销售管控相关消息 -->
+
+<!-- 订单相关消息 start -->
+<task name="订单为分配额度状态时-订单撤销" code="task_sys_website_order_failddcx"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="订单撤销(分配额度状态)" type="1" status="1" code="sys_website_order_failddcx">
+     <![CDATA[
+      	您好，会员${sendName! ''}取消了${p_orderNumber! ''}订单，<a href="${adminDomainAddress! ''}/market/cancel?c=204">查看详情。</a>
+     ]]>     
+   </template>
+</task>
+<task name="分配额度后-订单撤销" code="task_sys_website_order_ddcx"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="订单撤销(分配额度后续状态)" type="1" status="1" code="sys_website_order_ddcx">
+     <![CDATA[
+     	您好，会员${sendName! ''}取消了${p_orderNumber! ''}订单，详情请查看     
+     ]]>     
+   </template>
+</task>
+<task name="到帐金额大于0申请-订单撤销" code="task_sys_website_order_sqcxdd"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="订单撤销(帐金额大于0)" type="1" status="1" code="sys_website_order_sqcxdd">
+     <![CDATA[
+      	您好，会员${sendName! ''}取消了${p_orderNumber! ''}订单，详情请查看：<a href="${adminDomainAddress! ''}/market/order?c=202">这里</a>
+     ]]>     
+   </template>
+</task>
+<task name="RM接受配给额度" code="task_sys_website_order_jspjed"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="RM接受配给额度" type="1" status="1" code="sys_website_order_jspjed">
+     <![CDATA[
+      	您好，会员${sendName! ''}接受了${p_orderNumber! ''}订单的配给额度。
+     ]]>     
+   </template>
+</task>
+<task name="RM拒绝配给额度" code="task_sys_website_order_jjpjed"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="RM拒绝配给额度" type="1" status="1" code="sys_website_order_jjpjed">
+     <![CDATA[
+      	您好，会员${sendName! ''}拒绝了${p_orderNumber! ''}订单的配给额度。
+     ]]>     
+   </template>
+</task>
+<task name="RM修改后金额与配给额度不一致" code="task_sys_website_order_edbyz"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="RM修改后金额与配给额度不一致" type="1" status="1" code="sys_website_order_edbyz">
+     <![CDATA[
+      	您好，会员${sendName! ''}修改了${p_orderNumber! ''}订单，修改后的金额与配给额度不一致。
+     ]]>     
+   </template>
+</task>
+<task name="发起赎回" code="task_sys_website_order_fqsh"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="发起赎回" type="1" status="1" code="sys_website_order_fqsh">
+     <![CDATA[
+      	您好，会员${sendName! ''}申请赎回${p_productName! ''}产品的${orderNumber! ''}订单，详情请查看：<a href="${adminDomainAddress! ''}/market/order?c=202?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+<task name="追加消息" code="task_sys_website_order_zjxx"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="追加消息" type="1" status="1" code="sys_website_order_zjxx">
+     <![CDATA[
+      	您好，会员${sendName! ''}申请追加${p_productName! ''}产品的${orderNumber! ''}订单，详情请查看：<a href="${adminDomainAddress! ''}/market/order?c=202?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+<task name="在额度分配、资金到帐、合同归集状态下(修改后的投资金额与已分配额度不一致)" code="task_sys_website_order_updateshare"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="在额度分配、资金到帐、合同归集状态下(修改后的投资金额与已分配额度不一致)" type="1" status="1" code="sys_website_order_updateshare">
+     <![CDATA[
+      	您好，会员${sendName! ''}对${p_productName! ''}产品的${p_orderNumber! ''}订单进行了修改，详情请查看：<a href="${adminDomainAddress! ''}/market/order?c=202?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+<task name="上传打款凭证（产品停止打款后才提示）" code="task_sys_website_order_dkpz"  sendType="1" status="2" isConfigReceiver="1">
+   <template name="上传打款凭证（产品停止打款后才提示）" type="1" status="1" code="sys_website_order_dkpz">
+     <![CDATA[
+      	您好，会员${sendName! ''}对${p_orderNumber! ''}订单有新的打款凭证上传，详情请查看：<a href="${adminDomainAddress! ''}/market/order?c=202?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+<!-- RM发送结束 -->
+<task name="运营平台在途订单_额度分配" code="task_sys_manage_order_edfp"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="额度分配" type="1" status="1" code="sys_manage_order_edfp">
+     <![CDATA[
+      	尊敬的会员您好，销售人员给您的${parameter_orderNumber! ''}订单分配了${parameter_share! ''}额度，详情请查看：<a href="${websiteDomainAddress}/order/order_detail-${parameter_orderID! '0'}-0.html?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+   <template name="额度分配" type="2" status="1" code="sms_manage_order_edfp">
+     <![CDATA[
+      	尊敬的会员您好，销售人员给您的${parameter_orderNumber! ''}订单分配了${parameter_share! ''}额度。
+     ]]>     
+   </template>
+</task>
+<task name="销售人员修改订单" code="task_sys_manage_order_xgdd"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="销售人员修改订单" type="1" status="1" code="sys_manage_order_xgdd">
+     <![CDATA[
+      	尊敬的会员您好，管理人员协助您修改了${parameter_orderNumber! ''}订单。
+     ]]>     
+   </template>
+   <template name="销售人员修改订单" type="2" status="1" code="sms_manage_order_xgdd">
+     <![CDATA[
+      	尊敬的会员您好，管理人员协助您修改了${parameter_orderNumber! ''}订单。
+     ]]>     
+   </template>
+</task>
+<task name="协助撤销订单" code="task_sys_manage_order_xzcxdd"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="协助撤销订单" type="1" status="1" code="sys_manage_order_xzcxdd">
+     <![CDATA[
+      	尊敬的会员您好，管理人员协助您完成了${parameter_orderNumber! ''}订单的撤销。
+     ]]>     
+   </template>
+   <template name="协助撤销订单" type="2" status="1" code="sms_manage_order_xzcxdd">
+     <![CDATA[
+      	尊敬的会员您好，管理人员协助您完成了${parameter_orderNumber! ''}订单的撤销。
+     ]]>     
+   </template>
+</task>
+<task name="配给额度" code="task_sys_manage_order_pjed"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="配给额度" type="1" status="1" code="sys_manage_order_pjed">
+     <![CDATA[
+      	尊敬的会员您好，管理人员为您的${parameter_orderNumber! ''}订单进行了额度配给，请确认。
+     ]]>     
+   </template>
+</task>
+<task name="赎回订单份额不合理" code="task_sys_manage_order_febhl"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="赎回订单份额不合理" type="1" status="1" code="sys_manage_order_febhl">
+     <![CDATA[
+      	赎回订单份额不合理。
+     ]]>     
+   </template>
+   <template name="赎回订单份额不合理" type="2" status="1" code="sms_manage_order_febhl">
+     <![CDATA[
+      	赎回订单份额不合理。
+     ]]>     
+   </template>
+</task>
+<task name="赎回完成" code="task_sys_manage_order_shwc"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="赎回完成" type="1" status="1" code="sys_manage_order_shwc">
+     <![CDATA[
+      	尊敬的会员您好，您${parameter_productName! ''}产品${parameter_orderNumber! ''}订单已成功赎回。
+     ]]>     
+   </template>
+   <template name="赎回完成" type="2" status="1" code="sms_manage_order_shwc">
+     <![CDATA[
+      	尊敬的会员您好，您${parameter_productName! ''}产品${parameter_orderNumber! ''}订单已成功赎回。
+     ]]>     
+   </template>
+</task>
+<task name="补录订单" code="task_sys_manage_order_bldd"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="补录订单" type="1" status="1" code="sys_manage_order_bldd">
+     <![CDATA[
+      	尊敬的会员您好，管理人员给您补录了${parameter_orderNumber! ''}订单。
+     ]]>     
+   </template>
+</task>
+<task name="打款凭证-金额确认(确认金额与凭证金额不同时)" code="task_sys_manage_order_proof_affirm"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="打款凭证-金额确认(确认金额与凭证金额不同时)" type="1" status="1" code="sys_manage_order_proof_affirm">
+     <![CDATA[
+      	尊敬的会员您好，管理人员对您的${parameter_orderNumber! ''}订单的凭证进行了处理，详情请点击：<a href="${websiteDomainAddress}/order/order_detail-${parameter_orderID! ''}-0.html?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+<task name="打款凭证-修改" code="task_sys_manage_order_proof_update"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="打款凭证-修改" type="1" status="1" code="sys_manage_order_proof_update">
+     <![CDATA[
+      	尊敬的会员您好，管理人员对您的${parameter_orderNumber! ''}订单进行了修改，详情请点击：<a href="${websiteDomainAddress}/order/order_detail-${parameter_orderID! ''}-0.html?ssid=<ssid>">这里</a>
+     ]]>     
+   </template>
+</task>
+<task name="订单设置成功时" code="task_sys_manage_order_success"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="订单设置成功时" type="1" status="1" code="sys_manage_order_success">
+     <![CDATA[
+      	尊敬的会员您好，您的${parameter_orderNumber! ''}订单已经成功。
+     ]]>     
+   </template>
+</task>
+<task name="订单失败时" code="task_sys_manage_order_fail"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="订单失败时" type="1" status="1" code="sys_manage_order_fail">
+     <![CDATA[
+      	尊敬的会员您好，您的${parameter_orderNumber! ''}订单已经失败。
+     ]]>     
+   </template>
+</task>
+<!-- 订单相关消息end  -->
+
+<!-- 产品评价推送问卷start -->
+<task name="推送问卷" code="task_sys_manage_product_push"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="推送问卷" type="1" status="1" code="sys_manage_product_push">
+     <![CDATA[
+      	<a href="${websiteDomainAddress}/order/remian_product.html?productID=${productID}?ssid=<ssid>">尊敬的会员您好，请对${parameter_productShortName}产品进行问卷评级，谢谢配合。</a>
+     ]]>     
+   </template>
+</task>
+<!-- 产品评价推送问卷end -->
+
+<!-- N5活动发放奖金start -->
+<task name="N5活动发放奖金" code="task_sys_manage_activity_issue"  sendType="1" status="2" isConfigReceiver="0">
+   <template name="N5活动发放奖金" type="1" status="1" code="sys_manage_activity_issue">
+     <![CDATA[
+      	尊敬的会员您好，您参与幸运5次方活动获得：${parameter_n1! ''}${parameter_n2! ''}${parameter_n3! ''}${parameter_n4! ''}${parameter_n5! ''}奖金已发放到您的帐户，请注意查收。
+     ]]>     
+   </template>
+</task>
+<!-- N5活动发放奖金end -->
+</messageTask>
