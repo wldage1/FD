@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	name:权限中文描述
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isStatus:是否记录状态
+-->
+<plugins>
+	<system name="系统管理" icon="images/menu/system-management.png">
+		<organization isNav="true" isSetAuth="sub" isStatus="true" name="机构管理" icon="images/menu/system-management-organizational management.png">
+			<language>
+				<value>/language/organizationMessages_zh_CN.properties</value>
+				<value>/language/organizationMessages_en_US.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建"/>
+			<modify isNav="true" isLog="true" name="修改"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+		</organization>
+	</system>
+</plugins>

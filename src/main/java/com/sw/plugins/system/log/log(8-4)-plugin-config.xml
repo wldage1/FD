@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<system name="系统管理" icon="images/menu/system-management.png">
+		<log isNav="true"  isSetAuth="sub" isStatus="true" name="操作日志" icon="images/menu/system-management-operation log.png">
+			<language>
+				<value>/language/logMessages_zh_CN.properties</value>
+				<value>/language/logMessages_en_US.properties</value>
+			</language>
+			<delete name="删除"/>
+		</log>
+	</system>
+</plugins>

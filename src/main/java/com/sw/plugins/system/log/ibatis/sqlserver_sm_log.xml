@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   ID                   bigint not null auto_increment comment '操作日志主键ID：操作日志记录表主键。',
+   UserID               bigint not null comment '操作日志主键ID：操作日志记录表主键。',
+   UserAccount          varchar(100) comment '操作用户帐号',
+   UserName             varbinary(255) comment '操作用户名称',
+   OperateTime          datetime comment '操作时间：日志记录的详细时间。',
+   Content              varchar(500) comment '操作内容：系统用户操作的具体功能步骤的记录。',
+   AccessIP             varchar(20) comment '访问IP：系统用户远端访问的IP地址。',
+   CreatTime            datetime comment '创建时间',
+-->
+<mapper namespace="log">
+	<parameterMap id="log" type="com.sw.plugins.system.log.entity.Log" />
+	<resultMap id="logResult" type="com.sw.plugins.system.log.entity.Log">
+		<result property="id" column="ID" javaType="Long"/>
+		<result property="userId" column="UserID" />
+		<result property="userAccount" column="UserAccount" />
+		<result property="userName" column="UserName" />
+		<result property="type" column="Type" />
+		<result property="operationTime" column="OperateTime" />
+		<result property="content" column="Content" />
+		<result property="accessIp" column="AccessIp" />
+		<result property="createTime" column="CreateTime" />
+	</resultMap>
+	
+	<select id="select" resultMap="logResult" parameterMap="log">	
+		select a.* from (
+			select row_number() over(order by ID DESC) as rowNum, 
+			ID,UserID,UserAccount,convert(varchar,OperateTime,120) as operateTime,UserName,Type,Content,AccessIp
+			from SM_Log 
+		<where>
+			<if test="gridSearch != null and gridSearch != ''">
+				${gridSearch} 
+			</if>
+		</where>
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	
+	<select id="count" resultType="long" parameterMap="log">	
+		select count(ID) from  SM_Log 
+		<where>
+			<if test="gridSearch != null and gridSearch != ''">
+				${gridSearch} 
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="log">
+		insert into SM_Log
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,UserID</if>
+			<if test="userAccount!=null and userAccount != ''">,UserAccount</if>
+			<if test="userName!=null and userName!=''">,UserName</if>
+			<if test="type!=null">,Type</if>
+			,OperateTime
+			<if test="content!=null and content!=''">,Content</if>
+			<if test="accessIp!=null and accessIp!=''">,AccessIp</if>
+			,CreateTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,${userId}</if>
+			<if test="userAccount!=null and userAccount != ''">,#{userAccount}</if>
+			<if test="userName!=null and userName!=''">,#{userName}</if>
+			<if test="type!=null">,${type}</if>
+			,GETDATE()
+			<if test="content!=null and content!=''">,#{content}</if>
+			<if test="accessIp!=null and accessIp!=''">,#{accessIp}</if>
+			,GETDATE()
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterMap="log">
+		delete from SM_Log where ID =
+		${id}
+	</delete>
+
+</mapper>
