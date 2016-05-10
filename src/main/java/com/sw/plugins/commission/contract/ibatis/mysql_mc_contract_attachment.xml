@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="contractAttachment">
+	<parameterMap id="contractAttachment" type="com.sw.plugins.commission.contract.entity.ContractAttachment"/>
+	
+	<!-- 理财师机构结果集 -->
+	<resultMap id="contractAttachmentResult" type="com.sw.plugins.commission.contract.entity.ContractAttachment">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="orgContractID" column="OrgContractID" />
+		<result property="fileName" column="FileName" />
+		<result property="fileUrl" column="FileUrl" />
+		<result property="createTime" column="CreateTime" />
+	</resultMap>
+	<!-- 新增合同附件 -->
+    <insert id="insert" parameterMap="contractAttachment">
+        insert into SM_OrgContractAttachment
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="orgContractID!=null and orgContractID!=''">,orgContractID</if>
+            <if test="fileName!=null and fileName!=''">,fileName</if>
+            <if test="fileUrl!=null and fileUrl!=''">,fileUrl</if>
+            ,createTime
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+        	<if test="orgContractID!=null and orgContractID!=''">,#{orgContractID}</if>
+           	<if test="fileName!=null and fileName!=''">,#{fileName}</if>
+            <if test="fileUrl!=null and fileUrl!=''">,#{fileUrl}</if>
+            ,now()
+        </trim>
+    </insert>
+	<!-- 更新合同名称与附件 -->
+	<update id="update" parameterMap="contractAttachment">
+		update SM_OrgContractAttachment
+			<set>
+				<trim prefixOverrides=",">
+					<if test="fileName!=null and fileName!=''">,fileName=#{fileName}</if>
+					<if test="fileUrl!=null and fileUrl!=''">,fileUrl=#{fileUrl}</if>
+				</trim>
+			</set>
+		where orgContractID = ${orgContractID} 
+	</update>
+	<!-- 删除合同附件 -->
+	<delete id="delete" parameterMap="contractAttachment">
+		delete from SM_OrgContractAttachment
+		where orgContractID=#{orgContractID}		
+	</delete>
+</mapper>

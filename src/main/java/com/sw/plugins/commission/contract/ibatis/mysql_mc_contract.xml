@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="contract">
+	<parameterMap id="contract" type="com.sw.plugins.commission.contract.entity.Contract"/>
+	
+	<!-- 协议与协议结果集 -->
+	<resultMap id="contractResult" type="com.sw.plugins.commission.contract.entity.Contract">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<!-- 协议结果集 -->
+		<result property="orgID" column="OrgID" />
+		<result property="title" column="Title" />
+		<result property="content" column="Content" />
+		<result property="status" column="Status" />
+		<result property="startTime" column="StartTime" />
+		<result property="stopTime" column="StopTime" />
+		<result property="createTime" column="CreateTime" />
+		<!-- 合同结果集 -->
+		<result property="contractOrgID" column="ContractOrgID" />
+		<result property="teamOrOrgID" column="TeamOrOrgID" />
+		<result property="contractName" column="ContractName" />
+		<result property="contractType" column="ContractType" />
+		<result property="contractDescription" column="ContractDescription" />
+		<result property="contractStatus" column="ContractStatus" />
+		<result property="contractStartTime" column="ContractStartTime" />
+		<result property="contractStopTime" column="ContractStopTime" />
+		<result property="contractCreateTime" column="ContractCreateTime" />
+	</resultMap>
+	<!-- 查询居间公司合同ID -->
+	<select id="select_orgContractID" resultMap="contractResult" parameterMap="contract">
+		select id contractOrgID 
+		from SM_OrgContract
+		where OrgID=${orgID} and TeamOrOrgID=${teamOrOrgID} and Status = ${status}
+	</select>
+	<!-- 查询协议ID -->
+	<select id="select_agreementtemplateID" resultMap="contractResult" parameterMap="contract">
+		select id, orgID, status
+		from SM_AgreementTemplate
+		where OrgID = ${orgID} and Status = ${status}
+	</select>
+	<!-- 协议分页分页查询 -->
+	<select id="select_paginated" resultMap="contractResult" parameterMap="contract">
+		select sa.id,sa.OrgID,sa.Title,sa.Content,sa.status,so.name as orgname from SM_AgreementTemplate sa left join SM_Organization so on 
+		sa.OrgID=so.ID and so.IsCommission=1
+		<if test="orgID!=null and orgID!=''">
+		where sa.OrgID = ${orgID}
+		</if>
+		limit ${start},${offset}			
+	</select>
+	<!-- 合同分页分页查询 -->
+	<select id="select_paginated_contract" resultMap="contractResult" parameterMap="contract">
+		select so.id,so.name as contractName,so.Status as contractStatus,so.Type as contractType,so.OrgID as contractOrgID,smo.shortName as contractorgname,so.TeamOrOrgID,mo.name  as teamororgname from SM_OrgContract so  left join  SM_Organization smo on so.OrgID= smo.id and smo.IsCommission=1 LEFT JOIN MC_TeamOrOrg mt on so.TeamOrOrgID = mt.id LEFT JOIN
+		MC_Organization mo  on mt.OrgID= mo.id 
+		<if test="contractOrgID!=null and contractOrgID!=''">
+		where so.OrgID = ${contractOrgID} order by so.id desc
+		</if>
+		limit ${start},${offset}			
+	</select>
+	<!-- 协议统计 -->
+	<select id="count_contract" resultType="long" parameterMap="contract">	
+		select count(so.id) from SM_OrgContract so left join  SM_Organization smo on so.OrgID= smo.id and smo.IsCommission=1 LEFT JOIN MC_TeamOrOrg mt on so.TeamOrOrgID = mt.id LEFT JOIN
+		MC_Organization mo  on mt.OrgID= mo.id 
+		<if test="contractOrgID!=null and contractOrgID!=''">
+		where so.OrgID = ${ContractOrgID}
+		</if>
+	</select>
+	<!-- 协议统计 -->
+	<select id="count" resultType="long" parameterMap="contract">	
+		select count(sa.id) from SM_AgreementTemplate sa left join SM_Organization so on 
+		sa.OrgID=so.ID and so.IsCommission=1
+		<if test="orgID!=null and orgID!=''">
+		where sa.OrgID = ${orgID}
+		</if>
+	</select>
+	<!-- 协议查询实体 -->
+	<select id="getone" resultMap="contractResult" parameterMap="contract">	
+		select sa.id,sa.OrgID,sa.Title,sa.Content,sa.status,so.name as orgname from SM_AgreementTemplate sa left join SM_Organization so on 
+		sa.OrgID=so.ID and so.IsCommission=1
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+					and sa.id = ${id}
+				</if>
+				<if test="orgID!=null and orgID!=''">
+					and sa.OrgID=${orgID}
+				</if>
+				<if test="status!=null and status!=''">
+					and sa.Status=${status}
+				</if>
+			</trim>
+		</where>
+	</select>
+	<!-- 合同查询实体 -->
+	<select id="getone_contract" resultMap="contractResult" parameterMap="contract">	
+	   	select so.id,so.name as contractName,so.TeamOrOrgID,mo.name as TeamOrOrgName,so.Status as contractStatus,so.Type as contractType,so.OrgID as contractOrgID,
+	   	so.Description as ContractDescription,soc.fileurl,soc.filename 
+	   	from SM_OrgContract so left join SM_OrgContractAttachment soc on so.id=soc.orgcontractId
+	   	left join MC_TeamOrOrg  mt on so.TeamOrOrgID=mt.id left join MC_Organization mo on mt.orgid= mo.id
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+					and so.id = ${id}
+				</if>
+				<if test="orgID!=null and orgID!=''">
+					and so.OrgID=${orgID}
+				</if>
+				<if test="teamOrOrgID!=null and teamOrOrgID!=''">
+					and so.TeamOrOrgID=${teamOrOrgID}
+				</if>
+				<if test="status!=null and status!=''">
+					and so.Status=${status}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 协议标题统计 -->
+	<select id="countForTitle" resultType="long" parameterMap="contract">	
+		select count(sa.OrgID) from SM_AgreementTemplate sa left join SM_Organization so on 
+		sa.OrgID=so.ID and so.IsCommission=1 where sa.status!=3
+		<if test="title!=null and title!=''">
+		and sa.title = #{title}
+		</if>
+		<if test="orgID!=null and orgID!=''">
+		and sa.orgID = #{orgID}
+		</if>
+		<if test="id!=null and id!=''">
+		and sa.id != #{id}
+		</if>
+	</select>
+	<!-- 合同名称统计 -->
+	<select id="countForContractName" resultType="long" parameterMap="contract">	
+		select count(so.id) from SM_OrgContract so  where status!=3
+		<if test="contractName!=null and contractName!=''">
+		and so.Name = #{contractName}
+		</if>
+		<if test="contractOrgID!=null and contractOrgID!=''">
+		and so.orgID = #{contractOrgID}
+		</if>
+		<if test="id!=null and id!=''">
+		and so.id != #{id}
+		</if>
+	</select>
+	<!-- 合同是否签订统计 -->
+	<select id="countForContract" resultType="long" parameterMap="contract">	
+		select count(so.id) from SM_OrgContract so  where status!=3
+		<if test="teamOrOrgID!=null and teamOrOrgID!=''">
+		and so.teamOrOrgID = #{teamOrOrgID}
+		</if>
+		<if test="contractOrgID!=null and contractOrgID!=''">
+		and so.orgID = #{contractOrgID}
+		</if>
+		<if test="id!=null and id!=''">
+		and so.id != #{id}
+		</if>
+	</select>
+	<!-- 新增协议  -->
+    <insert id="insert" parameterMap="contract">
+        insert into SM_AgreementTemplate
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="orgID!=null and orgID!=''">,orgID</if>
+            <if test="title!=null and title!=''">,title</if>
+            <if test="content!=null and content!=''">,content</if>
+            ,Status,
+           	createTime
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+        	<if test="orgID!=null and orgID!=''">,#{orgID}</if>
+            <if test="title!=null and title!=''">,#{title}</if>
+            <if test="content!=null and content!=''">,#{content}</if>
+            ,1,
+            now()
+        </trim>
+    </insert>
+    <!-- 新增合同  -->
+    <insert id="insertContract" parameterMap="contract">
+        insert into SM_OrgContract
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="contractOrgID!=null and contractOrgID!=''">,OrgID</if>
+            <if test="teamOrOrgID!=null and teamOrOrgID!=''">,teamOrOrgID</if>
+            <if test="contractType!=null and contractType!=''">,Type</if>
+            <if test="contractName!=null and contractName!=''">,Name</if>
+            <if test="contractDescription!=null and contractDescription!=''">,Description</if>
+            ,Status,
+           	createTime,
+           	starttime
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+        	<if test="contractOrgID!=null and contractOrgID!=''">,#{contractOrgID}</if>
+            <if test="teamOrOrgID!=null and teamOrOrgID!=''">,#{teamOrOrgID}</if>
+            <if test="contractType!=null and contractType!=''">,#{contractType}</if>
+            <if test="contractName!=null and contractName!=''">,#{contractName}</if>
+            <if test="contractDescription!=null and contractDescription!=''">,#{contractDescription}</if>
+            ,2,
+            now(),
+            now()
+        </trim>
+        <selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>
+    </insert>
+    <!-- 更新合同 -->
+	<update id="updateContract" parameterMap="contract">
+	update SM_OrgContract
+		<set>
+			<trim prefixOverrides=",">
+				<if test="contractOrgID!=null and contractOrgID!=''">,OrgID=#{contractOrgID}</if>
+				<if test="teamOrOrgID!=null and teamOrOrgID!=''">,teamOrOrgID=#{teamOrOrgID}</if>
+				<if test="contractType!=null and contractType!=''">,Type=#{contractType}</if>
+				<if test="contractName!=null and contractName!=''">,name=#{contractName}</if>
+				<if test="status!=null and status!=''">,status=#{status}</if>
+				<if test="contractDescription!=null">,Description=#{contractDescription}</if>
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+				and ID = ${id}
+				</if>
+			</trim>
+		</where>
+	</update>
+	<!-- 更新协议 -->
+	<update id="update" parameterMap="contract">
+	update SM_AgreementTemplate
+		<set>
+			<trim prefixOverrides=",">
+				<if test="orgID!=null and orgID!=''">,OrgID=#{orgID}</if>
+				<if test="title!=null and title!=''">,Title=#{title}</if>
+				<if test="content!=null and content!=''">,Content=#{content}</if>
+				<if test="status!=null and status!=''">,status=#{status}</if>
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+				and ID = ${id}
+				</if>
+			</trim>
+		</where>
+	</update>
+	<!-- 更新协议状态为启动 -->
+	<update id="updateForStartStatus" parameterMap="contract">
+	update SM_AgreementTemplate
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null and status!=''">,status=#{status}</if>
+				,starttime=now()
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+				and ID = ${id}
+				</if>
+			</trim>
+		</where>
+	</update>
+	<!-- 更新协议状态为暂停 -->
+	<update id="updateForStopStatus" parameterMap="contract">
+	update SM_AgreementTemplate
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null and status!=''">,status=#{status}</if>
+				,stoptime=now()
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+				and ID = ${id}
+				</if>
+			</trim>
+		</where>
+	</update>
+	<!-- 更新合同状态为暂停 -->
+	<update id="updateForContractStatus" parameterMap="contract">
+	update SM_OrgContract
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null and status!=''">,status=#{status}</if>
+				,stoptime=now()
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+				and ID = ${id}
+				</if>
+			</trim>
+		</where>
+	</update>
+	<!-- 更新其他协议状态 -->
+	<update id="updateForOthers" parameterMap="contract">
+	update SM_AgreementTemplate
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null and status!=''">,status=3</if>
+				,stoptime=now()
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+				and ID != ${id} and status=2
+				</if>
+				<if test="orgID!=null and orgID!=''">
+				and orgID = ${orgID}
+				</if>
+			</trim>
+		</where>
+	</update>
+	<delete id="delete" parameterMap="contract">
+		delete from SM_AgreementTemplate
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>		
+			</trim>
+		</where>		
+	</delete>
+	<delete id="delete_contract" parameterMap="contract">
+		delete from SM_OrgContract
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>		
+			</trim>
+		</where>		
+	</delete>
+	
+	<!-- 查询居间协议通过居间公司ID -->
+	<select id="check_contract_list" resultMap="contractResult" parameterMap="contract">	
+	   	select * from SM_AgreementTemplate a where a.OrgID=${orgID}
+	</select>
+</mapper>
