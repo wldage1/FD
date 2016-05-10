@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="taxrate">
+
+	<parameterMap id="taxrate" type="com.sw.plugins.market.order.entity.TaxRate" />
+
+	<resultMap id="taxrateResult" type="com.sw.plugins.market.order.entity.TaxRate">
+		<result property="id" column="ID" />
+		<result property="minPersonalIncomeTax" column="MinPersonalIncomeTax" />
+		<result property="maxPersonalIncomeTax" column="MaxPersonalIncomeTax" />
+		<result property="taxRate" column="TaxRate" />
+		<result property="deductCount" column="DeductCount" />
+	</resultMap>
+	
+	<select id="select" resultMap="taxrateResult"  parameterMap="taxrate">
+		select * from TC_TaxRate
+	</select>
+	
+	<select id="delete" resultMap="taxrateResult"  parameterMap="taxrate">
+		delete from TC_TaxRate
+	</select>
+	
+	<insert id="insert" parameterMap="taxrate">
+		insert into TC_TaxRate
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="maxPersonalIncomeTax!=null">, MaxPersonalIncomeTax</if>
+	 		<if test="minPersonalIncomeTax!=null">, MinPersonalIncomeTax</if>
+	 		<if test="taxRate!=null">, TaxRate</if>
+	 		<if test="deductCount!=null">, DeductCount</if>
+	 	</trim>
+	 	values 
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="maxPersonalIncomeTax!=null">, ${maxPersonalIncomeTax}</if>
+	 		<if test="minPersonalIncomeTax!=null">, ${minPersonalIncomeTax}</if>
+	 		<if test="taxRate!=null">, ${taxRate}</if>
+	 		<if test="deductCount!=null">, ${deductCount}</if>
+	 	</trim>
+	 	<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>
+	</insert>
+	
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="stageParameter">
+
+	<parameterMap id="stageParameter" type="com.sw.plugins.incentivefee.incentive.entity.StageParameter" />
+
+	<resultMap id="stageParameterResult" type="com.sw.plugins.incentivefee.incentive.entity.StageParameter">
+		<result property="id" column="ID" />
+		<result property="code" column="Code" />
+		<result property="value" column="Value" />
+	</resultMap>
+	
+	<select id="select" parameterMap="stageParameter" resultMap="stageParameterResult">
+		select * from TC_StageParameter where 
+			<trim prefixOverrides="and">
+				<if test="code!=null and code!=''">and Code= '${code}'</if>
+			</trim>
+	</select>
+	
+	<select id="select_list" parameterMap="stageParameter" resultMap="stageParameterResult">
+		select * from TC_StageParameter
+	</select>
+	
+	<insert id="insert" parameterMap="stageParameter">
+		insert into TC_StageParameter
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="code!=null and code!=''">, Code</if>
+		 		<if test="value!=null and value!=''">, Value</if>
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="code!=null and code!=''">,'${code}'</if>
+		 		<if test="value!=null and value!=''">,'${value}'</if>
+		 	</trim>
+	</insert>
+	
+	<update id="update" parameterMap="stageParameter">
+		update TC_StageParameter 
+		<set> 
+			<trim prefixOverrides="," >
+				,Value = '${value}'
+			</trim>
+		</set>
+			where Code = '${code}' 
+	</update>
+	
+</mapper>

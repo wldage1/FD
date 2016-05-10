@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isHelp:是否有帮助信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+	isDynamic="true?false":是否是动态创建功能，数据库中对应type: 1：是 0：不是(默认)
+	isAuthority:是否需要功能授权
+-->
+<plugins>
+	<extension name="视频管理" icon="images/menu/video-management.png">
+		<youku_videomanager isNav="true"  isSetAuth="sub" isStatus="true" name="优酷视频管理" isHelp="false" icon="images/menu/video-management-youku.png">
+			<language>
+				<value>/language/videoMessages_zh_CN.properties</value>
+				<value>/language/videoMessages_en_US.properties</value>
+			</language>
+			<upload isNav="false" name="上传"/>
+			<detail isNav="true" isLog="true" name="状态"/>
+			<modify isNav="true" isLog="true" name="修改"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+			<publish isNav="true" isLog="true" name="发布"/>
+			<cancel isNav="true" isLog="true" name="撤销"/>
+			<save isNav="true" isLog="true" name="保存"/>
+		</youku_videomanager>
+	</extension>
+</plugins>

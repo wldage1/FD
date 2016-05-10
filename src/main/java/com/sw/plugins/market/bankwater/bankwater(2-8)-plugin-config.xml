@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心" icon="images/menu/sales-center.png">
+		<bankwater isNav="true" isSetAuth="sub" isStatus="true" name="银行流水对账" icon="images/menu/sales-center-bank reconciliation water.png">
+			<language>
+				<value>/language/bankwaterMessages_zh_CN.properties</value>
+			</language>
+			<bankwaterimportor isNav="true" isLog="true" name="数据导入" icon="images/icon/Import.png"/>
+			<bankwaterexport isNav="true" isLog="true" name="导出EXCEL" icon="images/icon/EXPort.png"/>
+			<mappingbankwater isNav="true" isLog="true" name="匹配预览" icon="images/icon/match preview.png"/>
+			<disposebankwater isNav="true" isLog="true" name="处理" icon="images/icon/order processing.png"/>
+			<affirmbankwater isNav="true" isLog="true" name="匹配" icon="images/icon/order processing.png"/>
+			<exportsubscibeexcel isNav="true" isLog="true" name="导出EXCEL" icon="images/icon/EXPort.png"/>
+		</bankwater>
+	</market>
+</plugins>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心" icon="images/menu/sales-center.png">
+		<docmanage isNav="true" isSetAuth="sub" isStatus="true" name="合同管理" icon="images/menu/sales-center-cancelled order.png">
+			<language>
+				<value>/language/docmanageMessages_zh_CN.properties</value>
+			</language>
+			<uploaddoc isNav="false" isLog="true" name="上传附件" icon="images/icon/detail.png"/>
+			<printview isNav="false" isLog="true" name="打印预览" icon="images/icon/detail.png"/>
+		</docmanage>
+	</market>
+</plugins>

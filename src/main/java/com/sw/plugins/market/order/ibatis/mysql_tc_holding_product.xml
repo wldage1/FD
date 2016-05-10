@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="holdingProduct">
+
+	<parameterMap id="holdingProduct" type="com.sw.plugins.market.order.entity.HoldingProduct" />
+
+	<resultMap id="holdingProductResult" type="com.sw.plugins.market.order.entity.HoldingProduct">
+		<result property="id" column="ID" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="orgID" column="OrgID" />
+		<result property="productID" column="ProductID" />
+		<result property="productName" column="ProductName" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="teamID" column="TeamID" />
+		<result property="memberID" column="MemberID" />
+		<result property="share" column="Share" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="deadline" column="Deadline" />
+		<result property="clientType" column="ClientType" />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="purchaseTime" column="purchaseTime" />
+		<result property="lastTradeTime" column="lastTradeTime" />
+		<result property="remark" column="remark" />
+		<!--   产品属性表   -->
+		<association property="product" column="productID" javaType="com.sw.plugins.product.manage.entity.Product" resultMap="productResult"/>
+		<!--   理财顾问表   -->
+		<association property="member" column="memberID" javaType="com.sw.plugins.customer.member.entity.Member" resultMap="memberResult"/>
+		<!--   产品供应商机构表   -->
+		<association property="provider" column="providerID" javaType="com.sw.plugins.cooperate.provider.entity.Provider" resultMap="providerResult"/>
+		<!--   居间机构表   -->
+		<association property="organization" column="orgID" javaType="com.sw.plugins.system.organization.entity.Organization" resultMap="organizationResult"/>
+		<!--  理财顾问团队表  -->
+		<association property="team" column="teamID" javaType="com.sw.plugins.customer.team.entity.Team" resultMap="teamResult"/>
+	</resultMap>
+	
+	<resultMap id="holdingProductResultWithoutAssociation" type="com.sw.plugins.market.order.entity.HoldingProduct">
+		<result property="id" column="ID" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="orgID" column="OrgID" />
+		<result property="productID" column="ProductID" />
+		<result property="productName" column="ProductName" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="teamID" column="TeamID" />
+		<result property="memberID" column="MemberID" />
+		<result property="share" column="Share" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="deadline" column="Deadline" />
+		<result property="clientType" column="ClientType" />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="purchaseTime" column="purchaseTime" />
+		<result property="lastTradeTime" column="lastTradeTime" />
+		<result property="remark" column="remark" />
+	</resultMap>
+	
+	<resultMap id="productResult" type="com.sw.plugins.product.manage.entity.Product">
+		<result property="name" column="NameOne" />
+		<result property="shortName" column="proShortName" />
+		<result property="type" column="Type" />
+	</resultMap>
+	
+	<resultMap id="memberResult" type="com.sw.plugins.customer.member.entity.Member">
+		<result property="name" column="NameTwo" />
+		<result property="nickName" column="NickName" />
+	</resultMap>
+	
+	<resultMap id="providerResult" type="com.sw.plugins.cooperate.provider.entity.Provider">
+		<result property="shortName" column="ProviderShortName" />
+		<result property="id" column="ProviderID" />
+	</resultMap>
+	
+	<resultMap id="organizationResult" type="com.sw.plugins.system.organization.entity.Organization">
+		<result property="shortName" column="ShortNameTwo" />
+		<result property="name" column="CommissionName" />
+	</resultMap>
+	
+	<resultMap id="teamResult" type="com.sw.plugins.customer.team.entity.Team">
+		<result property="shortName" column="TeamShortName" />
+	</resultMap>
+	
+	<!-- 保存存续产品 -->	
+	<insert id="insert" parameterMap="holdingProduct">
+		insert into TC_HoldingProduct
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="contractNumber!=null and contractNumber!=''">, ContractNumber</if>
+		 		<if test="orgID!=null">, OrgID</if>
+		 		<if test="productID!=null">, ProductID</if>
+		 		<if test="subProductID!=null">, SubProductID</if>
+		 		<if test="teamID!=null">, TeamID</if>
+		 		<if test="memberID!=null">, MemberID</if>
+		 		<if test="share!=null and share!=''">, Share</if>
+				<if test="investAmount!=null and investAmount!=''">, InvestAmount</if>
+		 		<if test="deadline!=null and deadline!=''">, Deadline</if>
+		 		<if test="clientType!=null">, ClientType</if>
+		 		<if test="clientName!=null and clientName!=''">, ClientName</if>
+		 		<if test="iDCardType!=null">, IDCardType</if>
+		 		<if test="iDCard!=null and iDCard!=''">, IDCard</if>
+		 		<if test="purchaseTime!=null and purchaseTime!=''">, PurchaseTime</if>
+		 		, LastTradeTime
+		 		<if test="remark!=null and remark!=''">, Remark</if>
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="contractNumber!=null and contractNumber!=''">,'${contractNumber}'</if>
+		 		<if test="orgID!=null">,${orgID}</if>
+		 		<if test="productID!=null">,${productID}</if>
+		 		<if test="subProductID!=null">,${subProductID}</if>
+		 		<if test="teamID!=null">,${teamID}</if>
+		 		<if test="memberID!=null">,${memberID}</if>
+		 		<if test="share!=null and share!=''">, ${share}</if>
+				<if test="investAmount!=null and investAmount!=''">,${investAmount}*1000000</if>
+		 		<if test="deadline!=null and deadline!=''">,${deadline}</if>
+		 		<if test="clientType!=null">,${clientType}</if>
+		 		<if test="clientName!=null and clientName!=''">,'${clientName}'</if>
+		 		<if test="iDCardType!=null">,${iDCardType}</if>
+		 		<if test="iDCard!=null and iDCard!=''">,'${iDCard}'</if>
+		 		<if test="purchaseTime!=null and purchaseTime!=''">, #{purchaseTime}</if>
+		 		, now()
+		 		<if test="remark!=null and remark!=''">, '${remark}'</if>
+		 	</trim>
+	</insert>
+	
+	<update id="update_money" parameterMap="holdingProduct">
+		update TC_HoldingProduct 
+		<set>
+			<trim prefixOverrides=",">
+				<if test="share!= null and share!=''">,Share=${share}</if>
+				<if test="investAmount!= null and investAmount!=''">,InvestAmount=${investAmount}*1000000</if>
+				,LastTradeTime=now()
+			</trim>
+		</set>
+		<where>
+			ID=${id}
+		</where>
+	</update>
+	
+	<select id="select_list" resultMap="holdingProductResult" parameterMap="holdingProduct">
+		select t.ID,t.ContractNumber,t.Share,ROUND(t.InvestAmount/1000000) as InvestAmount,t.MemberID
+			from TC_HoldingProduct t 
+			<where>
+				<trim prefixOverrides="and">
+					<if test="productID !=null "> and t.ProductID=${productID}</if>
+					<if test="subProductID !=null "> and t.SubProductID=${subProductID}</if>
+					<if test="contractNumber !=null and contractNumber!=''"> and t.ContractNumber='${contractNumber}'</if>
+					<if test="memberID !=null "> and t.MemberID=${memberID}</if>
+					<if test="iDCardType !=null "> and t.IDCardType=${iDCardType}</if>
+					<if test="iDCard !=null and iDCard!='' "> and t.IDCard='${iDCard}'</if>
+					<if test="clientName !=null and clientName!='' "> and t.ClientName='${clientName}'</if>
+				</trim>
+			</where>
+	</select>
+	
+	<!-- 推送评价问卷时按理财师分组查询存续产品 -->
+	<select id="select_list_comment" resultMap="holdingProductResult" parameterMap="holdingProduct">
+		select MemberID from TC_HoldingProduct where ProductID = ${productID} group by MemberID
+	</select>
+	
+    <!-- 理财顾问客户存续产品统计查询 -->
+    <select id="countClientHolding" resultType="long" parameterMap="holdingProduct">
+    	select count(ID) from TC_HoldingProduct
+	        <where>
+	            <trim prefixOverrides="and">
+	        	    <if test="memberID!=null">and MemberID = ${memberID}</if>
+	        	    <if test="iDCardType!=null">and IDCardType = ${iDCardType}</if>
+	        	    <if test="iDCard!=null and iDCard!=''">and IDCard = #{iDCard}</if>
+	            </trim>
+	        </where>  
+    </select>
+    
+    
+    <!-- 理财顾问客户存续产品分页查询 -->
+    <select id="selectPaginatedListClientHolding" resultMap="holdingProductResult" parameterMap="holdingProduct">
+        select h.ID, h.ContractNumber, p.Type, p.ShortName proShortName,h.Share, ROUND(h.InvestAmount/1000000) InvestAmount
+        	from TC_HoldingProduct h left join PM_Product p on h.ProductID = p.ID
+       	    <where>
+       	        <trim prefixOverrides="and">
+	        	    <if test="memberID!=null">and MemberID = ${memberID}</if>
+	        	    <if test="iDCardType!=null">and IDCardType = ${iDCardType}</if>
+	        	    <if test="iDCard!=null and iDCard!=''">and IDCard = #{iDCard}</if>
+       	        </trim>
+       	    </where>
+       	    limit ${start},${offset}
+    </select>
+	
+	<select id="select_holdingproduct" resultMap="holdingProductResult" parameterMap="holdingProduct">
+		select 
+		h.contractNumber,
+		h.teamID,h.orgID,
+		h.productID,h.clientName,h.ClientType,h.IDCardType,h.IDCard,h.SubProductID,
+		h.id,h.memberID,h.memberID,
+		m.name, p.shortName as productName,
+		c.ID as ProviderID,
+		c.shortName as ProviderShortName,
+		t.shortName as TeamShortName 
+		from TC_HoldingProduct h 
+		left join PM_Product p on h.productID = p.ID
+		left join PC_Provider c on c.ID = p.providerID
+		left join MC_Member m on m.ID = h.memberID
+		left join MC_Team t on t.ID = h.teamID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and h.OrgID = ${orgID}</if>
+				<if test="clientName!=null and clientName!=''">and h.clientName like '%${clientName}%'</if>
+			    <if test="productName!=null and productName!=''">and p.shortName like '%${productName}%'</if>
+			    <if test="id!=null">and h.id = ${id}</if>
+			    and p.type in (2,3,4)
+			</trim>
+		</where>
+	</select>
+	
+	<select id="select_count_holdingproduct" resultType="Long" parameterMap="holdingProduct">
+		select count(h.id) from TC_HoldingProduct h ,PM_Product p 
+		<where>
+			<trim prefixOverrides="and">
+				and p.ID = h.productID and p.type in (2,3,4)
+				<if test="clientName!=null and clientName!=''">and h.clientName like '%${clientName}%'</if>
+			    <if test="productName!=null and productName!=''">and p.shortName like '%${productName}%'</if>
+			    <if test="orgID!=null">and h.OrgID = ${orgID}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="select_one" resultMap="holdingProductResult" parameterMap="holdingProduct">
+		select ID,ROUND(investAmount/1000000) as investAmount,contractNumber,orgID,ProductID,subProductID,teamID,memberID,share,deadline,clientType,
+		clientName,iDCardType,iDCard,purchaseTime,lastTradeTime,remark from TC_HoldingProduct where ID = ${id}
+	</select>
+	<!-- 根据产品ID查询 -->
+	<select id="select_all_fields_by_productid" resultMap="holdingProductResultWithoutAssociation" parameterMap="holdingProduct">
+		select * from TC_HoldingProduct where ProductID = ${productID}
+	</select>
+	
+	<delete id="delete_by_productid" parameterMap="holdingProduct">
+		delete from TC_HoldingProduct where ProductID = ${productID}
+	</delete>
+	
+	<delete id="delete" parameterMap="holdingProduct">
+		delete from TC_HoldingProduct where ID = ${id}
+	</delete>
+</mapper>

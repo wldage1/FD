@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="document">
+    
+    <parameterMap type="com.sw.plugins.market.docmanage.entity.Document" id="document" />
+	
+    <!-- 单证结果集 -->
+    <resultMap type="com.sw.plugins.market.docmanage.entity.Document" id="documentResult">
+        <result property="orderNumber" column="orderNumber"/>
+        <result property="isPlatformSentNotusing" column="IsPlatformSentNotusing"/>
+        <result property="isNetReceivedNotusing" column="IsNetReceivedNotusing"/>
+        <result property="isNetSentSignNotusing" column="IsNetSentSignNotusing"/>
+        <result property="isPlatformReceivedNotusing" column="IsPlatformReceivedNotusing"/>
+        <result property="isPlatformSentSignUsing" column="IsPlatformSentSignUsing"/>
+        <result property="isNetreceivedSignUsing" column="IsNetreceivedSignUsing"/>
+        <result property="isPlatformSentUsing" column="IsPlatformSentUsing"/>
+        <result property="isNetReceivedUsing" column="IsNetReceivedUsing"/>
+        <result property="isNetSentSignUsing" column="IsNetSentSignUsing"/>
+        <result property="isPlatformReceivedSignUsing" column="IsPlatformReceivedSignUsing"/>
+        <result property="platformSentNotusingTime" column="PlatformSentNotusingTime"/>
+        <result property="netReceivedNotusingTime" column="NetReceivedNotusingTime"/>
+        <result property="netSentSignNotusingTime" column="NetSentSignNotusingTime"/>
+        <result property="platformReceivedNotusingTime" column="PlatformReceivedNotusingTime"/>
+        <result property="platformSentSignUsingTime" column="PlatformSentSignUsingTime"/>
+        <result property="netreceivedSignUsingTime" column="NetreceivedSignUsingTime"/>
+        <result property="platformSentUsingTime" column="PlatformSentUsingTime"/>
+        <result property="netReceivedUsingTime" column="NetReceivedUsingTime"/>
+        <result property="netSentSignUsingTime" column="NetSentSignUsingTime"/>
+        <result property="platformReceivedSignUsingTime" column="PlatformReceivedSignUsingTime"/>
+        <result property="operatorId" column="OperatorID"/>
+        <result property="receivorName" column="ReceivorName"/>
+        <result property="receivorMobilePhone" column="ReceivorMobilePhone"/>
+        <result property="receivorOfficePhone" column="ReceivorOfficePhone"/>
+        <result property="receivorAddress" column="ReceivorAddress"/>
+        <result property="receivorCode" column="ReceivorCode"/>
+        <result property="operateTime" column="OperateTime"/>
+        <result property="tableType" column="TableType" />
+    </resultMap>
+    
+    <!-- 在途订单单证分页查询 -->
+    <select id="select_paginated_list" resultMap="documentResult" parameterMap="document">
+        select 
+		o.ID,o.OrderNumber,o.ClientName,ROUND(o.InvestAmount/1000000) as InvestAmount,o.ContractNumber,o.DocStatus,
+		pd.ID as ProductID,pd.ShortName as ProductShortName,pd.ContractPrefix,
+		pv.ShortName as ProviderShortName,
+		m.Name as MemberName,m.NickName as MemberNickName,m.ID as MemberId,
+		d.IsPlatformSentNotusing,d.IsNetReceivedNotusing,d.IsNetSentSignNotusing,d.IsPlatformReceivedNotusing,d.IsPlatformSentSignUsing,
+		d.IsNetreceivedSignUsing,d.IsPlatformSentUsing,d.IsNetReceivedUsing,d.IsNetSentSignUsing,d.IsPlatformReceivedSignUsing
+		from TC_Order o
+		left join PM_Product pd on o.ProductID=pd.ID
+		left join PC_Provider pv on o.ProviderID=pv.ID
+		left join MC_Member m on o.MemberID=m.ID
+		left join TC_Document d on o.OrderNumber=d.OrderNumber
+		left join PM_ProductDocConfig dc on o.ProductID=dc.ID
+		where o.TradeStatus in(1,2,3,4,5,6,11,12) and o.OrgID=${orgId}
+		<if test="productShortName!=null and productShortName!=''">and pd.ShortName like '%${productShortName}%'</if>
+		<if test="clientName!=null and clientName!=''">and o.ClientName like '%${clientName}%'</if>		
+		<if test="orderNumber!=null and orderNumber!=''">and o.OrderNumber=#{orderNumber}</if>
+		<if test="contractNumber!=null and contractNumber!=''">and o.ContractNumber=#{contractNumber}</if>
+		<if test="docStatus!=null">and o.DocStatus=${docStatus}</if>
+		<if test="type!=null">and dc.Type=${type}</if>
+		limit ${start} , ${offset}
+    </select>
+    
+    <!-- 在途订单单证统计查询 -->
+    <select id="count" resultType="long" parameterMap="document">
+        select count(o.ID)
+	    from TC_Order o
+		left join PM_Product pd on o.ProductID=pd.ID
+		left join PC_Provider pv on o.ProviderID=pv.ID
+		left join MC_Member m on o.MemberID=m.ID
+		left join TC_Document d on o.OrderNumber=d.OrderNumber
+		left join PM_ProductDocConfig dc on o.ProductID=dc.ID
+		where o.TradeStatus in(1,2,3,4,5,6,11,12) and o.OrgID=${orgId}
+		<if test="productShortName!=null and productShortName!=''">and pd.ShortName like '%${productShortName}%'</if>
+		<if test="clientName!=null and clientName!=''">and o.ClientName like '%${clientName}%'</if>		
+		<if test="orderNumber!=null and orderNumber!=''">and o.OrderNumber=#{orderNumber}</if>
+		<if test="contractNumber!=null and contractNumber!=''">and o.ContractNumber=#{contractNumber}</if>
+		<if test="docStatus!=null">and o.DocStatus=${docStatus}</if>
+		<if test="type!=null">and dc.Type=${type}</if>
+    </select>
+    
+    <!-- 成功订单单证分页查询 -->
+    <select id="select_paginated_list_success" resultMap="documentResult" parameterMap="document">
+        select 
+		o.ID,o.OrderNumber,o.ClientName,ROUND(o.InvestAmount/1000000) as InvestAmount,o.ContractNumber,o.DocStatus,
+		pd.ID as ProductID,pd.ShortName as ProductShortName,pd.ContractPrefix,
+		pv.ShortName as ProviderShortName,
+		m.Name as MemberName,m.NickName as MemberNickName,m.ID as MemberId,
+		d.IsPlatformSentNotusing,d.IsNetReceivedNotusing,d.IsNetSentSignNotusing,d.IsPlatformReceivedNotusing,d.IsPlatformSentSignUsing,
+		d.IsNetreceivedSignUsing,d.IsPlatformSentUsing,d.IsNetReceivedUsing,d.IsNetSentSignUsing,d.IsPlatformReceivedSignUsing
+		from TC_OrderHistory o
+		left join PM_Product pd on o.ProductID=pd.ID
+		left join PC_Provider pv on o.ProviderID=pv.ID
+		left join MC_Member m on o.MemberID=m.ID
+		left join TC_Document d on o.OrderNumber=d.OrderNumber
+		left join PM_ProductDocConfig dc on o.ProductID=dc.ID
+		where o.TradeStatus=7 and o.OrgID=${orgId}
+		<if test="productShortName!=null and productShortName!=''">and pd.ShortName like '%${productShortName}%'</if>
+		<if test="clientName!=null and clientName!=''">and o.ClientName like '%${clientName}%'</if>		
+		<if test="orderNumber!=null and orderNumber!=''">and o.OrderNumber=#{orderNumber}</if>
+		<if test="contractNumber!=null and contractNumber!=''">and o.ContractNumber=#{contractNumber}</if>
+		<if test="docStatus!=null">and o.DocStatus=${docStatus}</if>
+		<if test="type!=null">and dc.Type=${type}</if>
+		limit ${start} , ${offset}
+    </select>
+    
+    <!-- 成功订单单证统计查询 -->
+    <select id="count_success" resultType="long" parameterMap="document">
+        select count(o.ID)
+	    from TC_OrderHistory o
+		left join PM_Product pd on o.ProductID=pd.ID
+		left join PC_Provider pv on o.ProviderID=pv.ID
+		left join MC_Member m on o.MemberID=m.ID
+		left join TC_Document d on o.OrderNumber=d.OrderNumber
+		left join PM_ProductDocConfig dc on o.ProductID=dc.ID
+		where o.TradeStatus=7 and o.OrgID=${orgId}
+		<if test="productShortName!=null and productShortName!=''">and pd.ShortName like '%${productShortName}%'</if>
+		<if test="clientName!=null and clientName!=''">and o.ClientName like '%${clientName}%'</if>		
+		<if test="orderNumber!=null and orderNumber!=''">and o.OrderNumber=#{orderNumber}</if>
+		<if test="contractNumber!=null and contractNumber!=''">and o.ContractNumber=#{contractNumber}</if>
+		<if test="docStatus!=null">and o.DocStatus=${docStatus}</if>
+		<if test="type!=null">and dc.Type=${type}</if>
+    </select>
+    
+    <!-- 打印封面查询数据   -->
+    <select id="select_printContent" resultMap="documentResult" parameterMap="document">
+    	select o.OrderNumber,o.ClientName,o.ContractNumber,pd.Name ProductShortName,pv.Name ProviderShortName,
+    	m.Name MemberName,mi.Postcode MemPostcode,mi.Address MemAddress,mi.Phone,mi.Telphone,o.ContactInformationID,
+    	dc.Contact,dc.Address,dc.Postcode,dc.Telephone,dc.Cellphone,mi.Name from 
+    	<if test="tableType == 1">TC_Order o </if>
+    	<if test="tableType == 2">TC_OrderHistory o</if>
+    	left join MC_ContactInformation mi on mi.ID = o.ContactInformationID
+    	left join MC_Member m on o.MemberID = m.ID
+    	left join PC_Provider pv on o.ProviderID = pv.ID
+    	left join PM_ProductDocConfig dc on o.ProductID=dc.ID
+    	left join PM_Product pd on o.ProductID=pd.ID
+    	where o.OrderNumber = #{orderNumber} 
+    </select>
+    
+    <select id="select_printContent1" resultMap="documentResult" parameterMap="document">
+    	select o.OrderNumber,o.ClientName,o.ContractNumber,pd.Name ProductShortName,pv.Name ProviderShortName,
+    	m.Name MemberName,mi.Postcode MemPostcode,mi.Address MemAddress,mi.Phone,mi.Telphone,
+    	dc.Contact,dc.Address,dc.Postcode,dc.Telephone,dc.Cellphone,mi.Name from 
+    	<if test="tableType == 1">TC_Order o </if>
+    	<if test="tableType == 2">TC_OrderHistory o</if>
+    	left join MC_Member m on o.MemberID = m.ID
+    	left join MC_ContactInformation mi on mi.MemberID = m.ID
+    	left join PC_Provider pv on o.ProviderID = pv.ID
+    	left join PM_ProductDocConfig dc on o.ProductID=dc.ID
+    	left join PM_Product pd on o.ProductID=pd.ID
+    	where o.OrderNumber = #{orderNumber} and mi.IsDefault = 1
+    </select>
+    
+    <!-- 合同编号重复验证 -->
+    <select id="check_contract_num" resultType="long" parameterMap="document">
+    	select count(ID) from TC_Order where ContractNumber=#{contractNumber} and ID != ${id}
+    </select>
+    
+    <!-- 合同编号重复验证 -->
+    <select id="check_contract_num_history" resultType="long" parameterMap="document">
+    	select count(ID) from TC_OrderHistory where ContractNumber=#{contractNumber}  and ID != ${id}
+    </select>
+    
+    <!-- 附件标题重复验证 -->
+    <select id="check_att_title" resultType="long" parameterMap="document">
+    	select count(ID) from TC_OrderAttachment where Title=#{attTitle}
+    </select>
+    
+    <!-- 保存单证 -->
+    <insert id="insert" parameterMap="document">
+		insert into TC_Document
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="orderNumber!=null and orderNumber!=''">, OrderNumber</if>
+		 		<if test="isPlatformSentNotusing!=null">, IsPlatformSentNotusing</if>
+		 		<if test="isNetReceivedNotusing!=null">, IsNetReceivedNotusing</if>
+		 		<if test="isNetSentSignNotusing!=null">, IsNetSentSignNotusing</if>
+		 		<if test="isPlatformReceivedNotusing!=null">, IsPlatformReceivedNotusing</if>
+		 		<if test="isPlatformSentSignUsing!=null">, IsPlatformSentSignUsing</if>
+		 		<if test="isNetreceivedSignUsing!=null">, IsNetreceivedSignUsing</if>
+		 		<if test="isPlatformSentUsing!=null">, IsPlatformSentUsing</if>
+		 		<if test="isNetReceivedUsing!=null">, IsNetReceivedUsing</if>
+		 		<if test="isNetSentSignUsing!=null">, IsNetSentSignUsing</if>
+		 		<if test="platformReceivedSignUsing!=null">, IsPlatformReceivedSignUsing</if>
+		 		<if test="platformSentNotusingTime!=null">, PlatformSentNotusingTime</if>
+		 		<if test="netReceivedNotusingTime!=null">, NetReceivedNotusingTime</if>
+		 		<if test="netSentSignNotusingTime!=null">, NetSentSignNotusingTime</if>
+		 		<if test="platformReceivedNotusingTime!=null">, PlatformReceivedNotusingTime</if>
+		 		<if test="platformSentSignUsingTime!=null">, PlatformSentSignUsingTime</if>
+		 		<if test="netreceivedSignUsingTime!=null">, NetreceivedSignUsingTime</if>
+		 		<if test="platformSentUsingTime!=null">, PlatformSentUsingTime</if>
+		 		<if test="netReceivedUsingTime!=null">, NetReceivedUsingTime</if>
+		 		<if test="netSentSignUsingTime!=null">, NetSentSignUsingTime</if>
+		 		<if test="platformReceivedSignUsingTime!=null">, PlatformReceivedSignUsingTime</if>
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="orderNumber!=null and orderNumber!=''">,#{orderNumber}</if>
+		 		<if test="isPlatformSentNotusing!=null">,${isPlatformSentNotusing}</if>
+		 		<if test="isNetReceivedNotusing!=null">,${isNetReceivedNotusing}</if>
+		 		<if test="isNetSentSignNotusing!=null">,${isNetSentSignNotusing}</if>
+		 		<if test="isPlatformReceivedNotusing!=null">,${isPlatformReceivedNotusing}</if>
+		 		<if test="isPlatformSentSignUsing!=null">,${isPlatformSentSignUsing}</if>
+		 		<if test="isNetreceivedSignUsing!=null">,${isNetreceivedSignUsing}</if>
+		 		<if test="isPlatformSentUsing!=null">,${isPlatformSentUsing}</if>
+		 		<if test="isNetReceivedUsing!=null">,${isNetReceivedUsing}</if>
+		 		<if test="isNetSentSignUsing!=null">,${isNetSentSignUsing}</if>
+		 		<if test="isPlatformReceivedSignUsing!=null">,${isPlatformReceivedSignUsing}</if>
+		 		<if test="platformSentNotusingTime!=null">, ${platformSentNotusingTime}</if>
+		 		<if test="netReceivedNotusingTime!=null">, ${netReceivedNotusingTime}</if>
+		 		<if test="netSentSignNotusingTime!=null">, ${netSentSignNotusingTime}</if>
+		 		<if test="platformReceivedNotusingTime!=null">, ${platformReceivedNotusingTime}</if>
+		 		<if test="platformSentSignUsingTime!=null">, ${platformSentSignUsingTime}</if>
+		 		<if test="netreceivedSignUsingTime!=null">, ${netreceivedSignUsingTime}</if>
+		 		<if test="platformSentUsingTime!=null">, ${platformSentUsingTime}</if>
+		 		<if test="netReceivedUsingTime!=null">, ${netReceivedUsingTime}</if>
+		 		<if test="netSentSignUsingTime!=null">, ${netSentSignUsingTime}</if>
+		 		<if test="platformReceivedSignUsingTime!=null">, ${platformReceivedSignUsingTime}</if>
+		 	</trim>
+	</insert>
+    
+    <!-- 保存单证流水 -->
+    <insert id="insert_detail" parameterMap="document">
+		insert into TC_DocumentDetil
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="orderNumber!=null and orderNumber!=''">, OrderNumber</if>
+		 		<if test="isPlatformSentNotusing!=null">, IsPlatformSentNotusing</if>
+		 		<if test="isNetReceivedNotusing!=null">, IsNetReceivedNotusing</if>
+		 		<if test="isNetSentSignNotusing!=null">, IsNetSentSignNotusing</if>
+		 		<if test="isPlatformReceivedNotusing!=null">, IsPlatformReceivedNotusing</if>
+		 		<if test="isPlatformSentSignUsing!=null">, IsPlatformSentSignUsing</if>
+		 		<if test="isNetreceivedSignUsing!=null">, IsNetreceivedSignUsing</if>
+		 		<if test="isPlatformSentUsing!=null">, IsPlatformSentUsing</if>
+		 		<if test="isNetReceivedUsing!=null">, IsNetReceivedUsing</if>
+		 		<if test="isNetSentSignUsing!=null">, IsNetSentSignUsing</if>
+		 		<if test="isPlatformReceivedSignUsing!=null">, IsPlatformReceivedSignUsing</if>
+		 		<if test="operatorId!=null">, OperatorID</if>
+		 		<if test="receivorName!=null and receivorName!=''">, ReceivorName</if>
+		 		<if test="receivorMobilePhone!=null and receivorMobilePhone!=''">, ReceivorMobilePhone</if>
+		 		<if test="receivorOfficePhone!=null and receivorOfficePhone!=''">, ReceivorOfficePhone</if>
+		 		<if test="receivorAddress!=null and receivorAddress!=''">, ReceivorAddress</if>
+		 		<if test="receivorCode!=null and receivorCode!=''">, ReceivorCode</if>
+		 		, OperateTime
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="orderNumber!=null and orderNumber!=''">,#{orderNumber}</if>
+		 		<if test="isPlatformSentNotusing!=null">,${isPlatformSentNotusing}</if>
+		 		<if test="isNetReceivedNotusing!=null">,${isNetReceivedNotusing}</if>
+		 		<if test="isNetSentSignNotusing!=null">,${isNetSentSignNotusing}</if>
+		 		<if test="isPlatformReceivedNotusing!=null">,${isPlatformReceivedNotusing}</if>
+		 		<if test="isPlatformSentSignUsing!=null">,${isPlatformSentSignUsing}</if>
+		 		<if test="isNetreceivedSignUsing!=null">,${isNetreceivedSignUsing}</if>
+		 		<if test="isPlatformSentUsing!=null">,${isPlatformSentUsing}</if>
+		 		<if test="isNetReceivedUsing!=null">,${isNetReceivedUsing}</if>
+		 		<if test="isNetSentSignUsing!=null">,${isNetSentSignUsing}</if>
+		 		<if test="isPlatformReceivedSignUsing!=null">,${isPlatformReceivedSignUsing}</if>
+		 		<if test="operatorId!=null">,${operatorId}</if>
+		 		<if test="receivorName!=null and receivorName!=''">,#{receivorName}</if>
+		 		<if test="receivorMobilePhone!=null and receivorMobilePhone!=''">,#{receivorMobilePhone}</if>
+		 		<if test="receivorOfficePhone!=null and receivorOfficePhone!=''">,#{receivorOfficePhone}</if>
+		 		<if test="receivorAddress!=null and receivorAddress!=''">,#{receivorAddress}</if>
+		 		<if test="receivorCode!=null and receivorCode!=''">,#{receivorCode}</if>
+		 		,now()
+		 	</trim>
+	</insert>
+	
+    <select id="select_config" resultMap="documentResult" parameterMap="document">
+        select Contact as ReceivorName, Cellphone as ReceivorMobilePhone, Telephone as ReceivorOfficePhone, Address as ReceivorAddress, Postcode as ReceivorCode
+	    	from PM_ProductDocConfig where ID=${productId}
+    </select>
+    
+    <update id="update" parameterMap="document">
+    	update TC_Document
+        <set>
+            <trim prefixOverrides=",">
+		 		<if test="isPlatformSentNotusing!=null">, IsPlatformSentNotusing=${isPlatformSentNotusing}</if>
+		 		<if test="isNetReceivedNotusing!=null">, IsNetReceivedNotusing=${isNetReceivedNotusing}</if>
+		 		<if test="isNetSentSignNotusing!=null">, IsNetSentSignNotusing=${isNetSentSignNotusing}</if>
+		 		<if test="isPlatformReceivedNotusing!=null">, IsPlatformReceivedNotusing=${isPlatformReceivedNotusing}</if>
+		 		<if test="isPlatformSentSignUsing!=null">, IsPlatformSentSignUsing=${isPlatformSentSignUsing}</if>
+		 		<if test="isNetreceivedSignUsing!=null">, IsNetreceivedSignUsing=${isNetreceivedSignUsing}</if>
+		 		<if test="isPlatformSentUsing!=null">, IsPlatformSentUsing=${isPlatformSentUsing}</if>
+		 		<if test="isNetReceivedUsing!=null">, IsNetReceivedUsing=${isNetReceivedUsing}</if>
+		 		<if test="isNetSentSignUsing!=null">, IsNetSentSignUsing=${isNetSentSignUsing}</if>
+		 		<if test="isPlatformReceivedSignUsing!=null">, IsPlatformReceivedSignUsing=${isPlatformReceivedSignUsing}</if>
+		 		<if test="platformSentNotusingTime!=null">, PlatformSentNotusingTime = ${platformSentNotusingTime}</if>
+		 		<if test="netReceivedNotusingTime!=null">, NetReceivedNotusingTime = ${netReceivedNotusingTime}</if>
+		 		<if test="netSentSignNotusingTime!=null">, NetSentSignNotusingTime = ${netSentSignNotusingTime}</if>
+		 		<if test="platformReceivedNotusingTime!=null">, PlatformReceivedNotusingTime = ${platformReceivedNotusingTime}</if>
+		 		<if test="platformSentSignUsingTime!=null">, PlatformSentSignUsingTime = ${platformSentSignUsingTime}</if>
+		 		<if test="netreceivedSignUsingTime!=null">, NetreceivedSignUsingTime = ${netreceivedSignUsingTime}</if>
+		 		<if test="platformSentUsingTime!=null">, PlatformSentUsingTime = ${platformSentUsingTime}</if>
+		 		<if test="netReceivedUsingTime!=null">, NetReceivedUsingTime = ${netReceivedUsingTime}</if>
+		 		<if test="netSentSignUsingTime!=null">, NetSentSignUsingTime = ${netSentSignUsingTime}</if>
+		 		<if test="platformReceivedSignUsingTime!=null">, PlatformReceivedSignUsingTime = ${platformReceivedSignUsingTime}</if>
+            </trim>
+        </set>
+        where OrderNumber=#{orderNumber}
+    </update>
+    
+    <select id="select_one" resultMap="documentResult" parameterMap="document">
+    	select * from TC_Document where OrderNumber= #{orderNumber}
+    </select>
+    
+</mapper>

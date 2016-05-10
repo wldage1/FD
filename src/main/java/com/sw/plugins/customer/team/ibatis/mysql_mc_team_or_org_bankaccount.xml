@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="teamBankAccount">
+	<parameterMap id="teamBankAccount" type="com.sw.plugins.customer.team.entity.TeamOrOrgBankAccount"/>
+	
+	<!-- 机构申请结果集 -->
+	<resultMap id="teamBankAccountResult" type="com.sw.plugins.customer.team.entity.TeamOrOrgBankAccount">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="teamID" column="TeamID" />
+		<result property="teamName" column="TeamName" />
+		<result property="bankName" column="BankName" />
+		<result property="userName" column="UserName" />
+		<result property="account" column="Account" />
+		<result property="isDefault" column="IsDefault" />
+		<result property="totalPay" column="TotalPay"/>
+	</resultMap>
+	
+	<select id="select_paginated" resultMap="teamBankAccountResult" parameterMap="teamBankAccount">
+		SELECT t.*,m.shortname as TeamName from MC_TeamOrOrgBankAccount t LEFT JOIN MC_Organization m on m.ID = t.TeamID
+	</select>
+	
+	<select id="select_one" resultMap="teamBankAccountResult" parameterMap="teamBankAccount">
+		select t.BankName,t.UserName,t.Account from MC_TeamOrOrgBankAccount t where t.teamID = ${teamID}
+	</select>
+	
+	<select id="sum_dff" resultType="Double" parameterMap="teamBankAccount">
+		select SUM(commission)/100 from TC_Commission where Paystatus = 4 and TeamID  = ${teamID}
+	</select>
+	
+	<select id="sum_ffsb" resultType="Double" parameterMap="teamBankAccount">
+		select SUM(commission)/100 from TC_Commission where Paystatus = 6 and TeamID  = ${teamID}
+	</select>
+	
+	<select id="count" resultType="long" parameterMap="teamBankAccount">	
+		select count(teamID) from TC_Order
+		<where>
+				<trim prefixOverrides="and">
+					<if test="teamID!=null and teamID!=''">
+					and t.teamID = ${teamID}
+					</if>
+				</trim>
+		</where>	
+	</select>
+</mapper>

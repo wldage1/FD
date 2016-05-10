@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心" icon="images/menu/sales-center.png">
+		<fail isNav="true" isSetAuth="sub" isStatus="true" name="失败订单" icon="images/menu/sales-center-failed order.png">
+			<language>
+				<value>/language/failMessages_zh_CN.properties</value>
+			</language>
+			<detail isNav="true"  name="查看" icon="images/icon/detail.png"/>
+			<detailRedeem isNav="true"  name="查看" icon="images/icon/detail.png"/>
+		</fail>
+	</market>
+</plugins>

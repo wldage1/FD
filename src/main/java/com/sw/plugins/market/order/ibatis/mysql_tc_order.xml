@@ -1,0 +1,1062 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="order">
+
+	<parameterMap id="order" type="com.sw.plugins.market.order.entity.Order" />
+	<!-- 仅供详细页所用 -->
+	<resultMap id="orderResult" type="com.sw.plugins.market.order.entity.Order">
+		<result property="id" column="ID" />
+		<result property="memberAccountID" column="MemberAccountID" />
+		<result property="contactInformationID" column="ContactInformationID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="orgID" column="OrgID" />
+		<result property="providerID" column="ProviderID" />
+		<result property="productID" column="ProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="subProductType" column="SubProductType" />
+		<result property="teamID" column="TeamID" />
+		<result property="memberID" column="MemberID" />
+		<result property="clientType" column="ClientType" />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="bankClientName" column="BankClientName" />
+		<result property="bankName" column="BankName" />
+		<result property="bankNumber" column="BankNumber" />
+		<result property="tradeType" column="TradeType" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="deadline" column="Deadline" />
+		<result property="profitRatio" column="ProfitRatio" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="commissionPayTime" column="CommissionPayTime" />
+		<result property="payMoneyStopTime" column="PayMoneyStopTime" />
+		<result property="share" column="Share" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="payTime" column="PayTime" />
+		<result property="netValue" column="NetValue" />
+		<result property="assignedShare" column="AssignedShare" />
+		<result property="tradeStatus" column="TradeStatus" />
+		<result property="payProgress" column="PayProgress" />
+		<result property="docStatus" column="DocStatus" />
+		<result property="documentStatus" column="DocumentStatus" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="holdingProductID" column="HoldingProductID" />
+		<result property="remark" column="Remark" />
+		<result property="pushStatus" column="PushStatus" />
+		<result property="pushShare" column="PushShare" />
+		<result property="pushTime" column="PushTime" />
+		<result property="breakReason" column="BreakReason" />
+		<result property="productName" column="ProductName" />
+		<!--   产品属性表   -->
+		<association property="product" column="productID" javaType="com.sw.plugins.product.manage.entity.Product" resultMap="productResult"/>
+		<!--   子产品属性表   -->
+		<association property="subProduct" column="subProductID" javaType="com.sw.plugins.product.manage.entity.SubProduct" resultMap="subProductResult"/>
+		<!--   理财顾问表   -->
+		<association property="member" column="memberID" javaType="com.sw.plugins.customer.member.entity.Member" resultMap="memberResult"/>
+		<!--   产品供应商机构表   -->
+		<association property="provider" column="providerID" javaType="com.sw.plugins.cooperate.provider.entity.Provider" resultMap="providerResult"/>
+		<!--   居间机构表   -->
+		<association property="organization" column="orgID" javaType="com.sw.plugins.system.organization.entity.Organization" resultMap="organizationResult"/>
+		<!--   理财顾问机构表   -->
+		<association property="team" column="teamID" javaType="com.sw.plugins.customer.team.entity.Team" resultMap="teamResult"/>
+		<!--   打款凭证表   -->
+		<association property="orderProof" column="orderNumber" javaType="com.sw.plugins.market.order.entity.OrderProof" resultMap="orderProofResult"/>
+	</resultMap>
+	
+	<!-- 列表所用 -->
+	<resultMap id="orderTradeStatusResult" type="com.sw.plugins.market.order.entity.Order">
+		<result property="id" column="ID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="orgID" column="OrgID" />
+		<result property="providerID" column="ProviderID" />
+		<result property="productID" column="ProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="teamID" column="TeamID" />
+		<result property="memberID" column="MemberID" />
+		<result property="clientType" column="ClientType" />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="bankClientName" column="BankClientName" />
+		<result property="bankName" column="BankName" />
+		<result property="bankNumber" column="BankNumber" />
+		<result property="tradeType" column="TradeType" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="deadline" column="Deadline" />
+		<result property="profitRatio" column="ProfitRatio" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="commissionPayTime" column="CommissionPayTime" />
+		<result property="payMoneyStopTime" column="PayMoneyStopTime" />
+		<result property="share" column="Share" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="payTime" column="PayTime" />
+		<result property="netValue" column="NetValue" />
+		<result property="assignedShare" column="AssignedShare" />
+		<result property="tradeStatus" column="TradeStatus" />
+		<result property="payProgress" column="PayProgress" />
+		<result property="documentStatus" column="DocumentStatus" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="holdingProductID" column="HoldingProductID" />
+		<result property="remark" column="Remark" />
+		<result property="pushStatus" column="PushStatus" />
+		<result property="pushShare" column="PushShare" />
+		<result property="pushTime" column="PushTime" />
+		<result property="productName" column="ProductName" />
+		<result property="memberNickName" column="MemberNickName" />
+		<result property="providerShortName" column="ProviderShortName"/>
+		<result property="productShortName" column="ProductShortName" />
+		<result property="orgShortName" column="OrgShortName" />
+	</resultMap>
+	
+	<!-- 列表所用 具有打款凭证信息 -->
+	<resultMap id="orderandproofResult" type="com.sw.plugins.market.order.entity.Order">
+		<!--   打款凭证表   -->
+		<association property="orderProof" column="orderNumber" javaType="com.sw.plugins.market.order.entity.OrderProof" resultMap="orderProofResult"/>
+	</resultMap>
+	
+	<resultMap id="productResult" type="com.sw.plugins.product.manage.entity.Product">
+		<result property="name" column="NameOne" />
+		<result property="shortName" column="proShortName" />
+		<result property="type" column="Type" />
+		<result property="deadlineDataType" column="DeadlineDataType" />
+		<result property="sellStatus" column="SellStatus" />
+		<result property="foundDate" column="FoundDate" />
+	</resultMap>
+	
+	<resultMap id="subProductResult" type="com.sw.plugins.product.manage.entity.SubProduct">
+		<result property="type" column="SubType" />
+	</resultMap>
+	
+	<resultMap id="memberResult" type="com.sw.plugins.customer.member.entity.Member">
+		<result property="name" column="NameTwo" />
+		<result property="nickName" column="NickName" />
+		<result property="level" column="Level" />
+	</resultMap>
+	
+	<resultMap id="providerResult" type="com.sw.plugins.cooperate.provider.entity.Provider">
+		<result property="shortName" column="ShortName" />
+	</resultMap>
+	
+	<resultMap id="organizationResult" type="com.sw.plugins.system.organization.entity.Organization">
+		<result property="shortName" column="ShortNameTwo" />
+		<result property="name" column="CommissionName" />
+	</resultMap>
+	
+	<resultMap id="teamResult" type="com.sw.plugins.customer.team.entity.Team">
+		<result property="name" column="NameThree" />
+		<result property="shortName" column="ShortNameThree" />
+	</resultMap>
+	
+	<resultMap id="orderProofResult" type="com.sw.plugins.market.order.entity.OrderProof">
+		<result property="proofTime" column="ProofTime" />
+		<result property="proofAmount" column="ProofAmount" />
+		<result property="proofFileUrl" column="ProofFileUrl" />
+		<result property="proofStatus" column="ProofStatus" />
+	</resultMap>
+	
+	
+	<!-- 分页认购订单打款凭证查询  -->
+	<select id="selectHasOrNotDispose" resultMap="orderandproofResult"  parameterMap="order">
+		SELECT td.OrderNumber,
+		td.ContractNumber,
+		td.MemberID,
+		m.`Name` as memberName,
+		m.NickName as memberNickName,
+		td.OrgID,
+		s.ShortName as orgShortName,
+		td.ClientName,
+		td.IDCard,
+		ROUND(td.InvestAmount/1000000) as InvestAmount,
+		ROUND(td.Share/1000000) as Share,
+		td.PayTime,
+		ROUND(td.PayAmount/1000000) as PayAmount,
+		tp.ProofTime,
+		ROUND(tp.ProofAmount/1000000) as ProofAmount,
+		tp.ProofFileUrl,
+		tp.ProofStatus,
+		tp.ID,
+		ps.Type as subProductType
+		from TC_OrderProof tp 
+		left join TC_Order td on tp.OrderNumber=td.OrderNumber
+		left join PM_Product p on td.ProductID=p.ID 
+		left join MC_Member m on m.ID=td.MemberID
+		left join PM_SubProduct ps on ps.ID=td.SubProductID 
+		LEFT JOIN SM_Organization s on s.ID=td.OrgID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and td.OrgID=${orgID}</if>
+				<if test="tradeType!=null">
+					<if test="tradeType == 2">
+						and td.TradeType in(2,3)		
+					</if>
+					<if test="tradeType == 1">
+						and td.TradeType=${tradeType}
+					</if>
+				</if>
+				<if test="proofStatus!=null">and tp.ProofStatus=${proofStatus}</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and td.TradeStatus=${tradeStatus}</if>
+				<if test="documentStatus!=null">and td.DocumentStatus=${documentStatus}</if>
+				<if test="clientName!=null and clientName!=''">and td.ClientName like '%${clientName}%'</if>
+				<if test="share!=null and share!=''">and td.Share=${share}*1000000</if> 
+				<if test="orderNumber!=null and orderNumber!=''">and td.OrderNumber like '%${orderNumber}%'</if>
+				and td.TradeStatus in(1,2,4,11,12)
+			</trim>
+		</where>
+		order by td.OrderTime asc,tp.ProofTime asc
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 统计认购订单打款凭证分页条数  -->
+	<select id="selectHasOrNotDispose_count" resultType="long"  parameterMap="order">
+		SELECT COUNT(tp.ID)
+		from TC_OrderProof tp 
+		left join TC_Order td on tp.OrderNumber=td.OrderNumber
+		left join PM_Product p on td.ProductID=p.ID 
+		left join MC_Member m on m.ID=td.MemberID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and td.OrgID=${orgID}</if>
+				<if test="tradeType!=null">
+					<if test="tradeType == 2">
+						and td.TradeType in(2,3)		
+					</if>
+					<if test="tradeType == 1">
+						and td.TradeType=${tradeType}
+					</if>
+				</if>
+				<if test="proofStatus!=null">and tp.ProofStatus=${proofStatus}</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and td.TradeStatus=${tradeStatus}</if>
+				<if test="documentStatus!=null">and td.DocumentStatus=${documentStatus}</if>
+				<if test="clientName!=null and clientName!=''">and td.ClientName like '%${clientName}%'</if>
+				<if test="share!=null and share!=''">and td.Share=${share}*1000000</if>  
+				<if test="orderNumber!=null and orderNumber!=''">and td.OrderNumber like '%${orderNumber}%'</if>
+				and td.TradeStatus in(1,2,4,11,12)
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 分页申购订单查询  -->
+	<select id="getNotMappOrderGrid" resultMap="orderTradeStatusResult"  parameterMap="order">
+		select
+		(SELECT count(1) FROM TC_OrderProof tw WHERE tw.OrderNumber=t.OrderNumber) as proofCount,
+		t.ID,
+		t.OrderNumber,
+		t.ContractNumber,
+		p.ShortName as productShortName,
+		t.ClientName,
+		t.TradeStatus,
+		ROUND(t.InvestAmount / 1000000) as InvestAmount ,
+	    ROUND(t.Share / 1000000) as Share ,
+		ROUND(t.PayAmount / 1000000) as PayAmount
+		from TC_Order t
+		LEFT JOIN PM_Product p on p.ID = t.ProductID
+		<where>
+			<trim prefixOverrides="and">
+				t.TradeStatus in (1, 2, 4, 12) and t.TradeType in (2, 3) and p.Type in(2, 5)
+				<if test="productID!=null">and t.ProductID = ${productID}</if>
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 统计认购订单分页条数  -->
+	<select id="getNotMappOrderGrid_count" resultType="long"  parameterMap="order">
+		select
+		count(*)
+		from TC_Order t
+		LEFT JOIN PM_Product p on p.ID = t.ProductID
+		<where>
+			<trim prefixOverrides="and">
+				t.TradeStatus in (1, 2, 4, 12) and t.TradeType in (2, 3) and p.Type in(2, 5)
+				<if test="productID!=null">and t.ProductID = ${productID}</if>
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- List  -->
+	<select id="select_list" resultMap="orderTradeStatusResult"  parameterMap="order">
+		select 
+			ID,OrderNumber,OrgID,ProviderID,ProductID,SubProductID,TeamID,MemberID,ClientType
+			,ClientName,IDCardType,IDCard,TradeType,PushStatus,PushTime,Deadline,ProfitRatio
+			,OrderTime,CommissionPayTime
+			,PayMoneyStopTime,PayTime,NetValue
+			,TradeStatus,PayProgress
+			,DocumentStatus,ContractNumber,HoldingProductID,Remark
+			,RMRemark,ShareTime
+			,ContactInformationID,MemberAccountID
+			,ROUND(InvestAmount/1000000) InvestAmount
+			,ROUND(PushShare/1000000) PushShare
+			,ROUND(Share/1000000) Share
+			,ROUND(PayAmount/1000000) PayAmount
+		from TC_Order t
+		<where>
+			<trim prefixOverrides="and">
+				<if test="tradeStatus!=null"> and t.TradeStatus=${tradeStatus}</if>
+				<if test="productID!=null"> and t.ProductID=${productID}</if>
+				<if test="subProductID!=null"> and t.SubProductID=${subProductID}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 分页查询  -->
+	<select id="select_paginated" resultMap="orderTradeStatusResult"  parameterMap="order">
+		select 
+		DISTINCT(tw.OrderNumber) as proofCount,
+		t.ID,
+		t.OrderNumber,
+		p.ShortName as productShortName,
+		pp.ShortName as providerShortName,
+		t.ClientName,
+		ROUND(t.InvestAmount/1000000) as InvestAmount,
+		m.`Name` as memberName,
+		m.NickName as memberNickName,
+		t.TradeStatus,
+		t.DocStatus,
+		t.DocumentStatus,
+		t.ConfirmPay,
+		so.ShortName as orgShortName,
+		t.TradeType,
+		ps.Type as subProductType,
+		ROUND(t.Share/1000000) as Share
+		from TC_Order t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join PM_SubProduct ps on ps.ID=t.SubProductID
+		left join SM_Organization so on t.OrgID=so.ID
+		left join TC_OrderProof tw on tw.OrderNumber=t.OrderNumber
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID=${orgID}</if>
+				
+				<if test="salerType !=null">and p.SalerType = #{salerType}</if>
+				<if test="isScManager != 1">and p.Scmanager like concat('%,',#{creatorUserId},',%')</if>
+				
+				<if test="tradeType!=null">
+					<if test="tradeType == 2">
+						and t.TradeType in(2,3)		
+					</if>
+					<if test="tradeType == 1">
+						and t.TradeType=${tradeType}
+					</if>
+				</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and t.TradeStatus=${tradeStatus}</if>
+				<if test="docStatus!=null">and t.DocStatus=${docStatus}</if>
+				<if test="clientName!=null and clientName!=''">and t.ClientName like '%${clientName}%'</if>
+				<if test="share!=null and share!=''">and t.Share=${share}*1000000</if>
+				<if test="orderNumber!=null and orderNumber!=''">and t.OrderNumber like '%${orderNumber}%'</if>
+				and t.TradeStatus in(1,2,4,6,11,12)
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 统计分页条数  -->
+	<select id="select_count" resultType="long"  parameterMap="order">
+		select 
+		count(t.ID)
+		from TC_Order t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID=${orgID}</if>
+				
+				<if test="salerType !=null">and p.SalerType = #{salerType}</if>
+				<if test="isScManager != 1">and p.Scmanager like concat('%,',#{creatorUserId},',%')</if>
+				
+				<if test="tradeType!=null">
+					<if test="tradeType == 2">
+						and t.TradeType in(2,3)		
+					</if>
+					<if test="tradeType == 1">
+						and t.TradeType=${tradeType}
+					</if>
+				</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and t.TradeStatus=${tradeStatus}</if>
+				<if test="docStatus!=null">and t.DocStatus=${docStatus}</if>
+				<if test="clientName!=null and clientName!=''">and t.ClientName like '%${clientName}%'</if>
+				<if test="share!=null and share!=''">and t.Share=${share}*1000000</if>
+				<if test="orderNumber!=null and orderNumber!=''">and t.OrderNumber like '%${orderNumber}%'</if>
+				and t.TradeStatus in(1,2,4,6,11,12)
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 导出查询  -->
+	<select id="select_for_export" resultType="java.util.Map"  parameterMap="order">
+		select b.proofCount,
+			b.OrderNumber,
+			b.OrderTime,
+			b.CommissionPayTime,
+			b.productShortName,
+			b.ProductType,
+			b.providerShortName,
+			b.ClientName,
+			b.InvestAmount,
+			b.memberName,
+			b.memberNickName,
+			b.DocStatus,
+			b.TradeStatus,
+			b.orgShortName,
+			b.TradeType,
+			b.subProductType,
+			b.McOrgName,
+			b.PayTime,
+			b.PayAmount,
+			ROUND(b.IssuanceCostRate*b.ServiceChargeCoefficient*b.TimeCoefficient+b.incentiveFeeRate,4)*100 as commission
+		FROM (
+		SELECT
+			a.*,po.IssuanceCostRate,
+				(
+					CASE a.OrgType WHEN 0 THEN
+						(po.OrgServiceChargeCoefficient+po.ServiceChargeCoefficient)
+					ELSE
+						po.ServiceChargeCoefficient
+					END
+				)AS ServiceChargeCoefficient,
+				po.TimeCoefficient,
+				po.incentiveFeeRate
+		FROM
+			(
+				SELECT DISTINCT
+					(tw.OrderNumber)AS proofCount,
+					t.ID,
+					t.OrderNumber,
+					DATE_FORMAT(t.OrderTime, '%Y-%m-%d %T')AS OrderTime,
+					DATE_FORMAT(t.CommissionPayTime, '%Y-%m-%d')AS CommissionPayTime,
+					p.ShortName AS productShortName,
+					p.Type AS ProductType,
+					pp.ShortName AS providerShortName,
+					t.ClientName,
+					ROUND(t.InvestAmount / 1000000)AS InvestAmount,
+					m.`Name` AS memberName,
+					m.NickName AS memberNickName,
+					t.TradeStatus,
+					t.DocStatus,
+					so.ShortName AS orgShortName,
+					t.TradeType,
+					ps.Type AS subProductType,
+					(
+						CASE
+						WHEN mo.OrgType = 0 THEN
+							mn. NAME
+						ELSE
+							mt.`Name`
+						END
+					)AS McOrgName,
+					DATE_FORMAT(t.PayTime, '%Y-%m-%d %T')AS PayTime,
+					ROUND(t.PayAmount / 1000000)AS PayAmount,
+					mo.OrgType,
+					t.SubProductID,
+					t.InvestAmount as tempInvestAmount
+				FROM TC_Order t
+				LEFT JOIN PM_Product p ON t.ProductID = p.ID
+				LEFT JOIN PC_Provider pp ON t.ProviderID = pp.ID
+				LEFT JOIN MC_Member m ON t.MemberID = m.ID
+				LEFT JOIN PM_SubProduct ps ON ps.ID = t.SubProductID
+				LEFT JOIN SM_Organization so ON t.OrgID = so.ID
+				LEFT JOIN TC_OrderProof tw ON tw.OrderNumber = t.OrderNumber
+				LEFT JOIN MC_TeamOrOrg mo ON t.teamID = mo.ID
+				LEFT JOIN MC_Team mt ON mo.OrgID = mt.ID
+				LEFT JOIN MC_Organization mn ON mo.OrgID = mn.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID=${orgID}</if>
+				<if test="tradeType!=null">
+					<if test="tradeType == 2">
+						and t.TradeType in(2,3)		
+					</if>
+					<if test="tradeType == 1">
+						and t.TradeType=${tradeType}
+					</if>
+				</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and t.TradeStatus=${tradeStatus}</if>
+				<if test="documentStatus!=null">and t.DocumentStatus=${documentStatus}</if>
+				<if test="clientName!=null and clientName!=''">and t.ClientName like '%${clientName}%'</if>
+				<if test="share!=null and share!=''">and t.Share=${share}*1000000</if>
+				<if test="orderNumber!=null and orderNumber!=''">and t.OrderNumber like '%${orderNumber}%'</if>
+				and t.TradeStatus in(1,2,4,6,11,12)
+			</trim>
+		</where>
+			)AS a
+		LEFT JOIN PM_ProductCommissionRatio po
+			 <![CDATA[ON po.MinShareThreshold <= a.tempInvestAmount]]>
+			 <![CDATA[AND a.tempInvestAmount < IFNULL(po.MaxShareThreshold,(a.tempInvestAmount + 1))]]>
+			AND po.IsAvailable=1
+			AND po.SubProductID = a.SubProductID
+		) b
+	</select>
+	
+	<!-- 通过订单号获取订单数据 -->
+	<select id="select_one_byNum" resultMap="orderResult"  parameterMap="order">
+		select t.ID,t.OrderNumber,t.OrgID,t.ProviderID,t.ProductID,t.SubProductID,t.TeamID,t.MemberID,t.ClientType,t.ClientName,t.MemberAccountID,t.ContactInformationID,
+		t.IDCardType,t.IDCard,t.BankClientName,t.BankName,t.BankNumber,t.TradeType,ROUND(t.InvestAmount/1000000) as InvestAmount,t.Deadline,t.ProfitRatio,
+		DATE_FORMAT(t.OrderTime,'%Y-%m-%d %T') as OrderTime,
+		DATE_FORMAT(t.CommissionPayTime,'%Y-%m-%d ') as CommissionPayTime,
+		DATE_FORMAT(t.PayMoneyStopTime,'%Y-%m-%d ') as PayMoneyStopTime,
+		ROUND(t.Share/1000000) as Share,ROUND(t.PayAmount/1000000) as PayAmount,
+		DATE_FORMAT(t.PayTime,'%Y-%m-%d %T') as PayTime,
+		t.NetValue
+		,t.TradeStatus,t.PayProgress,t.DocumentStatus,
+		t.ContractNumber,t.HoldingProductID,t.Remark,t.PushStatus,ROUND(t.PushShare/1000000) as PushShare,
+		DATE_FORMAT(t.PushTime,'%Y-%m-%d %T') as PushTime,
+		p.`Name` as NameOne,
+		p.Type,
+		p.DeadlineDataType,
+		p.SellStatus,
+		pp.ShortName,
+		m.`Name` as NameTwo,
+		m.NickName,
+		so.Name as CommissionName,
+		so.ShortName as ShortNameTwo,
+		(case when mo.OrgType=0 then	mn.Name else mt.`Name` end) as NameThree
+		from TC_Order t 
+		JOIN PM_Product p on t.ProductID=p.ID 
+		JOIN PC_Provider pp on t.ProviderID=pp.ID
+		JOIN MC_Member m on t.MemberID=m.ID
+		LEFT JOIN MC_TeamOrOrg mo on t.teamID=mo.ID
+		left join MC_Team mt on mo.OrgID=mt.ID
+		left join MC_Organization mn on mo.OrgID=mn.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		where t.OrderNumber='${orderNumber}'
+	</select>
+	
+	<!-- 通过ID获取订单数据 -->
+	<select id="select_one" resultMap="orderResult"  parameterMap="order">
+		select t.ID,t.OrderNumber,t.OrgID,t.ProviderID,t.ProductID,t.SubProductID,t.TeamID,t.MemberID,t.ClientType,t.ClientName,t.MemberAccountID,t.ContactInformationID,
+		t.IDCardType,t.IDCard,t.BankClientName,t.BankName,t.BankNumber,t.TradeType,ROUND(t.InvestAmount/1000000) as InvestAmount,t.Deadline,t.ProfitRatio
+		,DATE_FORMAT(t.OrderTime,'%Y-%m-%d %T') as OrderTime,
+		DATE_FORMAT(t.CommissionPayTime,'%Y-%m-%d ') as CommissionPayTime,
+		DATE_FORMAT(t.PayMoneyStopTime,'%Y-%m-%d ') as PayMoneyStopTime,
+		ROUND(t.Share/1000000) as Share,ROUND(t.PayAmount/1000000) as PayAmount,
+		DATE_FORMAT(t.PayTime,'%Y-%m-%d') as PayTime,
+		t.NetValue
+		,t.TradeStatus,t.PayProgress,t.DocStatus,t.DocumentStatus,
+		t.ContractNumber,t.HoldingProductID,t.Remark,t.PushStatus,ROUND(t.PushShare/1000000) as PushShare,
+		DATE_FORMAT(t.PushTime,'%Y-%m-%d %T') as PushTime,
+		p.`Name` as NameOne,
+		p.ShortName as proShortName,
+		p.Type,
+		p.DeadlineDataType,
+		p.SellStatus,
+		p.FoundDate,
+		p.ContractPrefix as ProContractPrefix,
+		pp.ShortName,
+		m.`Name` as NameTwo,
+		m.NickName,
+		so.Name as CommissionName,
+		so.ShortName as ShortNameTwo,
+		(case when mo.OrgType=0 then	mn.Name else mt.`Name` end) as NameThree,
+		t.BreakReason
+		from TC_Order t 
+		JOIN PM_Product p on t.ProductID=p.ID 
+		JOIN PC_Provider pp on t.ProviderID=pp.ID
+		JOIN MC_Member m on t.MemberID=m.ID
+		LEFT JOIN MC_TeamOrOrg mo on t.teamID=mo.ID
+		left join MC_Team mt on mo.OrgID=mt.ID
+		left join MC_Organization mn on mo.OrgID=mn.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		where t.ID=${id}
+	</select>
+	
+	<!-- 延时加载所用  通过ID获取订单数据 -->
+	<select id="select_one_lazy" resultMap="orderResult">
+		select t.ID,t.OrderNumber,t.OrgID,t.ProviderID,t.ProductID,t.SubProductID,t.TeamID,t.MemberID,t.ClientType,t.ClientName,t.MemberAccountID,t.ContactInformationID,
+		t.IDCardType,t.IDCard,t.BankClientName,t.BankName,t.BankNumber,t.TradeType,ROUND(t.InvestAmount/1000000) as InvestAmount,t.Deadline,t.ProfitRatio,
+		DATE_FORMAT(t.OrderTime,'%Y-%m-%d %T') as OrderTime,
+		DATE_FORMAT(t.CommissionPayTime,'%Y-%m-%d ') as CommissionPayTime,
+		DATE_FORMAT(t.PayMoneyStopTime,'%Y-%m-%d ') as PayMoneyStopTime,
+		ROUND(t.Share/1000000) as Share,ROUND(t.PayAmount/1000000) as PayAmount,
+		DATE_FORMAT(t.PayTime,'%Y-%m-%d ') as PayTime,
+		t.NetValue
+		,t.TradeStatus,t.PayProgress,t.DocumentStatus,
+		t.ContractNumber,t.HoldingProductID,t.Remark,t.PushStatus,ROUND(t.PushShare/1000000) as PushShare,
+		DATE_FORMAT(t.PushTime,'%Y-%m-%d %T') as PushTime,
+		p.`Name` as NameOne,
+		p.Type,
+		p.DeadlineDataType,
+		pp.ShortName,
+		m.`Name` as NameTwo,
+		m.NickName,
+		so.Name as CommissionName,
+		so.ShortName as ShortNameTwo,
+		(case when mo.OrgType=0 then	mn.Name else mt.`Name` end) as NameThree
+		from TC_Order t 
+		JOIN PM_Product p on t.ProductID=p.ID 
+		JOIN PC_Provider pp on t.ProviderID=pp.ID
+		JOIN MC_Member m on t.MemberID=m.ID
+		LEFT JOIN MC_TeamOrOrg mo on t.teamID=mo.ID
+		left join MC_Team mt on mo.OrgID=mt.ID
+		left join MC_Organization mn on mo.OrgID=mn.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		where t.OrderNumber='${value}'
+	</select>
+	
+	<!-- 查询订单号最大值 -->
+	<select id="select_order_max_code" resultMap="orderResult" parameterMap="order">
+		select max(OrderNumber) as OrderNumber from TC_Order
+	</select>
+	
+	<!-- 订单保存 -->	
+	<insert id="insert" parameterMap="order">
+		insert into TC_Order
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="id!=null">, ID</if>
+		 		<if test="orderNumber!=null and orderNumber!=''">, OrderNumber</if>
+		 		<if test="orgID!=null">, OrgID</if>
+		 		<if test="providerID!=null">, ProviderID</if>
+		 		<if test="productID!=null">, ProductID</if>
+		 		<if test="subProductID!=null">, SubProductID</if>
+		 		<if test="teamID!=null">, TeamID</if>
+		 		<if test="memberID!=null">, MemberID</if>
+		 		<if test="clientType!=null">, ClientType</if>
+		 		<if test="clientName!=null and clientName!=''">, ClientName</if>
+		 		<if test="iDCardType!=null">, IDCardType</if>
+		 		<if test="iDCard!=null and iDCard!=''">, IDCard</if>
+		 		<if test="bankClientName!=null and bankClientName!=''">, BankClientName</if>
+		 		<if test="bankName!=null and bankName!=''">, BankName</if>
+		 		<if test="bankNumber!=null and bankNumber!=''">, BankNumber</if>
+		 		<if test="tradeType!=null">, TradeType</if>
+		 		<if test="investAmount!=null and investAmount!=''">, InvestAmount</if>
+		 		<if test="deadline!=null and deadline!=''">, Deadline</if>
+		 		<if test="profitRatio!=null and profitRatio!=''">, ProfitRatio</if>
+		 		<if test="orderTime!=null and orderTime!=''">, OrderTime</if>
+		 		<if test="commissionPayTime!=null and commissionPayTime!=''">, CommissionPayTime</if>
+		 		<if test="payMoneyStopTime!=null and payMoneyStopTime!=''">, PayMoneyStopTime</if>
+		 		<if test="share!=null and share!=''">, Share</if>
+		 		<if test="payAmount!=null and payAmount!=''">, PayAmount</if>
+		 		<if test="payTime!=null and payTime!=''">, PayTime</if>
+		 		<if test="netValue!=null and netValue!=''">, NetValue</if>
+		 		<if test="tradeStatus!=null">, TradeStatus</if>
+		 		<if test="payProgress!=null">, PayProgress</if>
+		 		<if test="documentStatus!=null">, DocumentStatus</if>
+		 		<if test="contractNumber!=null and contractNumber!=''">, ContractNumber</if>
+		 		<if test="holdingProductID!=null">, HoldingProductID</if>
+		 		<if test="remark!=null and remark!=''">, Remark</if>
+		 		<if test="pushStatus!=null">, PushStatus</if>
+		 		<if test="pushTime!=null and pushTime!=''">,PushTime</if>
+		 		<if test="pushShare!=null and pushShare!=''">, PushShare</if>
+		 		<if test="memberAccountID!=null">, MemberAccountID</if>
+		 		<if test="contactInformationID!=null">, ContactInformationID</if>
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="id!=null">,${id}</if>
+		 		<if test="orderNumber!=null and orderNumber!=''">,'${orderNumber}'</if>
+		 		<if test="orgID!=null">,${orgID}</if>
+		 		<if test="providerID!=null">,${providerID}</if>
+		 		<if test="productID!=null">,${productID}</if>
+		 		<if test="subProductID!=null">,${subProductID}</if>
+		 		<if test="teamID!=null">,${teamID}</if>
+		 		<if test="memberID!=null">,${memberID}</if>
+		 		<if test="clientType!=null">,${clientType}</if>
+		 		<if test="clientName!=null and clientName!=''">,'${clientName}'</if>
+		 		<if test="iDCardType!=null">,${iDCardType}</if>
+		 		<if test="iDCard!=null and iDCard!=''">,'${iDCard}'</if>
+		 		<if test="bankClientName!=null and bankClientName!=''">, '${bankClientName}'</if>
+		 		<if test="bankName!=null and bankName!=''">, '${bankName}'</if>
+		 		<if test="bankNumber!=null and bankNumber!=''">, '${bankNumber}'</if>
+		 		<if test="tradeType!=null">,${tradeType}</if>
+		 		<if test="investAmount!=null and investAmount!=''">,${investAmount}*1000000</if>
+		 		<if test="deadline!=null and deadline!=''">,${deadline}</if>
+		 		<if test="profitRatio!=null and profitRatio!=''">,'${profitRatio}'</if>
+		 		<if test="orderTime!=null and orderTime!=''">,'${orderTime}'</if>
+		 		<if test="commissionPayTime!=null and commissionPayTime!=''">,'${commissionPayTime}'</if>
+		 		<if test="payMoneyStopTime!=null and payMoneyStopTime!=''">,'${payMoneyStopTime}'</if>
+		 		<if test="share!=null and share!=''">,${share}*1000000</if>
+		 		<if test="payAmount!=null and payAmount!=''">,${payAmount}*1000000</if>
+		 		<if test="payTime!=null and payTime!=''">,'${payTime}'</if>
+		 		<if test="netValue!=null and netValue!=''">,${netValue}</if>
+		 		<if test="tradeStatus!=null">,${tradeStatus}</if>
+		 		<if test="payProgress!=null">,${payProgress}</if>
+		 		<if test="documentStatus!=null">,${documentStatus}</if>
+		 		<if test="contractNumber!=null and contractNumber!=''">,'${contractNumber}'</if>
+		 		<if test="holdingProductID!=null">,${holdingProductID}</if>
+		 		<if test="remark!=null and remark!=''">,'${remark}'</if>
+		 		<if test="pushStatus!=null">, ${pushStatus}</if>
+		 		<if test="pushTime!=null and pushTime!=''">,'${pushTime}'</if>
+		 		<if test="pushShare!=null and pushShare!=''">, ${pushShare}*1000000</if>
+		 		<if test="memberAccountID!=null">, ${memberAccountID}</if>
+		 		<if test="contactInformationID!=null">, ${contactInformationID}</if>
+		 	</trim>
+		 	<selectKey keyProperty="generatedKey" resultType="Long">
+			  select LAST_INSERT_ID() as generatedKey      
+		 	</selectKey>
+	</insert>
+	
+	<!-- 修改资金到账状态，同时修改已到账金额 -->
+	<update id="update_payProgress" parameterMap="order">
+		update TC_Order set PayAmount=${payAmount}*1000000 , PayProgress = ${payProgress} 
+		<if test="tradeStatus!=null">,TradeStatus=${tradeStatus}</if> 
+		<if test="payTime!=null and payTime!=''">,PayTime='${payTime}'</if> 
+		where ID=${id}
+	</update>
+	
+	<update id="update_confirmPay" parameterMap="order">
+		update TC_Order set ConfirmPay = 2,TradeStatus = 4,payProgress = 2
+		<if test="payAmount!=null and payAmount!=''">, PayAmount=${payAmount}*1000000</if>
+ 		<if test="payTime!=null and payTime!=''">, PayTime='${payTime}'</if>
+	    where ID = ${id}
+	</update>
+	
+	<!-- 修改订单 -->
+	<update id="update" parameterMap="order">
+		update TC_Order 
+		<set>
+			<trim  prefixOverrides=",">
+		 		<if test="orderNumber!=null and orderNumber!=''">, OrderNumber='${orderNumber}'</if>
+		 		<if test="orgID!=null">, OrgID=${orgID}</if>
+		 		<if test="providerID!=null">, ProviderID=${providerID}</if>
+		 		<if test="productID!=null">, ProductID=${productID}</if>
+		 		<if test="subProductID!=null">, SubProductID=${subProductID}</if>
+		 		<if test="teamID!=null">, TeamID=${teamID}</if>
+		 		<if test="memberID!=null">, MemberID=${memberID}</if>
+		 		<if test="clientType!=null">, ClientType=${clientType}</if>
+		 		<if test="clientName!=null and clientName!=''">, ClientName='${clientName}'</if>
+		 		<if test="iDCardType!=null">, IDCardType=${iDCardType}</if>
+		 		<if test="iDCard!=null and iDCard!=''">, IDCard='${iDCard}'</if>
+		 		<if test="bankClientName!=null and bankClientName!=''">, BankClientName='${bankClientName}'</if>
+		 		<if test="bankName!=null and bankName!=''">, BankName='${bankName}'</if>
+		 		<if test="bankNumber!=null and bankNumber!=''">, BankNumber='${bankNumber}'</if>
+		 		<if test="tradeType!=null">, TradeType=${tradeType}</if>
+		 		<if test="investAmount!=null and investAmount!=''">, InvestAmount=${investAmount}*1000000</if>
+		 		<if test="deadline!=null and deadline!=''">, Deadline=${deadline}</if>
+		 		<if test="profitRatio!=null and profitRatio!=''">, ProfitRatio='${profitRatio}'</if>
+		 		<if test="orderTime!=null and orderTime!=''">, OrderTime='${orderTime}'</if>
+		 		<if test="commissionPayTime!=null and commissionPayTime!=''">, CommissionPayTime='${commissionPayTime}'</if>
+		 		<if test="payMoneyStopTime!=null and payMoneyStopTime!=''">, PayMoneyStopTime='${payMoneyStopTime}'</if>
+		 		<if test="share!=null and share!=''">, Share=${share}*1000000</if>
+		 		<if test="payAmount!=null and payAmount!=''">, PayAmount=${payAmount}*1000000</if>
+		 		<if test="payTime!=null and payTime!=''">, PayTime='${payTime}'</if>
+		 		<if test="netValue!=null and netValue!=''">, NetValue=${netValue}</if>
+		 		<if test="tradeStatus!=null">, TradeStatus=${tradeStatus}</if>
+		 		<if test="payProgress!=null">, PayProgress=${payProgress}</if>
+		 		<if test="docStatus!=null">, DocStatus=${docStatus}</if>
+		 		<if test="documentStatus!=null">, DocumentStatus=${documentStatus}</if>
+		 		<if test="contractNumber!=null and contractNumber!=''">, ContractNumber='${contractNumber}'</if>
+		 		<if test="holdingProductID!=null">, HoldingProductID=${holdingProductID}</if>
+		 		<if test="remark!=null and remark!=''">, Remark='${remark}'</if>
+		 		<if test="pushStatus!=null">, PushStatus=${pushStatus}</if>
+		 		<if test="pushTime!=null and pushTime!=''">,PushTime='${pushTime}'</if>
+		 		<if test="pushShare!=null and pushShare!=''">,PushShare=${pushShare}*1000000</if>
+		 		<if test="breakReason!=null">,BreakReason=${breakReason}</if>
+		 		<if test="memberAccountID !=null">,MemberAccountID =${memberAccountID}</if>
+		 		<if test="contactInformationID!=null">,ContactInformationID=${contactInformationID}</if>
+			</trim>
+		</set>
+		<where>
+			ID=#{id}
+		</where>
+	</update>
+	
+	<!-- 已取消的认购、申购订单分页查询  -->
+	<select id="select_cancel_paginated" resultMap="orderTradeStatusResult"  parameterMap="order">
+		select 
+		t.ID,
+		t.OrderNumber,
+		pp.ShortName as providerShortName,
+		p.ShortName as productShortName,
+		t.ClientName,
+		sp.Type as SubProductType,
+		ROUND(t.InvestAmount/1000000) as InvestAmount,
+		m.`Name` as memberName,
+		m.NickName as memberNickName
+		from TC_Order t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PM_SubProduct sp on t.SubProductID = sp.ID
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+				<if test="pushStatus!=null">and t.PushStatus = ${pushStatus}</if>
+				<if test="tradeType!=null">
+					<if test="tradeType == 2">
+						and t.TradeType in(2,3)		
+					</if>
+					<if test="tradeType == 1">
+						and t.TradeType=${tradeType}
+					</if>
+				</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+				<![CDATA[ and t.TradeStatus in ]]> 
+					 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}
+		        	</foreach> 
+				<![CDATA[]]>
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 已取消的认购、申购订单统计分页条数  -->
+	<select id="select_cancel_count" resultType="long"  parameterMap="order">
+		select 
+		count(*) 
+		from TC_Order t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+				<if test="pushStatus!=null">and t.PushStatus = ${pushStatus}</if>
+				<if test="tradeType!=null">
+					<if test="tradeType == 2">
+						and t.TradeType in(2,3)		
+					</if>
+					<if test="tradeType == 1">
+						and t.TradeType=${tradeType}
+					</if>
+				</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+				<![CDATA[ and t.TradeStatus in ]]> 
+					 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}
+		        	</foreach> 
+				<![CDATA[]]>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 删除订单 -->
+	<delete id="delete" parameterMap="order">
+		delete from TC_Order where id=${id}
+	</delete>
+	
+	<!--  查询订单表所有额度确认的数据  -->
+	<select id="select_tradestatus_2" resultMap="orderTradeStatusResult" parameterMap="order">
+		select 
+		t.ID,
+		t.OrderNumber,
+		p.Name as NameOne,
+		p.ShortName as ProductShortName,
+		pp.ShortName as ProviderShortName,
+		t.ClientName,
+		ROUND(t.InvestAmount/1000000) as InvestAmount,
+		m.`Name` as MemberName,
+		m.NickName as MemberNickName,
+		t.TradeStatus,
+		t.DocumentStatus,
+		so.ShortName as OrgShortName,
+		t.TradeType
+		from TC_Order t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join SM_Organization so on t.OrgID=so.ID 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id !=null">and t.ID = ${id}</if>
+				<if test="orgID !=null">and t.OrgID=${orgID} </if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				and t.TradeStatus = 2
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<select id="select_tradestatus_2_one" resultMap="orderTradeStatusResult" parameterMap="order">
+		select 
+		t.ID,
+		t.OrderNumber,
+		p.Name as NameOne,
+		p.ShortName as ProductShortName,
+		pp.ShortName as ProviderShortName,
+		t.ClientName,
+		ROUND(t.InvestAmount/1000000) as InvestAmount,
+		m.`Name` as MemberName,
+		m.NickName as MemberNickName,
+		t.TradeStatus,
+		t.DocumentStatus,
+		so.ShortName as OrgShortName,
+		t.TradeType
+		from TC_Order t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join SM_Organization so on t.OrgID=so.ID 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id !=null">and t.ID = ${id}</if>
+				<if test="orgID !=null">and t.OrgID=${orgID} </if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				and t.TradeStatus = 2
+			</trim>
+		</where>
+	</select>
+	
+	<select id="select_tradestatus_count" resultType="long" parameterMap="order">
+		select 
+		count(t.id)
+		from TC_Order t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join SM_Organization so on t.OrgID=so.ID 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID !=null">and t.OrgID=${orgID} </if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				and t.TradeStatus = 2
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 通过合同编号查询订单数目 -->
+    <select id="checkForContractNumber" resultType="long" parameterMap="order">
+        select count(id) 
+        	from TC_Order
+        		<where>
+		            <trim prefixOverrides="and">
+			            <if test="productID!=null">and ProductID = ${productID}</if>
+			            <if test="subProductID!=null">and SubProductID = ${subProductID}</if>
+			            <if test="contractNumber!=null and contractNumber!=''">and ContractNumber = #{contractNumber}</if>
+			            <if test="id!=null">and ID != ${id}</if>
+		            </trim>
+		        </where>
+    </select>
+    
+    <!-- 责任额度配给订单列表(新订单)  -->
+    <select id="select_newpushshare_list" resultMap="orderResult" parameterMap="order">
+    	select 
+    		o.id,o.orderNumber,o.clientName,ROUND(o.investAmount/1000000) as InvestAmount,o.orderTime,ROUND(o.share/1000000) as Share,o.payAmount/1000000 as PayAmount,o.payTime,o.TradeStatus,
+	    	o.pushTime,ps.type SubType,mm.name NameTwo,mm.nickName,mm.level,ROUND(o.pushShare/1000000) as PushShare,o.pushStatus,DATE_FORMAT(o.CommissionPayTime,'%Y-%m-%d ') as CommissionPayTime
+	    	from TC_Order o
+	    	left join PM_SubProduct ps on ps.ID = o.subProductID
+	    	left join MC_Member mm on mm.ID = o.memberID
+	    	left join PM_Product pp on pp.ID = o.productID
+    	where
+    		<!-- 配给状态为未配给打款状态为停止打款并且资金状态不为全款到账和超额打款,交易状态为预约提交或份额确认只可能是认购订单不管产品成立与否    -->                   
+    		 o.PushStatus = 0 and ps.isRemittance = 0 and o.PayProgress in (0,1) and o.TradeStatus in (1,2) and o.TradeType = 1
+			
+			and o.SubProductID = ${subProductID} and o.ProductID = ${productID}
+			
+		order by o.PayAmount, o.CommissionPayTime  desc limit ${start} , ${offset}
+    </select>
+    
+    <select id="select_newpushshare_count" resultType="Long" parameterMap = "order">
+    	select count(o.id) from TC_Order o left join PM_SubProduct p on p.ID = o.subProductID where 
+    	 o.PushStatus = 0 and p.isRemittance = 0 and o.PayProgress in (0,1) and o.TradeStatus in (1,2) and o.TradeType = 1
+			and o.SubProductID = ${subProductID} and o.ProductID = ${productID}
+    </select>
+    
+    <!-- 责任额度配给已配给订单集合 -->
+    <select id="select_pushshare_list" resultMap="orderResult" parameterMap="order">
+    	select 
+	    	o.id,o.orderNumber,o.clientName,ROUND(o.investAmount/1000000) as InvestAmount,DATE_FORMAT(o.CommissionPayTime,'%Y-%m-%d ') as CommissionPayTime,o.orderTime,ROUND(o.share/1000000) as Share,ROUND(o.payAmount/1000000) as PayAmount,o.payTime,o.PayProgress,
+	    	o.pushTime,ps.type as SubType,mm.name NameTwo,mm.nickName,mm.level Level,o.pushShare/1000000 as PushShare,o.pushStatus
+	    	from TC_Order o
+	    	left join PM_SubProduct ps on ps.ID = o.subProductID
+	    	left join MC_Member mm on mm.ID = o.memberID
+	    where o.PushStatus != 0 and o.SubProductID = ${subProductID} and o.ProductID = ${productID}
+		order by o.PushTime desc limit ${start} , ${offset}
+    </select>
+    
+    <select id = "select_pushshare_count" resultType ="long" parameterMap="order">
+    	select count(o.ID) from TC_Order o left join  PM_SubProduct p on o.subProductID = p.ID where
+    	 o.PushStatus != 0  and o.ProductID = ${productID} and o.SubProductID = ${subProductID}
+    </select>
+    
+    <!-- 配给列表确认按钮 将配给额度写入已分配份额 -->
+    <update id="update_share" parameterMap="order">
+    		update TC_Order 
+		<set>
+			<trim prefixOverrides=",">
+				<if test="investAmount!=null and investAmount!=''">,Share = ${investAmount}*1000000</if>
+			</trim>
+		</set>
+		<where>
+			ID = ${id}
+		</where>
+    </update>
+    
+    <!-- 配给状态为部分接受的时候改变订单交易状态为2(份额确认) -->
+    <update id="update_tradeStatus" parameterMap="order">
+    	update TC_Order set tradeStatus = 2 where ID = #{id}
+    </update>
+    
+    <!-- 改变配给状态 -->
+    <update id="update_pushStatus" parameterMap="order">
+    	update TC_Order set PushStatus = ${pushStatus} where ID = #{id}
+    </update>
+    
+    <!-- 获取小额订单数量 -->
+	<select id="select_lowamount_count" resultType="long" parameterMap="order">
+		SELECT
+			count(1)
+		FROM
+			TC_Order a
+		WHERE
+			a.TradeStatus IN (2,4,12)
+		<![CDATA[AND a.InvestAmount < ${investAmount}* 100]]>
+		<if test="productID != null">AND a.ProductID = ${productID}</if>
+		<if test="subProductID != null">AND a.SubProductID = ${subProductID}</if>
+	</select>
+	
+	<!-- 查询是否有超时打款的订单 -->
+	<select id="select_timeout_order_count" resultMap="orderResult">
+		SELECT a.ID FROM (
+			SELECT pf.OrderNumber,t.ID
+			FROM TC_Order t
+			LEFT JOIN TC_OrderProof pf ON t.OrderNumber = pf.OrderNumber
+			WHERE <![CDATA[DATE_FORMAT(t.CommissionPayTime , '%Y-%m-%d') < DATE_FORMAT(NOW(), '%Y-%m-%d')]]> AND t.TradeStatus IN(1,2,3,12)
+		) a where ISNULL(a.OrderNumber)
+	</select>
+    <!-- 修改有超时打款的订单 -->
+    <update id="update_timeout_order" parameterMap="order">
+    	UPDATE TC_Order t SET t.TradeStatus=6,t.Share=NULL WHERE 
+		<![CDATA[ t.ID in ]]> 
+			 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+           	 	${item}
+        	</foreach> 
+		<![CDATA[]]>
+    </update>
+    <!-- 将有超时打款的订单存入流水记录表 -->
+    <insert id="insert_timeout_transactiondetailhistory" parameterMap="order">
+    	INSERT INTO TC_OrderTransactionDetail(
+			OrderNumber,OrgID, ProviderID, ProductID, SubProductID, TeamID, MemberID, ClientType, ClientName, IDCardType, IDCard
+			, BankClientName, BankName, BankNumber, TradeType, InvestAmount, Deadline, ProfitRatio, OrderTime, CommissionPayTime, PayMoneyStopTime, Share, PayAmount
+			, PayTime, NetValue, TradeStatus, PayProgress, DocStatus, DocumentStatus, ContractNumber, HoldingProductID, Remark, PushStatus,PushTime, PushShare
+			, BreakReason, ShareTime, UpdateTime,MemberAccountID,ContactInformationID) SELECT OrderNumber,OrgID, ProviderID, ProductID, SubProductID, TeamID, MemberID, ClientType, ClientName, IDCardType, IDCard
+			, BankClientName, BankName, BankNumber, TradeType, InvestAmount, Deadline, ProfitRatio, OrderTime, CommissionPayTime, PayMoneyStopTime, Share, PayAmount
+			, PayTime, NetValue, TradeStatus, PayProgress, DocStatus, DocumentStatus, ContractNumber, HoldingProductID, Remark, PushStatus,PushTime, PushShare
+			, BreakReason, ShareTime, NOW(),MemberAccountID,ContactinformationID FROM TC_Order t WHERE 
+			<![CDATA[ t.ID in ]]> 
+				 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+	           	 	${item}
+	        	</foreach> 
+			<![CDATA[]]>
+    </insert>
+    
+    <!-- 查询订单关联理财师单证邮寄地址 -->
+    <select id="select_member_contact" resultMap="orderResult" parameterMap="order">
+        select c.Name as ContactName,
+        	c.Address as ContactAddress,
+        	c.Phone as ContactPhone,
+        	c.Telphone as ContactTelphone,
+        	c.PostCode as ContactPostCode
+        from MC_ContactInformation c left join TC_Order o on c.ID=o.ContactinformationID
+        where o.OrderNumber = #{orderNumber}
+    </select>
+</mapper>

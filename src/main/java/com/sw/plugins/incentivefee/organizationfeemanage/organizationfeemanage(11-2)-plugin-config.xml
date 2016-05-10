@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<incentivefee name="返利费用管理" icon="images/menu/sales-center.png">
+		<organizationfeemanage isNav="true" isSetAuth="sub" isStatus="true" name="机构返利管理" icon="images/menu/sales-center-succeed order.png">
+			<language>
+				<value>/language/incentiveFeeMessages_zh_CN.properties</value>
+			</language>
+			<pay isNav="true" isSetAuth="sub" isStatus="true" name="发放" icon="images/menu/sales-center-succeed order.png" />
+			<check isNav="true" isSetAuth="sub" isStatus="true" name="核算" icon="images/menu/sales-center-succeed order.png" />
+			<onekeypay isNav="true" isSetAuth="sub" isStatus="true" name="一键发放" icon="images/menu/sales-center-succeed order.png" />
+		</organizationfeemanage>
+	</incentivefee>
+</plugins>

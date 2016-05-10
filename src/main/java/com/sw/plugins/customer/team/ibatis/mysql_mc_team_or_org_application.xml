@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="teamApplication">
+	<parameterMap id="teamOrOrgApplication" type="com.sw.plugins.customer.team.entity.TeamOrOrgApplication"/>
+	
+	<!-- 机构申请结果集 -->
+	<resultMap id="teamOrOrgApplicationResult" type="com.sw.plugins.customer.team.entity.TeamOrOrgApplication">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="name" column="name" />
+		<result property="teamID" column="TeamID" />
+		<result property="status" column="Status" />
+		<result property="type" column="Type" />
+		<result property="applicationTime" column="ApplicationTime" />
+		<result property="applicationMember" column="ApplicationMember" />
+		<result property="applicantFeedback" column="ApplicantFeedback" />
+		<result property="licenceCode" column="LicenceCode" />
+		<result property="licenceImage" column="LicenceImage" />
+		<result property="licenceExpireTime" column="LicenceExpireTime" />
+		<result property="handleUserID" column="HandleUserID" />
+		
+	</resultMap>
+   <!-- 机构申请表查询 -->
+	<select id="select_paginated" resultMap="teamOrOrgApplicationResult" parameterMap="teamOrOrgApplication">
+			select mta.id,mo.name,mta.type,mta.status
+			from MC_TeamOrOrgApplication mta left join MC_TeamOrOrg mt on mta.teamID=mt.id join MC_Organization mo
+			on mt.orgid=mo.id
+			<where>
+				<trim prefixOverrides="and">
+					<if test="teamID!=null and teamID!=''">
+					and mta.teamID = ${teamID}
+					</if>
+				</trim>
+			</where>
+			order by mta.status asc
+	</select>
+	<!-- 机构申请表查询 -->
+	<select id="select_paginated_for_team" resultMap="teamOrOrgApplicationResult" parameterMap="teamOrOrgApplication">
+			select mta.id,mo.name,mta.type,mta.status
+			from MC_TeamOrOrgApplication mta left join MC_TeamOrOrg mt on mta.teamID=mt.id join MC_Team mo
+			on mt.orgid=mo.id
+			<where>
+				<trim prefixOverrides="and">
+					<if test="teamID!=null and teamID!=''">
+					and mta.teamID = ${teamID}
+					</if>
+				</trim>
+			</where>
+			order by mta.status asc
+	</select>
+	<!-- 机构申请表 -->
+	<select id="select_one" resultMap="teamOrOrgApplicationResult" parameterMap="teamOrOrgApplication">
+			select mta.id,mta.type,mta.status,mta.teamID
+			from MC_TeamOrOrgApplication mta
+			<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and mta.id = ${id}
+					</if>
+				</trim>
+			</where>
+			order by mta.status asc
+	</select>
+	<!-- 机构申请表信息统计 -->
+	<select id="count" resultType="long" parameterMap="teamOrOrgApplication">	
+		select count(mta.ID) from MC_TeamOrOrgApplication  mta left join MC_TeamOrOrg mt on mta.teamID=mt.id
+		<where> 
+				<trim prefixOverrides="and">
+					<if test="teamID!=null and teamID!=''">
+					and mta.teamID = ${teamID}
+					</if>
+				</trim>
+		</where>	
+	</select>
+	<!-- 更新理财师机构申请 -->
+	<update id="update" parameterMap="teamOrOrgApplication">
+		update MC_TeamOrOrgApplication
+		<set>
+			<trim prefixOverrides=",">
+				<if test="teamID!=null and teamID!=''">,TeamID=#{teamID}</if>
+				<if test="status!=null and status!=''">,Status=#{status}</if>
+				<if test="type!=null">,Type=#{type}</if>
+				<if test="applicationTime!=null">,ApplicationTime=#{applicationTime}</if>
+				<if test="applicationMember!=null">,ApplicationMember=#{applicationMember}</if>
+				<if test="applicantFeedback!=null">,ApplicantFeedback=#{applicantFeedback}</if>
+				<if test="licenceCode!=null">,LicenceCode=#{licenceCode}</if>
+				<if test="licenceImage!=null">,LicenceImage=#{licenceImage}</if>
+				<if test="licenceExpireTime!=null and licenceExpireTime!=''">,LicenceExpireTime=#{licenceExpireTime}</if>
+				<if test="handleUserID!=null">,HandleUserID=#{handleUserID}</if>
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	<!-- 更新理财师机构申请表状态为申请中的为不通过 -->
+	<update id="updateForCancel" parameterMap="teamOrOrgApplication">
+		update MC_TeamOrOrgApplication
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null and status!=''">,Status=#{status}</if>
+			</trim>
+		</set>
+		Where TeamID=#{teamID} and status=0
+	</update>
+	
+</mapper>

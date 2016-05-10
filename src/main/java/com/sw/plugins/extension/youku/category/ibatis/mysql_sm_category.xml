@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="category">
+	
+	<parameterMap id="category" type="com.sw.plugins.extension.youku.category.entity.Category" />
+	
+	<resultMap id="categoryResult" type="com.sw.plugins.extension.youku.category.entity.Category">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="code" column="Code" />
+		<result property="name" column="Name" />
+		<result property="isRelate" column="IsRelate" />
+		<result property="isPwdControl" column="IsPwdControl" />
+	</resultMap>
+
+	<!-- 通用视频基本信息查询 -->
+	<select id="select" resultMap="categoryResult" parameterMap="category">
+		select * from SM_VideoCategory
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="category">
+		insert into SM_VideoCategory
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code!=null and code!=''">,Code</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="isRelate!=null">,IsRelate</if>
+			<if test="isPwdControl!=null">,IsPwdControl</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code!=null and code!=''">,#{code}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="isRelate!=null">,${isRelate}</if>
+			<if test="isPwdControl!=null">,${isPwdControl}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey     
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterMap="category">
+		update SM_VideoCategory
+		<set>
+			<trim prefixOverrides=",">
+				<if test="code!=null and code!=''">,Code = #{code}</if>
+				<if test="name!=null and name!=''">,Name = #{name}</if>
+				<if test="isRelate!=null">,IsRelate = ${isRelate}</if>
+				<if test="isPwdControl!=null">,IsPwdControl = ${isPwdControl}</if>
+			</trim>
+		</set>
+		where ID = ${id}
+	</update>
+
+	<delete id="delete" parameterMap="category">
+		delete from SM_VideoCategory where ID = ${id} 
+	</delete>
+	
+	<select id="selectNameCount" resultType="long" parameterMap="category">
+		select count(id) from SM_VideoCategory where Name = #{name}
+	</select>
+	
+	<select id="selectCodeCount" resultType="long" parameterMap="category">
+		select count(id) from SM_VideoCategory where Code = #{code}
+	</select>
+	
+	<select id="count_id_Name" resultType="long" parameterMap="category">
+		select count(id) from SM_VideoCategory where Name = #{name} and ID !=${id}
+	</select>
+	
+	<select id="count_id_Code" resultType="long" parameterMap="category">
+		select count(id) from SM_VideoCategory where Code = #{code} and ID !=${id}
+	</select>
+</mapper>

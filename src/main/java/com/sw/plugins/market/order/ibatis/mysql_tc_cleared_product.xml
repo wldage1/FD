@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="clearedProduct">
+
+	<parameterMap id="clearedProduct" type="com.sw.plugins.market.order.entity.ClearedProduct" />
+
+	<resultMap id="clearedProductResult" type="com.sw.plugins.market.order.entity.ClearedProduct">
+		<result property="id" column="ID" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="orgID" column="OrgID" />
+		<result property="productID" column="ProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="teamID" column="TeamID" />
+		<result property="memberID" column="MemberID" />
+		<result property="share" column="Share" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="deadline" column="Deadline" />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="purchaseTime" column="purchaseTime" />
+		<result property="lastTradeTime" column="lastTradeTime" />
+		<result property="remark" column="remark" />
+		<result property="clearedTime" column="ClearedTime" />
+	</resultMap>
+	
+	<!-- 保存清算产品 -->	
+	<insert id="insert" parameterMap="clearedProduct">
+		insert into TC_ClearedProduct
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="contractNumber!=null and contractNumber!=''">, ContractNumber</if>
+		 		<if test="orgID!=null">, OrgID</if>
+		 		<if test="productID!=null">, ProductID</if>
+		 		<if test="subProductID!=null">, SubProductID</if>
+		 		<if test="teamID!=null">, TeamID</if>
+		 		<if test="memberID!=null">, MemberID</if>
+		 		<if test="share!=null and share!=''">, Share</if>
+				<if test="investAmount!=null and investAmount!=''">, InvestAmount</if>
+		 		<if test="deadline!=null and deadline!=''">, Deadline</if>
+		 		<if test="clientName!=null and clientName!=''">, ClientName</if>
+		 		<if test="iDCardType!=null">, IDCardType</if>
+		 		<if test="iDCard!=null and iDCard!=''">, IDCard</if>
+		 		<if test="purchaseTime!=null and purchaseTime!=''">, PurchaseTime</if>
+		 		<if test="lastTradeTime!=null and lastTradeTime!=''">, LastTradeTime</if>
+		 		<if test="remark!=null and remark!=''">, Remark</if>
+		 		, ClearedTime
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="contractNumber!=null and contractNumber!=''">,'${contractNumber}'</if>
+		 		<if test="orgID!=null">,${orgID}</if>
+		 		<if test="productID!=null">,${productID}</if>
+		 		<if test="subProductID!=null">,${subProductID}</if>
+		 		<if test="teamID!=null">,${teamID}</if>
+		 		<if test="memberID!=null">,${memberID}</if>
+		 		<if test="share!=null and share!=''">, ${share}</if>
+				<if test="investAmount!=null and investAmount!=''">,${investAmount}</if>
+		 		<if test="deadline!=null and deadline!=''">,${deadline}</if>
+		 		<if test="clientName!=null and clientName!=''">,'${clientName}'</if>
+		 		<if test="iDCardType!=null">,${iDCardType}</if>
+		 		<if test="iDCard!=null and iDCard!=''">,'${iDCard}'</if>
+		 		<if test="purchaseTime!=null and purchaseTime!=''">, #{purchaseTime}</if>
+		 		<if test="lastTradeTime!=null and lastTradeTime!=''">, #{lastTradeTime}</if>
+		 		<if test="remark!=null and remark!=''">, '${remark}'</if>
+		 		,now()
+		 	</trim>
+	</insert>
+	
+	<!-- 由 赎回产生的 清算产品 -->	
+	<insert id="insert_by_redeem" parameterMap="clearedProduct">
+		insert into TC_ClearedProduct
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="contractNumber!=null and contractNumber!=''">, ContractNumber</if>
+		 		<if test="orgID!=null">, OrgID</if>
+		 		<if test="productID!=null">, ProductID</if>
+		 		<if test="subProductID!=null">, SubProductID</if>
+		 		<if test="teamID!=null">, TeamID</if>
+		 		<if test="memberID!=null">, MemberID</if>
+		 		<if test="share!=null and share!=''">, Share</if>
+				<if test="investAmount!=null and investAmount!=''">, InvestAmount</if>
+		 		<if test="deadline!=null and deadline!=''">, Deadline</if>
+		 		<if test="clientName!=null and clientName!=''">, ClientName</if>
+		 		<if test="iDCardType!=null">, IDCardType</if>
+		 		<if test="iDCard!=null and iDCard!=''">, IDCard</if>
+		 		<if test="purchaseTime!=null and purchaseTime!=''">, PurchaseTime</if>
+		 		<if test="lastTradeTime!=null and lastTradeTime!=''">, LastTradeTime</if>
+		 		<if test="remark!=null and remark!=''">, Remark</if>
+		 		, ClearedTime
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="contractNumber!=null and contractNumber!=''">,'${contractNumber}'</if>
+		 		<if test="orgID!=null">,${orgID}</if>
+		 		<if test="productID!=null">,${productID}</if>
+		 		<if test="subProductID!=null">,${subProductID}</if>
+		 		<if test="teamID!=null">,${teamID}</if>
+		 		<if test="memberID!=null">,${memberID}</if>
+		 		<if test="share!=null and share!=''">, ${share}</if>
+				<if test="investAmount!=null and investAmount!=''">,${investAmount}</if>
+		 		<if test="deadline!=null and deadline!=''">,${deadline}</if>
+		 		<if test="clientName!=null and clientName!=''">,'${clientName}'</if>
+		 		<if test="iDCardType!=null">,${iDCardType}</if>
+		 		<if test="iDCard!=null and iDCard!=''">,'${iDCard}'</if>
+		 		<if test="purchaseTime!=null and purchaseTime!=''">, '${purchaseTime}'</if>
+		 		<if test="lastTradeTime!=null and lastTradeTime!=''">, #{lastTradeTime}</if>
+		 		<if test="remark!=null and remark!=''">, '${remark}'</if>
+		 		,now()
+		 	</trim>
+	</insert>
+	
+</mapper>

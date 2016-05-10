@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="incentiveOrderHistory">
+
+	<parameterMap id="incentiveOrderHistory" type="com.sw.plugins.incentivefee.organizationfeemanage.entity.IncentiveOrderHistory" />
+
+	<resultMap id="incentiveOrderHistoryResult" type="com.sw.plugins.incentivefee.organizationfeemanage.entity.IncentiveOrderHistory">
+		<result property="incentiveFeeId" column="IncentiveFeeID" />
+		<result property="orderNumber" column="OrderNumber" />
+	</resultMap>
+	
+	<insert id="insert" parameterMap="incentiveOrderHistory">
+		insert into TC_IncentiveOrderHistory
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="incentiveFeeId!=null">,IncentiveFeeID</if>
+			<if test="orderNumber!=null and orderNumber !=''">,OrderNumber</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="incentiveFeeId!=null">,${incentiveFeeId}</if>
+			<if test="orderNumber!=null and orderNumber !=''">,#{orderNumber}</if>
+		</trim>
+	</insert>
+	
+</mapper>

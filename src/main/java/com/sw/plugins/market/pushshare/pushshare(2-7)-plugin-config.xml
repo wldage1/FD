@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心" icon="images/menu/sales-center.png">
+		<productlist isNav="true" isSetAuth="sub" isStatus="true" name="责任配给额度" icon="images/menu/sales-center-succeed order.png">
+			<pushshare isNav="true" isSetAuth="sub" isStatus="true" name="配给额度" icon="images/menu/sales-center-succeed order.png">
+				<language>
+					<value>/language/puchshareMessages_zh_CN.properties</value>
+				</language>
+				<comfirm isNav="true" isLog="true" name="确认" icon="images/icon/Import.png"/>
+				<agree isNav="true" isLog="true" name="同意" icon="images/icon/detail.png"/>
+				<refuse isNav="true" isLog="true" name="拒绝" icon="images/icon/detail.png"/>
+			</pushshare>
+		</productlist>
+	</market>
+</plugins>

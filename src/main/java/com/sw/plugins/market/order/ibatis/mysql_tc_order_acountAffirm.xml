@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="orderAcountAffirmDetail">
+
+	<parameterMap id="orderAcountAffirmDetail" type="com.sw.plugins.market.order.entity.OrderAcountAffirmDetail" />
+
+	<resultMap id="orderAcountAffirmDetailResult" type="com.sw.plugins.market.order.entity.OrderAcountAffirmDetail">
+		<result property="id" column="ID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="proofID" column="ProofID" />
+		<result property="proofAmount" column="ProofAmount" />
+		<result property="proofTime" column="ProofTime" />
+		<result property="affirmProofAmount" column="AffirmProofAmount" />
+		<result property="affirmProofTime" column="AffirmProofTime" />
+		<result property="type" column="Type" />
+		<result property="operateType" column="OperateType" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creatorUserId" column="CreatorUserId" />
+		<result property="serialNumber" column="SerialNumber" />
+		
+		<!--   订单属性表   -->
+		<collection property="order" select="order.select_one_lazy" column="orderNumber" />
+	</resultMap>
+	
+	<!-- 分页查询 -->
+	<select id="select_paginated" resultMap="orderAcountAffirmDetailResult" parameterMap="orderAcountAffirmDetail">
+		select 
+		t.ID,
+		t.OrderNumber,
+		t.ProofID,
+		ROUND(t.ProofAmount/1000000) as ProofAmount,
+		DATE_FORMAT(t.ProofTime,'%Y-%m-%d %T') as ProofTime,
+		t.Type,t.OperateType,
+		t.AffirmProofAmount/1000000 as AffirmProofAmount,
+		DATE_FORMAT(t.AffirmProofTime,'%Y-%m-%d %T') as AffirmProofTime,
+		DATE_FORMAT(t.CreateTime,'%Y-%m-%d %T') as CreateTime,
+		t.CreatorUserId
+		from TC_OrderAcountAffirmdetail t 
+		<where>
+			<if test=" orderNumber != null and orderNumber!=''"> t.OrderNumber='${orderNumber}'</if>
+		</where>
+		order by t.ID desc
+	</select>
+	
+	<!-- 分页查询 -->
+	<select id="select_count" resultType="long" parameterMap="orderAcountAffirmDetail">
+		select 
+		count(t.ID)
+		from TC_OrderAcountAffirmdetail t 
+		<where>
+			<if test=" orderNumber != null and orderNumber!=''"> t.OrderNumber='${orderNumber}'</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="orderAcountAffirmDetail">
+		insert into TC_OrderAcountAffirmdetail
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orderNumber!=null and orderNumber!=''">, OrderNumber</if>
+	 		<if test="proofID!=null">, ProofID</if>
+	 		<if test="proofAmount!=null and proofAmount!=''">, ProofAmount</if>
+	 		<if test="proofTime!=null and proofTime!=''">, ProofTime</if>
+	 		<if test="affirmProofAmount!=null and affirmProofAmount!=''">, AffirmProofAmount</if>
+	 		<if test="affirmProofTime!=null and affirmProofTime!=''">, AffirmProofTime</if>
+	 		<if test="type!=null">, Type</if>
+	 		<if test="operateType!=null">, OperateType</if>
+	 		,CreateTime
+			,CreatorUserId
+			<if test="serialNumber!=null and serialNumber!=''">, SerialNumber</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orderNumber!=null and orderNumber!=''">, '${orderNumber}'</if>
+	 		<if test="proofID!=null">, ${proofID}</if>
+	 		<if test="proofAmount!=null and proofAmount!=''">, ${proofAmount}*1000000</if>
+	 		<if test="proofTime!=null and proofTime!=''">, '${proofTime}'</if>
+	 		<if test="affirmProofAmount!=null and affirmProofAmount!=''">, ${affirmProofAmount}*1000000</if>
+	 		<if test="affirmProofTime!=null and affirmProofTime!=''">, '${affirmProofTime}'</if>
+	 		<if test="type!=null">, ${type}</if>
+	 		<if test="operateType!=null">, ${operateType}</if>
+	 		,now()
+			,${creatorUserId}
+			<if test="serialNumber!=null and serialNumber!=''">, '${serialNumber}'</if>
+		</trim>
+	</insert>
+</mapper>

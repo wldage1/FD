@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="bankWater">
+    
+    <parameterMap type="com.sw.plugins.market.bankwater.entity.PayConfirmFromProvider" id="payConfirmFromProvider"/>
+    
+    <resultMap type="com.sw.plugins.market.bankwater.entity.PayConfirmFromProvider" id="payConfirmFromProviderResult">
+        <result property="id" column="ID"/>
+        <result property="providerId" column="ProviderID"/>
+        <result property="productId" column="ProductID"/>
+        <result property="orderAcountAffirmdetailID" column="OrderAcountAffirmdetailID"/>
+        <result property="name" column="Name"/>
+        <result property="payAmount" column="PayAmount"/>
+        <result property="payTime" column="PayTime"/>
+        <result property="serialNumber" column="SerialNumber"/>
+        <result property="matchingStatus" column="MatchingStatus"/>
+        <result property="orderNumber" column="OrderNumber"/>
+    </resultMap>
+    
+    <insert id="insert" parameterMap="payConfirmFromProvider">
+        insert into PC_PayConfirmFromProvider
+        	<trim prefix="(" prefixOverrides="," suffix=")">
+	            <if test="providerId!=null">,ProviderID</if>
+	            <if test="productId!=null">,ProductID</if>
+	            <if test="name!=null and name!=''">,Name</if>
+	            <if test="payAmount!=null">,PayAmount</if>
+	            <if test="payTime!=null and payTime!=''">,PayTime</if>
+	            <if test="serialNumber!=null and serialNumber!=''">,SerialNumber</if>
+	            <if test="matchingStatus!=null">,MatchingStatus</if>
+	            <if test="orderNumber!=null and orderNumber!=''">,OrderNumber</if>
+	        </trim>
+	        values
+	        <trim prefix="(" prefixOverrides="," suffix=")">
+	            <if test="providerId!=null">,${providerId}</if>
+	            <if test="productId!=null">,${productId}</if>
+	            <if test="name!=null and name!=''">,#{name}</if>
+	            <if test="payAmount!=null">,${payAmount}*100</if>
+	            <if test="payTime!=null and payTime!=''">,#{payTime}</if>
+	            <if test="serialNumber!=null and serialNumber!=''">,#{serialNumber}</if>
+	            <if test="matchingStatus!=null">,${matchingStatus}</if>
+	            <if test="orderNumber!=null and orderNumber!=''">,#{orderNumber}</if>
+	        </trim>
+    </insert>
+    <!-- 分页查询流水数据 -->
+    <select id="select_paginatedList" resultMap="payConfirmFromProviderResult"  parameterMap="payConfirmFromProvider">
+    	select pp.ID,pp.ProviderID,pp.ProductID,pp.Name,ROUND(pp.PayAmount/1000000) as PayAmount,pp.PayTime,pp.SerialNumber,pp.MatchingStatus,
+    	pm.ShortName as productShortName,
+    	pr.ShortName as providerShortName,
+    	t.OrderNumber as orderNumber
+    	from PC_PayConfirmFromProvider pp 
+    	join PM_Product pm on pp.ProductID=pm.ID
+    	left join PC_Provider pr on pp.ProviderID=pr.ID
+    	left join TC_OrderAcountAffirmdetail t on t.ID=pp.OrderAcountAffirmdetailID
+    	<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null"> and pm.OrgId =${orgID}</if>
+				<if test="dataType==1"> and pm.SellStatus in(1,2)</if>
+				<if test="dataType==2"> and pm.SellStatus in(5,6)</if>
+	            <if test="productId!=null"> and pp.ProductID=#{productId}</if>
+	            <if test="name!=null and name!=''"> and pp.Name like '%${name}%'</if>
+	            <if test="payAmount!=null"> and pp.PayAmount=${payAmount}</if>
+	            <if test="payTime!=null and payTime!=''"> and pp.PayTime='${payTime}'</if>
+	            <if test="serialNumber!=null and serialNumber!=''"> and pp.SerialNumber='${serialNumber}'</if>
+	            <if test="matchingStatus!=null"> and pp.MatchingStatus=#{matchingStatus}</if>
+			</trim>
+    	</where>
+    	limit ${start} , ${offset}
+    </select>
+    
+    <!-- 统计流水记录数 -->
+    <select id="select_count" resultType="long"  parameterMap="payConfirmFromProvider">
+    	select count(pp.ID) 
+    	from PC_PayConfirmFromProvider pp 
+    	join PM_Product pm on pp.ProductID=pm.ID
+    	<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null"> and pm.OrgId =${orgID}</if>
+				<if test="dataType==1"> and pm.SellStatus in(1,2)</if>
+				<if test="dataType==2"> and pm.SellStatus in(5,6)</if>
+	            <if test="productId!=null"> and pp.ProductID=#{productId}</if>
+	            <if test="name!=null and name!=''"> and pp.Name like '%${name}%'</if>
+	            <if test="payAmount!=null"> and pp.PayAmount=${payAmount}</if>
+	            <if test="payTime!=null and payTime!=''"> and pp.PayTime='${payTime}'</if>
+	            <if test="serialNumber!=null and serialNumber!=''"> and pp.SerialNumber='${serialNumber}'</if>
+	            <if test="matchingStatus!=null"> and pp.MatchingStatus=#{matchingStatus}</if>
+			</trim>
+    	</where>
+    </select>
+    
+    <!-- 通过产品ID删除流水 -->
+    <delete id="delete" parameterMap="payConfirmFromProvider">
+    	delete from PC_PayConfirmFromProvider where ProductID=${productId}
+    </delete>
+    
+    <!-- 银行流水导出 -->
+    <select id="export_excel" resultType="java.util.Map" parameterMap="payConfirmFromProvider">
+        select pp.Name,ROUND(pp.PayAmount/1000000) as PayAmount,pp.PayTime,pp.MatchingStatus,pm.ShortName as productShortName,pr.ShortName as providerShortName
+   			from PC_PayConfirmFromProvider pp
+    			join PM_Product pm on pp.ProductID=pm.ID
+    				left join PC_Provider pr on pp.ProviderID=pr.ID
+    					where ProductID=${productId} and MatchingStatus=${matchingStatus}
+    </select>
+    
+    <!-- 通过产品ID设置 匹配状态和 资金确认记录表ID -->
+    <update id="update_matchingStatus" parameterMap="payConfirmFromProvider">
+    	update PC_PayConfirmFromProvider set MatchingStatus=0 , OrderAcountAffirmdetailID=null where ProductID=${productId}
+    </update>
+    
+    <!-- 通过产品ID 判断流水是否进行匹配过 -->
+    <select id="select_mapping_count" resultType="long"  parameterMap="payConfirmFromProvider">
+    	select count(*) from PC_PayConfirmFromProvider where ProductID=${productId} and MatchingStatus=1
+    </select>
+    
+    <!-- 满足自动匹配的数据List -->
+    <select id="select_bankwaterandproof_list" resultMap="payConfirmFromProviderResult"  parameterMap="payConfirmFromProvider">
+    	select a.ID as ID,b.ID as OrderAcountAffirmdetailID,a.`Name`,a.PayAmount,a.PayTime,a.ShortName as productShortName,b.OrderNumber,b.ProofTime,b.ProofFileUrl from (select count(1),p1.ID,p1.`Name`,ROUND(p1.PayAmount/1000000) as PayAmount,p1.PayTime,p1.ProductID,p.ShortName 
+		from PC_PayConfirmFromProvider p1 join PM_Product p on p1.ProductID=p.ID
+		where p1.ProductID=${productId} 
+		<!-- #客户姓名重复过滤 --> 
+		GROUP BY p1.`Name` HAVING count(1)=1) as a
+		join (select count(1),t.ClientName,ROUND(tp.ProofAmount/1000000) as ProofAmount,tp.ProofTime,tp.SerialNumber,tp.OrderNumber,t.ProductID,ta.ID,tp.ProofFileUrl
+		from TC_Order t 
+		join TC_OrderProof tp 
+		<!-- #订单号相等  --> 
+		on t.OrderNumber=tp.OrderNumber 
+	    <!-- #打款金额需大于等于分配金额 以避免分批打款 无法对账  --> 
+		<![CDATA[and t.Share<=tp.ProofAmount]]>
+		join TC_OrderAcountAffirmdetail ta 
+		on tp.ID=ta.ProofID
+		<!-- #操作类型 1为金额确认  --> 
+		and ta.OperateType=1
+	    <!-- #资金确认处理类型 1为打款凭证确认  --> 
+		and ta.Type=1
+		where t.ProductID=${productId} 
+		<!-- #订单状态为 资金确认或资金确认&单证归集 and t.TradeStatus in(4,5)   --> 
+		and t.TradeStatus=4 
+	    <!-- #客户名称相同的数据过滤掉  --> 
+		group by t.ClientName HAVING count(1)=1) as b on a.ProductID=b.ProductID and a.`Name`=b.ClientName and a.PayAmount=b.ProofAmount 
+		limit ${start} , ${offset}
+    </select>
+    
+    <!-- 通过产品ID 判断流水是否进行匹配过 -->
+    <select id="select_bankwaterandproof_count" resultType="long"  parameterMap="payConfirmFromProvider">
+    	select count(*) 
+    	from (select count(1),p1.ID,p1.`Name`,p1.PayAmount/1000000 as PayAmount,p1.PayTime,p1.ProductID,p.ShortName 
+		from PC_PayConfirmFromProvider p1 join PM_Product p on p1.ProductID=p.ID
+		where p1.ProductID=${productId} 
+		<!-- #客户姓名重复过滤 --> 
+		GROUP BY p1.`Name` HAVING count(1)=1) as a
+		join (select count(1),t.ClientName,tp.ProofAmount/1000000 as ProofAmount,tp.ProofTime,tp.SerialNumber,tp.OrderNumber,t.ProductID,ta.ID,tp.ProofFileUrl
+		from TC_Order t 
+		join TC_OrderProof tp 
+		<!-- #订单号相等  --> 
+		on t.OrderNumber=tp.OrderNumber 
+	    <!-- #打款金额需大于等于分配金额 以避免分批打款 无法对账  --> 
+		<![CDATA[and t.Share<=tp.ProofAmount]]>
+		join TC_OrderAcountAffirmdetail ta 
+		on tp.ID=ta.ProofID
+		<!-- #操作类型 1为金额确认  --> 
+		and ta.OperateType=1
+	    <!-- #资金确认处理类型 1为打款凭证确认  --> 
+		and ta.Type=1
+		where t.ProductID=${productId} 
+		<!-- #订单状态为 资金确认或资金确认&单证归集 and t.TradeStatus in(4,5)  --> 
+		and t.TradeStatus=4 
+	    <!-- #客户名称相同的数据过滤掉  --> 
+		group by t.ClientName HAVING count(1)=1) as b on a.ProductID=b.ProductID and a.`Name`=b.ClientName and a.PayAmount=b.ProofAmount
+    </select>
+    
+    <!-- 匹配数据 -->
+    <update id="update_mappingBankWater"  parameterMap="payConfirmFromProvider">
+    	update PC_PayConfirmFromProvider w,
+		(select a.ID as payID,b.ID as affimID from (select count(1),p1.ID,p1.`Name`,p1.PayAmount,p1.PayTime,p1.ProductID 
+		from PC_PayConfirmFromProvider p1 
+		where p1.ProductID=${productId}  
+		<!-- #客户姓名重复过滤 -->
+		GROUP BY p1.`Name` HAVING count(1)=1) as a
+		join (select count(1),t.ClientName,tp.ProofAmount,tp.ProofTime,tp.SerialNumber,tp.OrderNumber,t.ProductID,ta.ID
+		from TC_Order t 
+		join TC_OrderProof tp 
+		<!-- #订单号相等 -->
+		on t.OrderNumber=tp.OrderNumber 
+		<!-- #打款金额需大于等于分配金额 以避免分批打款 无法对账 -->
+		<![CDATA[and t.Share<=tp.ProofAmount]]>
+		join TC_OrderAcountAffirmdetail ta 
+		on tp.ID=ta.ProofID
+		<!-- #操作类型 1为金额确认 -->
+		and ta.OperateType=1
+		<!-- #资金确认处理类型 1为打款凭证确认 -->
+		and ta.Type=1
+		where t.ProductID=${productId} 
+		<!-- #订单状态为 资金确认或资金确认&单证归集and t.TradeStatus in(4,5) -->
+		and t.TradeStatus=4 
+		<!-- #客户名称相同的数据过滤掉 -->
+		group by t.ClientName HAVING count(1)=1) as b on a.ProductID=b.ProductID and a.`Name`=b.ClientName and a.PayAmount=b.ProofAmount) t 
+		set w.OrderAcountAffirmdetailID=t.affimID,w.MatchingStatus=1 WHERE w.ID = t.payID 
+    </update>
+    
+    <!-- 通过ID获取数据 -->
+    <select id="select_one" resultMap="payConfirmFromProviderResult"  parameterMap="payConfirmFromProvider">
+    	select pp.ID,pp.ProviderID,pp.ProductID,pp.Name,ROUND(pp.PayAmount/1000000) as PayAmount,pp.PayTime,pp.SerialNumber,pp.MatchingStatus, 
+    	pm.ShortName as productShortName,
+    	pr.ShortName as providerShortName 
+    	from PC_PayConfirmFromProvider pp 
+    	join PM_Product pm on pp.ProductID=pm.ID
+    	left join PC_Provider pr on pp.ProviderID=pr.ID 
+    	where pp.ID=${id}
+    </select>
+    
+    <!-- 修改方法 修改为已匹配状态 -->
+    <update id="update_mappingbymanual" parameterMap="payConfirmFromProvider">
+    	update PC_PayConfirmFromProvider p set p.OrderAcountAffirmdetailID=${orderAcountAffirmdetailID},p.MatchingStatus=1 where p.ID=${id}
+    </update>	
+    
+    <!-- 查询某一产品下的 订单状态为（资金确认/资金确认&单证归集）的订单数量 t.TradeStatus in(4,5)  -->
+    <select id="select_orderCountByProductID" resultType="long"  parameterMap="payConfirmFromProvider">
+    	select count(1) from TC_Order t where t.TradeStatus=4 and t.ProductID=${productId} 
+    </select>
+    
+    <!-- 查询某一产品下的 订单状态为（资金确认/资金确认&单证归集）的已处理的打款凭证数量t.TradeStatus in(4,5)   -->
+    <select id="select_orderProofCountByProductID" resultType="long"  parameterMap="payConfirmFromProvider">
+    	select count(1) from TC_Order t JOIN TC_OrderProof tf on t.OrderNumber=tf.OrderNumber and tf.ProofStatus=1 where  t.TradeStatus=4 and t.ProductID=${productId}
+    </select>
+    
+     <!-- 查询某一产品下的银行流水总数   -->
+    <select id="select_bankWaterCountByProductID" resultType="long"  parameterMap="payConfirmFromProvider">
+    	select count(1) from PC_PayConfirmFromProvider t where t.ProductID=${productId}
+    </select>
+    
+    <!-- 查询某一产品下的已处理的银行流水总数   -->
+    <select id="select_bankWaterHasDisposeCountByProductID" resultType="long"  parameterMap="payConfirmFromProvider">
+    	select count(1) from PC_PayConfirmFromProvider t where t.MatchingStatus=1 and t.ProductID=${productId}
+    </select>
+</mapper>

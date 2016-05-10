@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="orderProof">
+
+	<parameterMap id="orderProof" type="com.sw.plugins.market.order.entity.OrderProof" />
+
+	<resultMap id="orderProofResult" type="com.sw.plugins.market.order.entity.OrderProof">
+		<result property="id" column="ID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="memberID" column="MemberID" />
+		<result property="productID" column="ProductID" />
+		<result property="proofAmount" column="ProofAmount" />
+		<result property="proofTime" column="ProofTime" />
+		<result property="proofStatus" column="ProofStatus" />
+		<result property="proofFileUrl" column="ProofFileUrl" />
+		<result property="proofRemark" column="ProofRemark" />
+		<result property="createTime" column="CreateTime" />
+		<result property="serialNumber" column="SerialNumber" />
+		<result property="comfirm" column="Comfirm" />
+		<result property="remark" column="Remark" />
+		
+		<!--   订单属性表   -->
+		<collection property="order" select="order.select_one_lazy" column="orderNumber" />
+	</resultMap>
+	
+	<!-- 分页查询 -->
+	<select id="select_paginated" resultMap="orderProofResult" parameterMap="orderProof">
+		select 
+		t.ID,t.OrderNumber,t.MemberID,ROUND(t.ProofAmount/1000000) as ProofAmount,t.ProofStatus,
+		DATE_FORMAT(t.ProofTime,'%Y-%m-%d %T') as ProofTime,t.ProofFileUrl,t.ProofRemark
+		from TC_OrderProof t  
+		left join PM_Product p on t.ProductID=p.ID 
+		left join MC_Member m on t.memberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test=" orderNumber != null and orderNumber != ''">and t.OrderNumber='${orderNumber}'</if>
+				<if test=" proofStatus != null ">and t.ProofStatus=${proofStatus}</if>
+				<if test=" productShortName != null and productShortName!='' ">and p.ShortName like '%${productShortName}%'</if>
+				<if test=" memberName != null and memberName!='' ">and m.Name like '%${memberName}%'</if>
+			</trim>
+		</where>
+		order by t.ProofTime asc
+	</select>
+	
+	<!-- 分页查询 -->
+	<select id="select_count" resultType="long" parameterMap="orderProof">
+		select 
+		count(t.ID)
+		from TC_OrderProof t  
+		left join PM_Product p on t.ProductID=p.ID 
+		left join MC_Member m on t.memberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test=" orderNumber != null and orderNumber != ''">and t.OrderNumber='${orderNumber}'</if>
+				<if test=" proofStatus != null ">and t.ProofStatus=${proofStatus}</if>
+				<if test=" productShortName != null and productShortName!='' ">and p.ShortName like '%${productShortName}%'</if>
+				<if test=" memberName != null and memberName!='' ">and m.Name like '%${memberName}%'</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 通过ID查询 -->
+	<select id="select_one" resultMap="orderProofResult" parameterMap="orderProof" >
+		select 
+		t.ID,t.OrderNumber,t.MemberID,ROUND(t.ProofAmount/1000000) as ProofAmount,
+		DATE_FORMAT(t.ProofTime,'%Y-%m-%d %T') as ProofTime,t.ProofTime,t.ProofFileUrl,t.ProofRemark,t.SerialNumber
+		from TC_OrderProof t 
+		where ID=${id}
+	</select>
+	
+	<!-- 修改打款凭证 -->
+	<update id="update" parameterMap="orderProof">
+		update TC_OrderProof 
+		<set>
+			<trim prefixOverrides=",">
+				<if test="proofAmount!=null">, ProofAmount = ${proofAmount}*1000000</if>
+				<if test="proofTime!=null and proofTime!=''">, ProofTime = '${proofTime}'</if>
+				<if test="proofStatus!=null">, ProofStatus = ${proofStatus}</if>
+				<if test="serialNumber!=null and serialNumber!=''">, SerialNumber = '${serialNumber}'</if>
+				<if test="comfirm !=null">,Comfirm = ${comfirm}</if>
+           		<if test="remark!=null and remark!=''">,Remark = #{remark}</if>
+			</trim>
+		</set>
+		where ID=${id}
+	</update>
+	
+	<!-- 保存打款凭证 -->
+	<insert id="insert" parameterMap="orderProof">
+	    insert into TC_OrderProof
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            CreateTime
+            <if test="orderNumber!=null and orderNumber!=''">,OrderNumber</if>
+            <if test="memberID!=null">,MemberID</if>
+            <if test="productID!=null">,ProductID</if>
+            <if test="proofAmount!=null">,ProofAmount</if>
+            <if test="proofTime!=null and proofTime!=''">,ProofTime</if>
+            <if test="proofStatus!=null">,ProofStatus</if>
+            <if test="proofFileUrl!=null and proofFileUrl!=''">,ProofFileUrl</if>
+            <if test="proofRemark!=null and proofRemark!=''">,ProofRemark</if>
+            <if test="serialNumber!=null and serialNumber!=''">,SerialNumber</if>
+            <if test="comfirm !=null">,Comfirm</if>
+            <if test="remark!=null and remark!=''">,Remark</if>
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            now()
+            <if test="orderNumber!=null and orderNumber!=''">,'${orderNumber}'</if>
+            <if test="memberID!=null">,${memberID}</if>
+            <if test="productID!=null">,${productID}</if>
+            <if test="proofAmount!=null">,${proofAmount}*1000000</if>
+            <if test="proofTime!=null and proofTime!=''">,#{proofTime}</if>
+            <if test="proofStatus!=null">,${proofStatus}</if>
+            <if test="proofFileUrl!=null and proofFileUrl!=''">,#{proofFileUrl}</if>
+            <if test="proofRemark!=null and proofRemark!=''">,#{proofRemark}</if>
+            <if test="serialNumber!=null and serialNumber!=''">,#{serialNumber}</if>
+            <if test="comfirm !=null">,${comfirm}</if>
+            <if test="remark!=null and remark!=''">,#{remark}</if>
+        </trim>
+	</insert>
+	
+	<!-- 查询没有匹配的打款凭证数据  -->
+	<select id="select_notmaping" resultMap="orderProofResult" parameterMap="orderProof">
+		select tp.OrderNumber,m.`Name`,t.ClientName,t.IDCard,ROUND(ta.AffirmProofAmount/1000000) as AffirmProofAmount,ta.AffirmProofTime,ta.SerialNumber,tp.ProductID,ta.ID,tp.ProofFileUrl
+		from TC_Order t 
+		join TC_OrderProof tp 
+		<!-- 订单号相等 -->
+		on t.OrderNumber=tp.OrderNumber 
+		join TC_OrderAcountAffirmdetail ta 
+		on tp.ID=ta.ProofID
+		<!-- /*操作类型 1为金额确认*/  -->
+		and ta.OperateType=1
+		<!-- /*资金确认处理类型 1为打款凭证确认*/  -->
+		and ta.Type=1
+		LEFT JOIN MC_Member m
+		on m.ID=tp.MemberID 
+		where t.ProductID=${productID} 
+		<!-- /*订单状态为 资金确认或资金确认&单证归集*/  删掉5 -->
+		and t.TradeStatus in(4) 
+		and ta.ID
+		<!--	/*过滤掉已匹配的打款凭证数据*/  -->
+			not in(
+				select p.OrderAcountAffirmdetailID 
+				from PC_PayConfirmFromProvider p 
+				where p.ProductID=${productID}  
+				and (p.MatchingStatus=1 or p.OrderAcountAffirmdetailID is not null)
+				)
+		limit ${start} , ${offset}
+	</select>
+	<!-- 查询没有匹配的打款凭证数据 记录数  -->
+	<select id="select_notmaping_count" resultType="long" parameterMap="orderProof">
+		select count(t.ID)
+		from TC_Order t 
+		join TC_OrderProof tp 
+		<!-- /*订单号相等*/  -->
+		on t.OrderNumber=tp.OrderNumber 
+		join TC_OrderAcountAffirmdetail ta 
+		on tp.ID=ta.ProofID
+		<!-- /*操作类型 1为金额确认*/  -->
+		and ta.OperateType=1
+		<!-- /*资金确认处理类型 1为打款凭证确认*/  -->
+		and ta.Type=1
+		where t.ProductID=${productID} 
+		<!-- /*订单状态为 资金确认或资金确认&单证归集*/ 删掉5 -->
+		and t.TradeStatus in(4) 
+		and ta.ID
+			<!-- /*过滤掉已匹配的打款凭证数据*/  -->
+			not in(
+				select p.OrderAcountAffirmdetailID 
+				from PC_PayConfirmFromProvider p 
+				where p.ProductID=${productID}  
+				and (p.MatchingStatus=1 or p.OrderAcountAffirmdetailID is not null)
+				)
+	</select>
+</mapper>

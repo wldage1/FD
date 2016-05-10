@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="video">
+	<!-- 视频基本信息映射对象 -->
+	<parameterMap id="video" type="com.sw.plugins.extension.youku.videomanager.entity.VideoBasic" />
+	<!-- 视频基本信息映射结果集 -->
+	<resultMap id="videoResult" type="com.sw.plugins.extension.youku.videomanager.entity.VideoBasic">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="title" column="Title" />
+		<result property="link" column="Link" />
+		<result property="thumbnail" column="Thumbnail" />
+		<result property="duration" column="Duration" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="publishTime" column="PublishTime" />
+		<result property="publishOrNot" column="PublishOrNot" />
+		<result property="publicType" column="PublicType" />
+		<result property="copyrightType" column="CopyrightType" />
+		<result property="categoryId" column="CategoryID" />
+		<result property="userId" column="UserID" />
+		<result property="orgId" column="OrgID" />
+		<result property="fileName" column="FileName" />
+		<result property="videoId" column="VideoID" />
+	</resultMap>
+
+	<!-- 通用视频基本信息查询 -->
+	<select id="select" resultMap="videoResult" parameterMap="video">
+		select vb.ID,vb.CategoryID,vb.* from SM_VideoBasic vb 
+		left join SM_VideoCategory vc on vc.ID = vb.CategoryID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="publishOrNot!=null">
+					and vb.PublishOrNot=${publishOrNot}
+				</if>
+				<if test="categoryId!=null">
+					and vb.CategoryID = ${categoryId}
+				</if>
+				<if test="id!=null">
+					and vb.ID=${id}
+				</if>
+				<if test="orgId!=null">
+					and vb.orgID = ${orgId}
+				</if>
+			</trim>
+		</where>
+			order by vb.PublishTime desc limit ${start},${offset}
+	</select>
+	
+	<!-- 视频统计查询 -->
+	<select id="count" resultType="long" parameterMap="video">
+		select count(ID) from SM_VideoBasic
+		<where>
+			<trim prefixOverrides="and">
+				<if test="publishOrNot !=null ">
+					and PublishOrNot = #{publishOrNot}
+				</if>
+				<if test="categoryId!=null">
+					and CategoryID=${categoryId}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 视频新增 -->
+	<insert id="insert" parameterMap="video">
+		insert into SM_VideoBasic
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="title!=null and title!=''">,Title</if>
+			<if test="link!=null and link!=''">,Link</if>
+			<if test="thumbnail!=null and thumbnail!=''">,Thumbnail</if>
+			<if test="duration!=null and duration!=''">,Duration</if>
+			<if test="description!=null and description!=''">,Description</if>
+			<if test="status!=null">,Status</if>
+			,PublishTime
+			<if test="publishOrNot!=null">,PublishOrNot</if>
+			<if test="publicType!=null and publicType!=''">,PublicType</if>
+			<if test="copyrightType!=null and copyrightType!=''">,CopyrightType</if>
+			<if test="userId!=null">,UserID</if>
+			<if test="orgId!=null">,OrgID</if>
+			<if test="categoryId!=null">,CategoryID</if>
+			<if test="fileName!=null and fileName!=''">,FileName</if>
+			<if test="videoId!=null and videoId!=''">,VideoID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="title!=null and title!=''">,#{title}</if>
+			<if test="link!=null and link!=''">,#{link}</if>
+			<if test="thumbnail!=null and thumbnail!=''">,#{thumbnail}</if>
+			<if test="duration!=null and duration!=''">,#{duration}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			<if test="status!=null">,${status}</if>
+			,NOW()
+			<if test="publishOrNot!=null">,${publishOrNot}</if>
+			<if test="publicType!=null and publicType!=''">,#{publicType}</if>
+			<if test="copyrightType!=null and copyrightType!=''">,#{copyrightType}</if>
+			<if test="userId!=null">,${userId}</if>
+			<if test="orgId!=null">,${orgId}</if>
+			<if test="categoryId!=null">,${categoryId}</if>
+			<if test="fileName!=null and fileName!=''">,#{fileName}</if>
+			<if test="videoId!=null and videoId!=''">,#{videoId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey     
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterMap="video">
+		update SM_VideoBasic
+		<set>
+			<trim prefixOverrides=",">
+				<if test="title!=null and title!=''">,Title = #{title}</if>
+				<if test="link!=null and link!=''">,Link = #{link}</if>
+				<if test="thumbnail!=null and thumbnail!=''">,Thumbnail = #{thumbnail}</if>
+				<if test="duration!=null and duration!=''">,Duration = #{duration}</if>
+				<if test="description!=null and description!=''">,Description = #{description}</if>
+				<if test="status!=null">,Status = ${status}</if>
+				<if test="publishTime!=null and publishTime!=''">,PublishTime = NOW()</if>
+				<if test="publishOrNot!=null">,PublishOrNot = ${publishOrNot}</if>
+				<if test="publicType!=null and publicType!=''">,PublicType = #{publicType}</if>
+				<if test="copyrightType!=null and copyrightType!=''">,CopyrightType = #{copyrightType}</if>
+				<if test="userId!=null">,UserID = ${userId}</if>
+				<if test="orgId!=null">,OrgID = ${orgId}</if>
+				<if test="categoryId!=null">,CategoryID = ${categoryId}</if>
+				<if test="fileName!=null and fileName!=''">,FileName = ${fileName}</if>
+				<if test="videoId!=null and videoId!=''">,VideoID = #{videoId}</if>
+			</trim>
+		</set>
+		where ID = ${id}
+	</update>
+
+	<delete id="delete" parameterMap="video">
+		delete from SM_VideoBasic where ID = ${id} 
+	</delete>
+</mapper>

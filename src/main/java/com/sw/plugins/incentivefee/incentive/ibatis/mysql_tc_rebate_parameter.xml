@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="rebateParameter">
+
+	<parameterMap id="rebateParameter" type="com.sw.plugins.incentivefee.incentive.entity.RebateParameter" />
+
+	<resultMap id="rebateParameterResult" type="com.sw.plugins.incentivefee.incentive.entity.RebateParameter">
+		<result property="id" column="ID" />
+		<result property="levelName" column="LevelName" />
+		<result property="levelTag" column="LevelTag" />
+		<result property="type" column="Type" />
+		<result property="stageScore" column="StageScore" />
+		<result property="serviceFeeRat" column="ServiceFeeRat" />
+		<result property="stageTime" column="StageTime" />
+	</resultMap>
+	
+	<select id="select" parameterMap="rebateParameter" resultMap="rebateParameterResult">
+		select ID, LevelName, LevelTag, StageScore, ServiceFeeRat
+			from TC_RebateParameter where Type = ${type} and StageTime = #{stageTime} order by StageScore desc
+	</select>
+	
+	<delete id="deleteAll" parameterMap="rebateParameter">
+		delete from TC_RebateParameter where Type = ${type}
+	</delete>
+	
+	<delete id="delete" parameterMap="rebateParameter">
+		delete from TC_RebateParameter where ID = ${id}
+	</delete>
+	
+	<insert id="insert" parameterMap="rebateParameter">
+		insert into TC_RebateParameter
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="stageTime!=null and stageTime!=''">, StageTime</if>
+		 		<if test="levelName!=null and levelName!=''">, LevelName</if>
+		 		<if test="levelTag!=null and levelTag!=''">, LevelTag</if>
+		 		<if test="type!=null and type!=''">, Type</if>
+		 		<if test="stageScore!=null and stageScore!=''">, StageScore</if>
+		 		<if test="serviceFeeRat!=null and serviceFeeRat!=''">, ServiceFeeRat</if>
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="stageTime!=null and stageTime!=''">, #{stageTime}</if>
+		 		<if test="levelName!=null and levelName!=''">, #{levelName}</if>
+		 		<if test="levelTag!=null and levelTag!=''">, #{levelTag}</if>
+		 		<if test="type!=null and type!=''">, ${type}</if>
+		 		<if test="stageScore!=null and stageScore!=''">, ${stageScore}</if>
+		 		<if test="serviceFeeRat!=null and serviceFeeRat!=''">, ${serviceFeeRat}</if>
+		 	</trim>
+	</insert>
+	
+	<update id="update" parameterMap="rebateParameter">
+		update TC_RebateParameter 
+		<set> 
+			<trim prefixOverrides="," >
+				<if test="levelName!=null and levelName!=''">,LevelName=#{levelName}</if>
+				<if test="levelTag!=null and levelTag!=''">,LevelTag=#{levelTag}</if>
+				<if test="stageScore!=null">,StageScore=${stageScore}</if>
+				<if test="serviceFeeRat!=null">,ServiceFeeRat=${serviceFeeRat}</if>
+			</trim>
+		</set>
+			where ID = ${id} 
+	</update>
+	
+</mapper>

@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="redeemorder">
+
+	<parameterMap id="redeemorder" type="com.sw.plugins.market.order.entity.RedeemOrder" />
+
+	<resultMap id="redeemOrderResult" type="com.sw.plugins.market.order.entity.RedeemOrder">
+		<result property="id" column="ID" />
+		<result property="orgID" column="OrgID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="productID" column="ProductID" />
+		<result property="holdingProductID" column="holdingProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="teamID" column="TeamID" />
+		<result property="memberID" column="MemberID" />
+		<result property="clientType" column="ClientType" />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="share" column="Share" />
+		<result property="amount" column="Amount" />
+		<result property="openTime" column="OpenTime" />
+		<result property="netValue" column="NetValue" />
+		<result property="tradeStatus" column="TradeStatus" />
+		<result property="documentStatus" column="DocumentStatus" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="providerName" column="ProviderName" />
+		<result property="providerID" column="ProviderID" />
+		<result property="productName" column="ProductName" />
+		<result property="subProductType" column="SubProductType"/>
+		<result property="remark" column="Remark" />
+		<result property="tradeTime" column="TradeTime"/>
+		<result property="teamOrOrgName" column="TeamOrOrgName"/>
+		<!--   产品属性表   -->
+		<association property="product" column="productID" javaType="com.sw.plugins.product.manage.entity.Product" resultMap="productResult"/>
+		<!--   理财顾问表   -->
+		<association property="member" column="memberID" javaType="com.sw.plugins.customer.member.entity.Member" resultMap="memberResult"/>
+		<!--   产品供应商机构表   -->
+		<association property="provider" column="providerID" javaType="com.sw.plugins.cooperate.provider.entity.Provider" resultMap="providerResult"/>
+		<!--   居间机构表   -->
+		<association property="organization" column="orgID" javaType="com.sw.plugins.system.organization.entity.Organization" resultMap="organizationResult"/>
+		<!--   理财顾问机构表   -->
+		<association property="team" column="teamID" javaType="com.sw.plugins.customer.team.entity.Team" resultMap="teamResult"/>
+	</resultMap>
+	
+	<resultMap id="productResult" type="com.sw.plugins.product.manage.entity.Product">
+		<result property="name" column="NameOne" />
+		<result property="shortName" column="ProductShortName" />
+		<result property="type" column="Type" />
+	</resultMap>
+	
+	<resultMap id="memberResult" type="com.sw.plugins.customer.member.entity.Member">
+		<result property="name" column="NameTwo" />
+		<result property="nickName" column="NickName" />
+	</resultMap>
+	
+	<resultMap id="providerResult" type="com.sw.plugins.cooperate.provider.entity.Provider">
+		<result property="shortName" column="ShortName" />
+	</resultMap>
+	
+	<resultMap id="organizationResult" type="com.sw.plugins.system.organization.entity.Organization">
+		<result property="shortName" column="ShortNameTwo" />
+		<result property="name" column="CommissionName" />
+	</resultMap>
+	
+	<resultMap id="teamResult" type="com.sw.plugins.customer.team.entity.Team">
+		<result property="name" column="TeamName" />
+	</resultMap>
+	
+	<!-- 分页查询  -->
+	<select id="select_paginated" resultMap="redeemOrderResult"  parameterMap="redeemorder">
+		select 
+		p.ShortName as ProductName,
+		pp.ShortName as ProviderName,
+		s.Type as SubProductType,
+		t.ID,t.orgID,t.OrderNumber, t.ContractNumber, t.ClientType, t.ClientName, t.IDCardType, t.IDCard, t.NetValue,
+		t.Share, ROUND(t.Amount/1000000) as Amount,
+		t.TradeStatus, t.DocumentStatus, t.Remark,
+		DATE_FORMAT(t.OpenTime,'%Y-%m-%d') as OpenTime,
+		DATE_FORMAT(t.TradeTime,'%Y-%m-%d %T') as TradeTime,
+		m.Name as NameTwo,
+		m.NickName
+		from TC_RedeemOrder t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN PM_SubProduct s on t.SubProductID=s.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID=${orgID}</if>
+				<if test="salerType !=null">and p.SalerType = #{salerType}</if>
+				<if test="isScManager != 1">and p.Scmanager like concat('%,',#{creatorUserId},',%')</if>
+				<if test="tradeType!=null">and t.TradeType=${tradeType}</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and t.TradeStatus=${tradeStatus}</if>
+				<if test="documentStatus!=null">and t.DocumentStatus=${documentStatus}</if>
+				<if test="clientName!=null and clientName!=''">and t.ClientName like '%${clientName}%'</if>
+				and t.TradeStatus!=7 and t.TradeStatus != 8 and t.TradeStatus != 9
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 统计分页条数  -->
+	<select id="select_count" resultType="long"  parameterMap="redeemorder">
+		select 
+		count(t.ID)
+		from TC_RedeemOrder t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN PM_SubProduct s on t.SubProductID=s.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID=${orgID}</if>
+				<if test="salerType !=null">and p.SalerType = #{salerType}</if>
+				<if test="isScManager != 1">and p.Scmanager like concat('%,',#{creatorUserId},',%')</if>
+				<if test="tradeType!=null">and t.TradeType=${tradeType}</if>
+				<if test="productName!=null and productName!=''">and p.Name like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and t.TradeStatus=${tradeStatus}</if>
+				<if test="documentStatus!=null">and t.DocumentStatus=${documentStatus}</if>
+				and t.TradeStatus!=7 and t.TradeStatus != 8 and t.TradeStatus != 9
+			</trim>
+		</where>
+	</select>
+	<!-- 通过ID获取订单数据 -->
+	<select id="select_one" resultMap="redeemOrderResult"  parameterMap="redeemorder">
+		select
+		t.ID,t.OrgID,t.OrderNumber,t.holdingProductID, t.ContractNumber, t.ClientType, t.ClientName, t.IDCardType, t.IDCard, t.NetValue,
+		t.Share, ROUND(t.Amount/1000000) as Amount,t.ProductID,t.SubProductID,t.TeamID,t.DocumentStatus,
+		t.TradeStatus, t.DocumentStatus, t.Remark,t.MemberID,
+		DATE_FORMAT(t.OpenTime,'%Y-%m-%d') as OpenTime,
+		DATE_FORMAT(t.TradeTime,'%Y-%m-%d %T') as TradeTime,
+		p.Name as ProductName,
+		p.ShortName as ProductShortName,
+		pp.ShortName as ProviderName,
+		s.Type as SubProductType,
+		so.Name as CommissionName,
+		m.Name as MemberName,
+		m.NickName,
+		(case when mo.OrgType=0 then	mn.Name else mt.`Name` end) as TeamName,
+		p.*
+		from TC_RedeemOrder t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN PM_SubProduct s on t.SubProductID=s.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		LEFT JOIN MC_TeamOrOrg mo on t.teamID=mo.ID
+		left join MC_Team mt on mo.OrgID=mt.ID
+		left join MC_Organization mn on mo.OrgID=mn.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		where t.ID = ${id}
+	</select>
+	
+	<update id="update_trade" parameterMap="redeemorder">
+		update TC_RedeemOrder set TradeStatus = ${tradeStatus} where ID = ${id}		
+	</update>
+	
+	<delete id="delete" parameterMap="redeemorder">
+		delete from TC_RedeemOrder where ID = ${id}
+	</delete>
+	
+	<update id="update" parameterMap="redeemorder">
+		update TC_RedeemOrder
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" tradeStatus !=null and tradeStatus!=''">,TradeStatus = #{tradeStatus}</if>
+				<if test=" remark !=null and remark!=''">,Remark = #{remark}</if>
+				<if test=" documentStatus !=null and documentStatus!=''">,DocumentStatus = #{documentStatus}</if>
+				<if test=" netValue !=null and netValue!=''">,NetValue = #{netValue}</if>
+				<if test=" share!=null and share!=''">,Share = #{share}</if>
+				<if test=" share !=null and share!='' and netValue!='' and netValue!=null">,Amount = #{netValue}*#{share}*1000000</if>
+				<if test=" iDCardType !=null and iDCardType!=''">,IDCardType = #{iDCardType}</if>
+				<if test=" iDCard !=null and iDCard!=''">,IDCard = #{iDCard}</if>
+				<if test=" clientType !=null and clientType!=''">,ClientType = ${clientType}</if>
+				<if test=" clientName !=null and clientName!=''">,ClientName = #{clientName}</if>
+				<if test=" teamID !=null and teamID!=''">,TeamID = #{teamID}</if>
+				<if test=" subProductID!=null and subProductID!=''">,SubProductID = #{subProductID}</if>
+				<if test=" orgID!=null and orgID!=''">,OrgID =#{orgID}</if>
+				<if test=" providerID!=null and providerID!=''">,ProviderID = #{providerID}</if>
+			</trim>
+		</set>
+		<where>
+			ID = #{id}
+		</where>		
+	</update>
+	<!-- 修改历史订单的订单号 -->
+	<update id="update_history" parameterMap="redeemorder">
+		update TC_RedeemOrderHistory
+		<set>
+			<trim prefixOverrides=",">
+				<if test="orderNumber!=null and orderNumber!=''">,OrderNumber = #{orderNumber}</if>
+			</trim>
+		</set>
+		<where>
+			ID = #{id}
+		</where>		
+	</update>
+	<!-- 修改订单的订单号 -->
+	<update id="update_redeemorder" parameterMap="redeemorder">
+		update TC_RedeemOrder
+		<set>
+			<trim prefixOverrides=",">
+				<if test="orderNumber!=null and orderNumber!=''">,OrderNumber = #{orderNumber}</if>
+			</trim>
+		</set>
+		<where>
+			ID = #{id}
+		</where>		
+	</update>
+	
+	<insert id="insert" parameterMap="redeemorder">
+		insert into TC_RedeemOrder 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" id!=null">,ID</if>
+			<if test=" orderNumber!=null and orderNumber!=''">,OrderNumber</if>
+			<if test=" productID!=null and productID!=''">,ProductID</if>
+			<if test=" holdingProductID!=null and holdingProductID!=''">,holdingProductID</if>
+			<if test=" subProductID!=null and subProductID!=''">,SubProductID</if>
+			<if test=" orgID!=null and orgID!=''">,OrgID</if>
+			<if test=" teamID!=null and teamID!=''">,TeamID</if>
+			<if test=" tradeTime!=null and tradeTime!=''">,TradeTime</if>
+			<if test=" memberID!=null and memberID!=''">,MemberID</if>
+			<if test=" clientType!=null and clientType!=''">,ClientType</if>
+			<if test=" clientName!=null and clientName!=''">,ClientName</if>
+			<if test=" iDCardType!=null and iDCardType!=''">,IDCardType</if>
+			<if test=" iDCard!=null and iDCard!=''">,IDCard</if>
+			<if test=" share!=null and share!=''">,Share</if>
+			<if test=" amount!=null and amount!=''">,Amount</if>
+			<if test=" openTime!=null and openTime!=''">,OpenTime</if>
+			<if test=" netValue!=null and netValue!=''">,NetValue</if>
+			<if test=" tradeStatus!=null and tradeStatus!=''">,TradeStatus</if>
+			<if test=" documentStatus!=null and documentStatus!=''">,DocumentStatus</if>
+			<if test=" contractNumber!=null and contractNumber!=''">,ContractNumber</if>
+			<if test=" providerID!=null and providerID!=''">,ProviderID</if>
+			<if test=" remark!=null and remark!=''">,Remark</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" id!=null">,${id}</if>
+			<if test=" orderNumber!=null and orderNumber!=''">,#{orderNumber}</if>
+			<if test=" productID!=null and productID!=''">,${productID}</if>
+			<if test=" holdingProductID!=null and holdingProductID!=''">,#{holdingProductID}</if>
+			<if test=" subProductID!=null and subProductID!=''">,${subProductID}</if>
+			<if test=" orgID!=null and orgID!=''">,${orgID}</if>
+			<if test=" teamID!=null and teamID!=''">,${teamID}</if>
+			<if test=" tradeTime!=null and tradeTime!=''">,'${tradeTime}'</if>
+			<if test=" memberID!=null and memberID!=''">,${memberID}</if>
+			<if test=" clientType!=null and clientType!=''">,${clientType}</if>
+			<if test=" clientName!=null and clientName!=''">,#{clientName}</if>
+			<if test=" iDCardType!=null and iDCardType!=''">,${iDCardType}</if>
+			<if test=" iDCard!=null and iDCard!=''">,#{iDCard}</if>
+			<if test=" share!=null and share!=''">,#{share}</if>
+			<if test=" amount!=null and amount!=''">,#{amount}*1000000</if>
+			<if test=" openTime!=null and openTime!=''">,#{openTime}</if>
+			<if test=" netValue!=null and netValue!=''">,#{netValue}</if>
+			<if test=" tradeStatus!=null and tradeStatus!=''">,${tradeStatus}</if>
+			<if test=" documentStatus!=null and documentStatus!=''">,${documentStatus}</if>
+			<if test=" contractNumber!=null and contractNumber!=''">,#{contractNumber}</if>
+			<if test=" providerID!=null and providerID!=''">,#{providerID}</if>
+			<if test=" remark!=null and remark!=''">,#{remark}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey     
+		</selectKey>
+	</insert>
+	
+	<insert id="insert_transaction" parameterMap="redeemorder">
+		insert into TC_RedeemOrderDetail 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" orderNumber!=null">,OrderNumber</if>
+			<if test=" productID!=null">,ProductID</if>
+			<if test=" holdingProductID!=null and holdingProductID!=''">,holdingProductID</if>
+			<if test=" subProductID!=null">,SubProductID</if>
+			<if test=" orgID!=null">,orgID</if>
+			<if test=" teamID!=null">,TeamID</if>
+			<if test=" memberID!=null">,MemberID</if>
+			<if test=" clientType!=null">,ClientType</if>
+			<if test=" clientName!=null and clientName!=''">,ClientName</if>
+			<if test=" iDCardType!=null">,IDCardType</if>
+			<if test=" iDCard!=null and iDCard!=''">,IDCard</if>
+			<if test=" share!=null and share!=''">,Share</if>
+			<if test=" amount!=null and amount!=''">,Amount</if>
+			<if test=" openTime!=null and openTime!=''">,OpenTime</if>
+			<if test=" netValue!=null and netValue!=''">,NetValue</if>
+			<if test=" tradeStatus!=null">,TradeStatus</if>
+			<if test=" documentStatus!=null">,DocumentStatus</if>
+			<if test=" contractNumber!=null and contractNumber!=''">,ContractNumber</if>
+			<if test=" providerID!=null and providerID!=''">,ProviderID</if>
+			<if test=" remark!=null and remark!=''">,Remark</if>
+			,UpdateTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" orderNumber!=null">,#{orderNumber}</if>
+			<if test=" productID!=null">,${productID}</if>
+			<if test=" holdingProductID!=null and holdingProductID!=''">,#{holdingProductID}</if>
+			<if test=" subProductID!=null">,${subProductID}</if>
+			<if test=" orgID!=null">,${orgID}</if>
+			<if test=" teamID!=null">,${teamID}</if>
+			<if test=" memberID!=null">,${memberID}</if>
+			<if test=" clientType!=null">,${clientType}</if>
+			<if test=" clientName!=null and clientName!=''">,#{clientName}</if>
+			<if test=" iDCardType!=null">,${iDCardType}</if>
+			<if test=" iDCard!=null and iDCard!=''">,#{iDCard}</if>
+			<if test=" share!=null and share!=''">,${share}</if>
+			<if test=" amount!=null and amount!=''">,${amount}*1000000</if>
+			<if test=" openTime!=null and openTime!=''">,#{openTime}</if>
+			<if test=" netValue!=null and netValue!=''">,${netValue}</if>
+			<if test=" tradeStatus!=null">,${tradeStatus}</if>
+			<if test=" documentStatus!=null">,${documentStatus}</if>
+			<if test=" contractNumber!=null and contractNumber!=''">,#{contractNumber}</if>
+			<if test=" providerID!=null and providerID!=''">,${providerID}</if>
+			<if test=" remark!=null and remark!=''">,#{remark}</if>
+			,now()
+		</trim>
+	</insert>
+	
+	<insert id="insert_history" parameterMap="redeemorder">
+		insert into TC_RedeemOrderHistory 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" orderNumber!=null">,OrderNumber</if>
+			<if test=" productID!=null">,ProductID</if>
+			<if test=" holdingProductID!=null and holdingProductID!=''">,holdingProductID</if>
+			<if test=" subProductID!=null">,SubProductID</if>
+			<if test=" orgID!=null">,OrgID</if>
+			<if test=" teamID!=null">,TeamID</if>
+			<if test=" memberID!=null">,MemberID</if>
+			<if test=" clientType!=null">,ClientType</if>
+			<if test=" clientName!=null and clientName!=''">,ClientName</if>
+			<if test=" iDCardType!=null">,IDCardType</if>
+			<if test=" iDCard!=null and iDCard!=''">,IDCard</if>
+			<if test=" share!=null and share!=''">,Share</if>
+			<if test=" amount!=null and amount!=''">,Amount</if>
+			<if test=" openTime!=null and openTime!=''">,OpenTime</if>
+			<if test=" netValue!=null and netValue!=''">,NetValue</if>
+			<if test=" tradeStatus!=null">,TradeStatus</if>
+			<if test=" documentStatus!=null">,DocumentStatus</if>
+			<if test=" contractNumber!=null and contractNumber!=''">,ContractNumber</if>
+			<if test=" providerID!=null">,ProviderID</if>
+			<if test=" remark!=null and remark!=''">,Remark</if>
+			,UpdateTime,TradeTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" orderNumber!=null">,#{orderNumber}</if>
+			<if test=" productID!=null">,${productID}</if>
+			<if test=" holdingProductID!=null and holdingProductID!=''">,#{holdingProductID}</if>
+			<if test=" subProductID!=null">,${subProductID}</if>
+			<if test=" orgID!=null">,${orgID}</if>
+			<if test=" teamID!=null">,${teamID}</if>
+			<if test=" memberID!=null">,${memberID}</if>
+			<if test=" clientType!=null">,${clientType}</if>
+			<if test=" clientName!=null and clientName!=''">,#{clientName}</if>
+			<if test=" iDCardType!=null">,${iDCardType}</if>
+			<if test=" iDCard!=null and iDCard!=''">,#{iDCard}</if>
+			<if test=" share!=null and share!=''">,${share}</if>
+			<if test=" amount!=null and amount!=''">,${amount}*1000000</if>
+			<if test=" openTime!=null and openTime!=''">,#{openTime}</if>
+			<if test=" netValue!=null and netValue!=''">,${netValue}</if>
+			<if test=" tradeStatus!=null">,${tradeStatus}</if>
+			<if test=" documentStatus!=null">,${documentStatus}</if>
+			<if test=" contractNumber!=null and contractNumber!=''">,#{contractNumber}</if>
+			<if test=" providerID!=null">,${providerID}</if>
+			<if test=" remark!=null and remark!=''">,#{remark}</if>
+			,now(),now()
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey     
+		</selectKey>
+	</insert>
+	
+	<!-- 已取消的赎回订单分页查询  -->
+	<select id="select_cancel_redeem_paginated" resultMap="redeemOrderResult"  parameterMap="redeemorder">
+		select 
+		t.ID,
+		t.OrderNumber,
+		pp.ShortName,
+		p.ShortName as ProductName,
+		sp.Type as SubProductType,
+		t.ClientName,
+		m.`Name` as NameTwo,
+		m.NickName
+		from TC_RedeemOrder t 
+		left JOIN PM_Product p on t.ProductID=p.ID
+		left JOIN PM_SubProduct sp on t.SubProductID = sp.ID
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+				<if test="pushStatus!=null">and t.PushStatus = ${pushStatus}</if>
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+				<![CDATA[ and t.TradeStatus in ]]> 
+					 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}
+		        	</foreach> 
+				<![CDATA[]]>
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 已取消的赎回订单统计分页条数  -->
+	<select id="select_cancel_redeem_count" resultType="long"  parameterMap="redeemorder">
+		select 
+		count(*)
+		from TC_RedeemOrder t 
+		left JOIN PM_Product p on t.ProductID=p.ID
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+				<if test="pushStatus!=null">and t.PushStatus = ${pushStatus}</if>
+				<if test="productName!=null and productName!=''">and p.Name like '%${productName}%'</if>
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+				<![CDATA[ and t.TradeStatus in ]]> 
+					 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}
+		        	</foreach> 
+				<![CDATA[]]>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 失败的赎回订单分页查询  -->
+	<select id="select_fail_redeem_paginated" resultMap="redeemOrderResult"  parameterMap="redeemorder">
+		select 
+		t.ID,
+		t.OrderNumber,
+		pp.ShortName,
+		p.ShortName as ProductName,
+		t.ClientName,
+		sp.Type as SubProductType,
+		m.`Name` as NameTwo,
+		m.NickName
+		from TC_RedeemOrderHistory t 
+		left JOIN PM_Product p on t.ProductID=p.ID
+		left JOIN PM_SubProduct sp on t.SubProductID = sp.ID
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		<where>
+			<trim prefixOverrides="and">
+			    t.TradeStatus = ${tradeStatus}
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 失败的赎回订单统计分页条数  -->
+	<select id="select_fail_redeem_count" resultType="long"  parameterMap="redeemorder">
+		select 
+		count(*)
+		from TC_RedeemOrderHistory t 
+		left JOIN PM_Product p on t.ProductID=p.ID
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+			    t.TradeStatus = ${tradeStatus}
+				<if test="productName!=null and productName!=''">and p.Name like '%${productName}%'</if>
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 成功赎回订单分页查询  -->
+	<select id="select_succeed_paginated" resultMap="redeemOrderResult"  parameterMap="redeemorder">
+		select 
+		p.ShortName as ProductName,
+		pp.ShortName as ProviderName,
+		s.Type as SubProductType,
+		t.ContractNumber,
+		t.ClientName,
+		t.Share,
+		ROUND(t.Amount/1000000) as Amount,
+		DATE_FORMAT(t.OpenTime,'%Y-%m-%d') as OpenTime,
+		t.DocumentStatus,
+		t.ID,
+		m.Name as NameTwo,
+		m.NickName
+		from TC_RedeemOrderHistory t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN MC_Member m on t.MemberID=m.ID
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN PM_SubProduct s on t.SubProductID=s.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and t.TradeStatus=${tradeStatus}</if>
+				<if test="documentStatus!=null">and t.DocumentStatus=${documentStatus}</if>
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+				and t.TradeStatus = 9
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 成功赎回订单统计分页条数  -->
+	<select id="select_succeed_count" resultType="long"  parameterMap="redeemorder">
+		select 
+		count(*)
+		from TC_RedeemOrderHistory t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN MC_Member m on t.MemberID=m.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="productName!=null and productName!=''">and p.Name like '%${productName}%'</if>					
+				<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+				<if test="tradeStatus!=null">and t.TradeStatus=${tradeStatus}</if>
+				<if test="documentStatus!=null">and t.DocumentStatus=${documentStatus}</if>
+				<if test="orgID!=null">and t.OrgID = ${orgID}</if>
+				and t.TradeStatus = 9
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 通过ID获取成功订单数据 -->
+	<select id="select_one_history" resultMap="redeemOrderResult"  parameterMap="redeemorder">
+		select
+		t.OrderNumber, t.ContractNumber, t.ClientType, t.ClientName, t.IDCardType, t.IDCard, t.NetValue,t.ProductID,t.MemberID,t.IDCard,t.IDCardType,
+		t.Share, ROUND(t.Amount/1000000) as Amount,
+		t.TradeStatus, t.DocumentStatus, t.Remark,
+		DATE_FORMAT(t.OpenTime,'%Y-%m-%d') as OpenTime,
+		DATE_FORMAT(t.TradeTime,'%Y-%m-%d') as TradeTime,
+		DATE_FORMAT(t.UpdateTime,'%Y-%m-%d %T') as UpdateTime,
+		p.Name as ProductName,
+		p.ShortName as ProductShortName,
+		pp.ShortName as ProviderName,
+		pp.ShortName,
+		s.Type as SubProductType,
+		so.Name as CommissionName,
+		m.Name as NameTwo,
+		m.NickName,
+		(case when mo.OrgType=0 then mn.Name else mt.`Name` end) as TeamOrOrgName,
+		p.*
+		from TC_RedeemOrderHistory t 
+		left JOIN PM_Product p on t.ProductID=p.ID 
+		left JOIN PC_Provider pp on t.ProviderID=pp.ID
+		left JOIN PM_SubProduct s on t.SubProductID=s.ID
+		left JOIN MC_Member m on t.MemberID=m.ID
+		LEFT JOIN MC_TeamOrOrg mo on t.teamID=mo.ID
+		left join MC_Team mt on mo.OrgID=mt.ID
+		left join MC_Organization mn on mo.OrgID=mn.ID
+		left join SM_Organization so on t.OrgID=so.ID
+		where t.ID = ${id}
+	</select>
+</mapper>

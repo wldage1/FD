@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心"  icon="images/menu/sales-center.png">
+		<salemanage isNav="true" isStatus="true" name="销售管控" icon="images/menu/sales-center-sales control.png">
+			<language>
+				<value>/language/saleMessages_zh_CN.properties</value>
+				<value>/language/saleMessages_en_US.properties</value>
+			</language>
+			
+			<manage isNav="false" isStatus="true" name="销售管理" icon="images/icon/detail.png">
+				<overview isNav="true"  name="概览">
+					<openpay isNav="true" name="开启打款"></openpay>
+					<closepay isNav="true" name="停止打款"></closepay>
+					<stoppay isNav="true" name="产品封帐"></stoppay>
+					<success isNav="true" name="产品成立"></success>
+					<failed isNav="true" name="发行失败"></failed>
+					<cancel isNav="true" name="取消投放"></cancel>
+					<closecollect isNav="true" name="关闭收藏"></closecollect>
+					<openorder isNav="true" name="开启预约"></openorder>
+					<privateorder isNav="true" name="开启预约开启打款"></privateorder>
+				</overview>
+				<neworder isNav="true"  name="未配额订单"></neworder>
+				<shared isNav="true"  name="已配额订单"></shared>
+				<payed isNav="true"  name="已到账订单"></payed>
+				<limit isNav="true"  name="小额订单"></limit>
+			</manage>
+			
+			<saleconfig isNav="true"  isStatus="true" name="产品销售配置" icon="images/icon/detail.png">
+				<config isNav="true" isLog="true"  name="设置销售参数" icon="images/icon/detail.png"/>
+				<split isNav="true"  name="拆分" icon="images/icon/create.png"/>
+				<delete isNav="true"  name="删除" icon="images/icon/delete.png"/>
+				<modify isNav="true"  name="修改" icon="images/icon/modify.png"/>
+				<profit isNav="true"  name="收益率" icon="images/icon/modify.png"/>
+				<netvalue isNav="true"  name="净值" icon="images/icon/modify.png"/>
+				<commissionratio isNav="true"  name="居间费比例" icon="images/icon/modify.png"/>
+				<docconfig isNav="true"  name="单证配置" icon="images/icon/modify.png"/>
+			</saleconfig>
+			
+			<detail isNav="true" isStatus="true" name="查看" icon="images/icon/detail.png" />
+		</salemanage>
+	</market>
+</plugins>

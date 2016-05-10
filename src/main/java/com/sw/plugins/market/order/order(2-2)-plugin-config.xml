@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心" icon="images/menu/sales-center.png">
+		<order isNav="true" isStatus="true" name="在途订单" icon="images/menu/sales-center-on the order.png">
+			<language>
+				<value>/language/orderMessages_zh_CN.properties</value>
+				<value>/language/orderMessages_en_US.properties</value>
+			</language>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+			<repeal isNav="true" isLog="true" name="撤销" icon="images/icon/cancel order.png"/>
+			<create isNav="true" isLog="true" name="补录订单" icon="images/icon/create.png"/>
+			<confirmPay isNav="true" isLog="true" name="确认收到" icon="images/icon/detail.png"/>
+			<detail isNav="true" isLog="true" name="订单处理" icon="images/icon/order processing.png">
+				<amountDistribute isNav="true" isLog="true" name="额度分配" icon="images/icon/detail.png"/>
+				<uploadDocument isNav="true" isLog="true" name="上传单证" icon="images/icon/detail.png"/>
+				<fundConfirm isNav="true" isLog="true" name="打款凭证确认" icon="images/icon/detail.png">
+					<dispose isNav="false"  name="处理" icon="images/icon/order processing.png">
+						<addto isNav="true"  name="金额确认" icon="images/icon/detail.png" />
+						<recheck isNav="true"  name="复核" icon="images/icon/detail.png" />
+						<modifyTwo isNav="true"  name="修改" icon="images/icon/detail.png" />
+						<cancel isNav="true"  name="取消" icon="images/icon/detail.png" />
+						<refuse isNav="true"  name="拒绝" icon="images/icon/detail.png" />
+					</dispose>
+					<uploadProof  isNav="true" isLog="true" name="上传凭证" icon="images/icon/create.png"/>
+				</fundConfirm>
+<!--				<pushShare isNav="true" isLog="true" name="额度配给" icon="images/icon/create.png"/> -->
+				<bankStreamConfirm isNav="false" isLog="true" name="银行流水确认" icon="images/icon/create.png">
+					<addto isNav="true"  name="金额确认" icon="images/icon/detail.png" />
+					<recheck isNav="true"  name="复核" icon="images/icon/detail.png" />
+					<modifyTwo isNav="true"  name="修改" icon="images/icon/detail.png" />
+					<cancel isNav="true"  name="取消" icon="images/icon/detail.png" />
+				</bankStreamConfirm>
+				<orderSuccess isNav="true" isLog="true" name="成功订单" icon="images/icon/detail.png"/>
+				<orderfail isNav="true" isLog="true" name="失败订单" icon="images/icon/detail.png"/>
+			</detail>
+			<redeemModify isNav="true" name="修改" icon="images/icon/modify.png" />
+			<redeemRepeal isNav="true" name="撤销" icon="images/icon/cancel order.png" />
+			<redeemCreate isNav="true" name="补录订单" icon="images/icon/create.png" />
+			<redeemDetail isNav="true" name="订单处理" icon="images/icon/order processing.png" >
+				<redeemAmountDistribute isNav="true" isLog="true" name="份额确认" icon="images/icon/detail.png"/>
+				<redeemUploadDocument  isLog="true" name="上传单证" icon="images/icon/detail.png"/>
+				<redeemOrderSuccess isNav="true" isLog="true" name="成功订单" icon="images/icon/detail.png"/>
+				<redeemorderfail isNav="true" isLog="true" name="失败订单" icon="images/icon/detail.png"/>
+			</redeemDetail>
+			<export isNav="true" isLog="true" name="导出EXCEL" icon="images/icon/data.png"/>
+		</order>
+	</market>
+</plugins>

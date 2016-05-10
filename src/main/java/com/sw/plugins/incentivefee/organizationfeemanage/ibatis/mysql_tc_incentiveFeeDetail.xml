@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="incentiveFeeDetail">
+
+	<parameterMap id="incentiveFeeDetail" type="com.sw.plugins.incentivefee.organizationfeemanage.entity.IncentiveFeeDetail" />
+
+	<resultMap id="incentiveFeeDetailResult" type="com.sw.plugins.incentivefee.organizationfeemanage.entity.IncentiveFeeDetail">
+		<result property="id" column="ID" />
+		<result property="orgId" column="OrgID" />
+		<result property="type" column="Type" />
+		<result property="sumInvestAmount" column="SumInvestAmount" />
+		<result property="successRate" column="SuccessRate" />
+		<result property="rewardScore" column="RewardScore" />
+		<result property="rebateScore" column="RebateScore" />
+		<result property="sumCommissionFee" column="SumCommissionFee" />
+		<result property="rebateRate" column="RebateRate" />
+		<result property="rebateAmount" column="RebateAmount" />
+		<result property="payTime" column="PayTime" />
+		<result property="shortName" column="ShortName" />
+		<result property="isPay" column="IsPay" />
+		<result property="payStageTime" column="PayStageTime" />
+		<result property="companyID" column="CompanyID" />
+	</resultMap>
+	
+	<insert id="insert" parameterMap="incentiveFeeDetail">
+		insert into TC_IncentiveFeeDetail
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgId!=null">,OrgID</if>
+			<if test="companyID!=null">,CompanyID</if>
+			<if test="type!=null">,Type</if>
+			<if test="sumInvestAmount!=null and sumInvestAmount!=''">,SumInvestAmount</if>
+			<if test="successRate!=null and successRate!=''">,SuccessRate</if>
+			<if test="rewardScore!=null">,RewardScore</if>
+			<if test="rebateScore!=null and rebateScore!=''">,RebateScore</if>
+			<if test="sumCommissionFee!=null and sumCommissionFee!=''">,SumCommissionFee</if>
+			<if test="rebateRate!=null and rebateRate!=''">,RebateRate</if>
+			<if test="rebateAmount!=null and rebateAmount!=''">,RebateAmount</if>
+			<if test="payStageTime!=null and payStageTime!=''">,PayStageTime</if>
+			,IsPay
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgId!=null">,${orgId}</if>
+			<if test="companyID!=null">,${companyID}</if>
+			<if test="type!=null">,${type}</if>
+			<if test="sumInvestAmount!=null and sumInvestAmount!=''">,#{sumInvestAmount}</if>
+			<if test="successRate!=null and successRate!=''">,#{successRate}</if>
+			<if test="rewardScore!=null">,${rewardScore}</if>
+			<if test="rebateScore!=null and rebateScore!=''">,#{rebateScore}</if>
+			<if test="sumCommissionFee!=null and sumCommissionFee!=''">,#{sumCommissionFee}</if>
+			<if test="rebateRate!=null and rebateRate!=''">,#{rebateRate}</if>
+			<if test="rebateAmount!=null and rebateAmount!=''">,#{rebateAmount}</if>
+			<if test="payStageTime!=null and payStageTime!=''">,#{payStageTime}</if>
+			,0
+		</trim>
+	</insert>
+	
+	<delete id="delete" parameterMap="incentiveFeeDetail">
+		delete from TC_IncentiveFeeDetail where PayStageTime = #{payStageTime} and IsPay = 0 and CompanyID = ${companyID} and Type = ${type}
+	</delete>
+	
+	<update id="update" parameterMap="incentiveFeeDetail">
+		update TC_IncentiveFeeDetail set IsPay = 1, PayTime = NOW() where ID=${id}
+	</update>
+	
+</mapper>

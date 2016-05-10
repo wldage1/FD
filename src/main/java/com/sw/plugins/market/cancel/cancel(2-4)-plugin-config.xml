@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心" icon="images/menu/sales-center.png">
+		<cancel isNav="true" isSetAuth="sub" isStatus="true" name="已取消订单" icon="images/menu/sales-center-cancelled order.png">
+			<language>
+				<value>/language/cancelMessages_zh_CN.properties</value>
+			</language>
+			<detail isNav="true"  name="查看" icon="images/icon/detail.png"/>
+			<detailRedeem isNav="true"  name="查看" icon="images/icon/detail.png"/>
+			<faildispose isNav="true" isLog="true" name="注销" icon="images/icon/detail.png" />
+		</cancel>
+	</market>
+</plugins>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="orderTransactionDetailHistory">
+
+	<parameterMap id="orderTransactionDetailHistory" type="com.sw.plugins.market.order.entity.Order" />
+
+	<resultMap id="orderTransactionDetailHistoryResult" type="com.sw.plugins.market.order.entity.Order">
+		<result property="id" column="ID" />
+		<result property="memberAccountID" column="MemberAccountID" />
+		<result property="contactInformationID" column="ContactInformationID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="orgID" column="OrgID" />
+		<result property="providerID" column="ProviderID" />
+		<result property="productID" column="ProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="teamID" column="TeamID" />
+		<result property="memberID" column="MemberID" />
+		<result property="clientType" column="ClientType" />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="bankClientName" column="BankClientName" />
+		<result property="bankName" column="BankName" />
+		<result property="bankNumber" column="BankNumber" />
+		<result property="tradeType" column="TradeType" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="deadline" column="Deadline" />
+		<result property="profitRatio" column="ProfitRatio" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="commissionPayTime" column="CommissionPayTime" />
+		<result property="payMoneyStopTime" column="PayMoneyStopTime" />
+		<result property="share" column="Share" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="payTime" column="PayTime" />
+		<result property="netValue" column="NetValue" />
+		<result property="assignedShare" column="AssignedShare" />
+		<result property="tradeStatus" column="TradeStatus" />
+		<result property="payProgress" column="PayProgress" />
+		<result property="documentStatus" column="DocumentStatus" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="holdingProductID" column="HoldingProductID" />
+		<result property="remark" column="Remark" />
+		<result property="pushStatus" column="PushStatus" />
+		<result property="pushShare" column="PushShare" />
+		<result property="pushTime" column="PushTime" />
+		<result property="breakReason" column="BreakReason" />
+	</resultMap>
+	
+	
+	
+	<!-- 流水订单保存 -->	
+	<insert id="insert" parameterMap="orderTransactionDetailHistory">
+		insert into TC_OrderTransactionDetail
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="orderNumber!=null and orderNumber!=''">, OrderNumber</if>
+		 		<if test="orgID!=null">, OrgID</if>
+		 		<if test="providerID!=null">, ProviderID</if>
+		 		<if test="productID!=null">, ProductID</if>
+		 		<if test="subProductID!=null">, SubProductID</if>
+		 		<if test="teamID!=null">, TeamID</if>
+		 		<if test="memberID!=null">, MemberID</if>
+		 		<if test="clientType!=null">, ClientType</if>
+		 		<if test="clientName!=null and clientName!=''">, ClientName</if>
+		 		<if test="iDCardType!=null">, IDCardType</if>
+		 		<if test="iDCard!=null and iDCard!=''">, IDCard</if>
+		 		<if test="bankClientName!=null and bankClientName!=''">, BankClientName</if>
+		 		<if test="bankName!=null and bankName!=''">, BankName</if>
+		 		<if test="bankNumber!=null and bankNumber!=''">, BankNumber</if>
+		 		<if test="tradeType!=null">, TradeType</if>
+		 		<if test="investAmount!=null and investAmount!=''">, InvestAmount</if>
+		 		<if test="deadline!=null and deadline!=''">, Deadline</if>
+		 		<if test="profitRatio!=null and profitRatio!=''">, ProfitRatio</if>
+		 		<if test="orderTime!=null and orderTime!=''">, OrderTime</if>
+		 		<if test="commissionPayTime!=null and commissionPayTime!=''">, CommissionPayTime</if>
+		 		<if test="payMoneyStopTime!=null and payMoneyStopTime!=''">, PayMoneyStopTime</if>
+		 		<if test="share!=null and share!=''">, Share</if>
+		 		<if test="payAmount!=null and payAmount!=''">, PayAmount</if>
+		 		<if test="payTime!=null and payTime!=''">, PayTime</if>
+		 		<if test="netValue!=null and netValue!=''">, NetValue</if>
+		 		<if test="tradeStatus!=null">, TradeStatus</if>
+		 		<if test="payProgress!=null">, PayProgress</if>
+		 		<if test="docStatus!=null">, DocStatus</if>
+		 		<if test="documentStatus!=null">, DocumentStatus</if>
+		 		<if test="contractNumber!=null and contractNumber!=''">, ContractNumber</if>
+		 		<if test="holdingProductID!=null">, HoldingProductID</if>
+		 		<if test="remark!=null and remark!=''">, Remark</if>
+		 		<if test="pushStatus!=null">, PushStatus</if>
+		 		<if test="pushTime!=null and pushTime!=''">,PushTime</if>
+		 		<if test="pushShare!=null and pushShare!=''">, PushShare</if>
+		 		<if test="breakReason!=null">, BreakReason</if>
+		 		<if test="memberAccountID!=null">, MemberAccountID</if>
+		 		<if test="contactInformationID!=null">, ContactInformationID</if>
+		 		,UpdateTime
+		 	</trim>
+		 	values 
+		 	<trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="orderNumber!=null and orderNumber!=''">,'${orderNumber}'</if>
+		 		<if test="orgID!=null">,${orgID}</if>
+		 		<if test="providerID!=null">,${providerID}</if>
+		 		<if test="productID!=null">,${productID}</if>
+		 		<if test="subProductID!=null">,${subProductID}</if>
+		 		<if test="teamID!=null">,${teamID}</if>
+		 		<if test="memberID!=null">,${memberID}</if>
+		 		<if test="clientType!=null">,${clientType}</if>
+		 		<if test="clientName!=null and clientName!=''">,'${clientName}'</if>
+		 		<if test="iDCardType!=null">,${iDCardType}</if>
+		 		<if test="iDCard!=null and iDCard!=''">,'${iDCard}'</if>
+		 		<if test="bankClientName!=null and bankClientName!=''">, '${bankClientName}'</if>
+		 		<if test="bankName!=null and bankName!=''">, '${bankName}'</if>
+		 		<if test="bankNumber!=null and bankNumber!=''">, '${bankNumber}'</if>
+		 		<if test="tradeType!=null">,${tradeType}</if>
+		 		<if test="investAmount!=null and investAmount!=''">,${investAmount}*1000000</if>
+		 		<if test="deadline!=null and deadline!=''">,${deadline}</if>
+		 		<if test="profitRatio!=null and profitRatio!=''">,'${profitRatio}'</if>
+		 		<if test="orderTime!=null and orderTime!=''">,'${orderTime}'</if>
+		 		<if test="commissionPayTime!=null and commissionPayTime!=''">,'${commissionPayTime}'</if>
+		 		<if test="payMoneyStopTime!=null and payMoneyStopTime!=''">,'${payMoneyStopTime}'</if>
+		 		<if test="share!=null and share!=''">,${share}*1000000</if>
+		 		<if test="payAmount!=null and payAmount!=''">,${payAmount}*1000000</if>
+		 		<if test="payTime!=null and payTime!=''">,'${payTime}'</if>
+		 		<if test="netValue!=null and netValue!=''">,${netValue}</if>
+		 		<if test="tradeStatus!=null">,${tradeStatus}</if>
+		 		<if test="payProgress!=null">,${payProgress}</if>
+		 		<if test="docStatus!=null">,${docStatus}</if>
+		 		<if test="documentStatus!=null">,${documentStatus}</if>
+		 		<if test="contractNumber!=null and contractNumber!=''">,'${contractNumber}'</if>
+		 		<if test="holdingProductID!=null">,${holdingProductID}</if>
+		 		<if test="remark!=null and remark!=''">,'${remark}'</if>
+		 		<if test="pushStatus!=null">, ${pushStatus}</if>
+		 		<if test="pushTime!=null and pushTime!=''">,'${pushTime}'</if>
+		 		<if test="pushShare!=null and pushShare!=''">, ${pushShare}*1000000</if>
+		 		<if test="breakReason!=null">, ${breakReason}</if>
+		 		<if test="memberAccountID!=null">, ${memberAccountID}</if>
+		 		<if test="contactInformationID!=null">, ${contactInformationID}</if>
+		 		,now()
+		 	</trim>
+	</insert>
+</mapper>

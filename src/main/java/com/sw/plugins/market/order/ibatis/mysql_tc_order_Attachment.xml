@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="orderAttachment">
+
+	<parameterMap id="orderAttachment" type="com.sw.plugins.market.order.entity.OrderAttachment" />
+
+	<resultMap id="orderAttachmentResult" type="com.sw.plugins.market.order.entity.OrderAttachment">
+		<result property="id" column="ID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="title" column="Title" />
+		<result property="fileName" column="FileName" />
+		<result property="fileUrl" column="FileUrl" />
+		<result property="uploadTime" column="UploadTime" />
+		<result property="audited" column="Audited" />
+	</resultMap>
+	
+	<!-- 分页查询  -->
+	<select id="select_paginated" resultMap="orderAttachmentResult"  parameterMap="orderAttachment">
+		select 
+		*
+		from TC_OrderAttachment t 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="title!=null and title!=''">and t.Title like '%${title}%'</if>
+				and t.OrderNumber = '${orderNumber}'
+			</trim>
+		</where>
+		limit ${start} , ${offset}
+	</select>
+	
+	<!-- 统计分页条数  -->
+	<select id="select_count" resultType="long"  parameterMap="orderAttachment">
+		select 
+		count(*)
+		from TC_OrderAttachment t 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="title!=null and title!=''">and t.Title like '%${title}%'</if>
+				and t.OrderNumber = '${orderNumber}'
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 保存 -->
+	<insert id="insert" parameterMap="orderAttachment" >
+		insert into TC_OrderAttachment
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			, OrderNumber
+			<if test="title!=null and title!=''">,Title</if>
+			<if test="fileName!=null and fileName!=''">,FileName</if>
+			<if test="fileUrl!=null and fileUrl!=''">,FileUrl</if>		
+			,UploadTime
+			<if test="audited!=null">,Audited</if>	
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			, #{orderNumber}
+			<if test="title!=null and title!=''">,'${title}'</if>
+			<if test="fileName!=null and fileName!=''">,'${fileName}'</if>
+			<if test="fileUrl!=null and fileUrl!=''">,'${fileUrl}'</if>		
+			,now()
+			<if test="audited!=null">,${audited}</if>	
+		</trim>
+	</insert>
+	<!-- 修改 -->
+	<update id="update" parameterMap="orderAttachment">
+		update TC_OrderAttachment
+		<set>
+			<trim prefixOverrides=",">
+				<if test="title!=null and title!=''">,Title='${title}'</if>
+			</trim>			
+		</set>
+		where ID=#{id}
+	</update>
+</mapper>

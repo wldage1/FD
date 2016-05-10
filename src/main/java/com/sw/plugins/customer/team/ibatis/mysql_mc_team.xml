@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="team">
+	<parameterMap id="team" type="com.sw.plugins.customer.team.entity.Team"/>
+	
+	<!-- 理财师机构结果集 -->
+	<resultMap id="teamResult" type="com.sw.plugins.customer.team.entity.Team">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="name" column="Name" />
+		<result property="shortName" column="ShortName" />
+		<result property="status" column="Status" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorMemberID" column="CreatorMemberID" />
+	</resultMap>
+	
+	<!-- 查询所有团队 -->
+	<select id="select_team" resultMap="teamResult" parameterMap="team">
+		select mt.ID, mt.Name 
+		from MC_Team mt join MC_TeamOrOrg mto on mt.id=mto.orgid and mto.OrgType=1 and (mto.Status=1 or mto.Status=2) and mto.DelStatus=1 and mt.IsAvailable=1
+	</select>
+	
+	<!-- 理财师机构分页查询 -->
+	<select id="select_paginated" resultMap="teamResult" parameterMap="team">
+		select a.id ,a.name,a.shortName,a.status,
+			a.checkCount ,count(mm.id) as memberCount from 
+				(select mto.id ,mt.name,mt.shortName
+				,mto.status,
+				count(mta.id) as checkCount
+				from MC_Team mt join MC_TeamOrOrg mto on mt.id=mto.orgid and mto.OrgType=1 left join MC_TeamOrOrgApplication mta on mto.id=mta.TeamID and mta.Status=0
+				where ifnull(mto.DelStatus,0)<![CDATA[<>2]]> and mt.IsAvailable=1
+				GROUP BY  mto.id ,mt.name,mt.shortName
+				,mto.status) a 
+			left join MC_Member mm on a.id=mm.TeamID and mm.status not in (4)
+			<where>
+				<trim prefixOverrides="and">
+					<if test="name!=null and name!=''">
+					and a.Name like '%${name}%' 
+					</if>
+				</trim>
+			</where>
+			GROUP BY 
+			a.id ,a.name,a.shortName,a.status,
+			a.checkCount order by a.checkCount desc,a.status asc
+		limit ${start},${offset}
+	</select>
+	<!-- 理财师机构审核查询 -->
+	<select id="select_for_check" resultMap="teamResult" parameterMap="team">
+			select mto.id, mt.name,mt.shortName,
+			mto.status,mta.id as checkId,ApplicationMember,
+			mm.name as ApplicationMemberName,date_format(ApplicationTime,'%Y-%c-%d %H:%i:%S') as ApplicationTime,ApplicantFeedback,mta.Memberid,mme.name as memberName,mta.type as checktype,
+			mta.LicenceCode as checkLicenceCode,mta.LicenceImage as checkLicenceImage,mta.LicenceExpireTime as checkLicenceExpireTime
+			from MC_Team mt join MC_TeamOrOrg mto on mt.id=mto.orgid join MC_TeamOrOrgApplication mta on mto.id=mta.TeamID  join MC_Member mm on mta.ApplicationMember=mm.id
+			left join MC_Member mme on mta.Memberid=mme.id
+			<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and mta.ID = ${id}
+					</if>
+					<if test="id!=null and id!=''">
+					and mta.type = ${checkType}
+					</if>
+				</trim>
+			</where>
+	</select>
+	<!-- 理财师机构统计 -->
+	<select id="count" resultType="long" parameterMap="team">	
+		select count(mto.ID) from  MC_Team mt join MC_TeamOrOrg mto on mt.id=mto.orgid where mto.OrgType=1 and ifnull(mto.DelStatus,0)<![CDATA[<>2]]> and IsAvailable=1
+			<if test="name!=null and name!=''">
+			and mt.Name like '%${name}%' 
+			</if>
+	</select>
+	<!-- 更新理财师机构 -->
+	<update id="update" parameterMap="team">
+		update MC_Team  a
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name=#{name}</if>
+				<if test="shortName!=null and shortName!=''">,ShortName=#{shortName}</if>
+
+			</trim>
+		</set>
+		Where  exists (select 1
+		from MC_TeamOrOrg b
+		where a.id=b.orgid and b.ID=${id})
+	</update>
+	<!-- 更新理财师团队状态 -->
+	<update id="update_for_status" parameterMap="team">
+		update MC_TeamOrOrg
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null">,Status=#{status}</if>
+				,ModifyTime=now() 
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	<!-- 更新理财师团队为不可用 -->
+	<update id="update_for_isAvailable" parameterMap="team">
+		update MC_Team a 
+		<set>
+		   IsAvailable='0' 
+		</set>
+		where exists (select 1
+		from MC_TeamOrOrg b
+		where b.orgid=a.id and b.id=${id}
+		)
+	</update>
+	
+	<select id="select_teamId" resultType="long" parameterMap="team">
+		select ID from MC_Team
+	</select>
+</mapper>
