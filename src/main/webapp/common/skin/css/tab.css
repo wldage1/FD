@@ -1,0 +1,73 @@
+@charset "utf-8";
+/* CSS Document */
+/* begin css tabs */
+ul#tabnav {
+	text-align: bottom;
+	margin: 1em 0 1em 0;
+	font: bold 12px verdana, arial, sans-serif;
+	border-bottom: 1px solid #B4B1CE;
+	list-style-type: none;
+	padding: 4px 2px ;
+	height: 24px;
+}
+
+ul#tabnav li {
+	float:left;
+}
+
+ul#tabnav li a {
+	padding: 0 14px;
+	border-top: 1px solid #B4B1CE;
+	border-left: 1px solid #B4B1CE;
+	border-right: 1px solid #B4B1CE;
+	background-color: #eafbff ;
+	color: #000;
+	text-decoration: none;
+	height: 24px;
+	line-height: 24px;
+	float: left;
+	margin-top: 3px;
+	margin-right: 5px;
+	border-radius: 4px 4px 0 0;
+}
+
+#tabnav .selected {
+	background-color:#ccdfed;
+	color: #000;
+	height: 28px;
+	line-height: 28px;
+	margin-top: 0;
+}
+
+/* end css tabs */
+
+/* tab切换，在数据导入，第四步预览中使用  */
+.tabDiv{
+	width:200px;
+	height:20px;
+	background-color:#e1eaf6;
+	text-align:center;
+	padding-top:3px;
+	cursor:pointer;
+}
+.divtop{
+	height: 100%;
+	width: 200px;
+}
+.divContent{
+	height: 100%;
+}
+.divtab{
+	display:none;
+}
+.divtab_down{
+	display:block;
+	border-bottom:1px solid #FFFFFF;
+	height:200px;
+	width:200px;
+}
+.tab_down {
+	background-color:#f7f7f7;
+	border-bottom:1px solid #FFFFFF;
+}
+/***************************************************/
