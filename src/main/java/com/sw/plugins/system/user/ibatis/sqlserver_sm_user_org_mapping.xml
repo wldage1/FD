@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	UserID               bigint not null comment '用户随机编号：系统生成',
+   	OrgID               bigint not null comment '机构ID',
+ -->
+<mapper namespace="userOrgMapping">
+	<parameterMap id="userOrgMapping" type="com.sw.plugins.system.user.entity.UserOrgMapping" />
+	
+	<!--  用户管理机构结果集  -->
+	<resultMap id="userOrgMapping" type="com.sw.plugins.system.user.entity.UserOrgMapping" >	
+		<result property="userId" column="UserID" />
+		<result property="orgId" column="OrgID" />
+    </resultMap>
+	
+	<!--  查询用户管理的机构  -->
+    <select id="select_user_org_mapper" resultMap="userOrgMapping" parameterMap="userOrgMapping">
+		select * from SM_UserOrgMapping 
+		<where>
+				<if test="userId!=null">
+					 UserID=${userId}
+				</if>
+		</where>
+	</select>
+	
+	<!--  查询用户管理的机构  -->
+    <select id="select_user_org_mapper_paginated" resultMap="userOrgMapping" parameterMap="userOrgMapping">
+		select a.* from (
+			select row_number() over(order by UserID DESC) as rowNum, *
+			from SM_UserOrgMapping 
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	
+	<!-- 保存用户与机构的关系  -->
+  	<insert id="insert" parameterMap="userOrgMapping">
+		insert into SM_UserOrgMapping
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,UserID</if>
+			<if test="orgId!=null">,OrgID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,${userId}</if>
+			<if test="orgId!=null">,${orgId}</if>
+		</trim>
+	</insert>
+
+	<!--  用户机构关系统计  -->
+	<select id="count" resultType="long" parameterMap="userOrgMapping">
+		select count(*) from SM_UserOrgMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null "> and UserID = ${userId}</if>
+				<if test="orgId != null "> and OrgID = ${orgId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 删除用户机构关系 -->
+	<delete id="delete" parameterMap="userOrgMapping">
+		delete from SM_UserOrgMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null "> and UserID = ${userId}</if>
+				<if test="orgId != null"> and OrgID = ${orgId}</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>

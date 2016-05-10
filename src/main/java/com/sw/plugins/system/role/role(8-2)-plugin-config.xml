@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<system name="系统管理" icon="images/menu/system-management.png">
+		<role isNav="true" isSetAuth="sub" isStatus="true" name="角色管理" icon="images/menu/system-management-role management.png">
+			<language>
+				<value>/language/roleMessages_zh_CN.properties</value>
+				<value>/language/roleMessages_en_US.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建"/>
+			<modify isNav="true" isLog="true" name="修改"/>
+			<funcauth isNav="true" isLog="true" name="功能授权"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+			<dataauth isNav="true" isLog="true" name="数据授权"/>
+		</role>
+	</system>
+</plugins>

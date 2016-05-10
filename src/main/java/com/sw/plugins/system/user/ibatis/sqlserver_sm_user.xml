@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	   ID                   bigint not null auto_increment comment '用户随机编号：系统生成',
+	   OrgName              varbinary(255) comment '机构名称',
+	   Account              varchar(50) comment '用户登录ID：用户登录系统的标识，一般是英文字符或者数字。',
+	   Name                 varchar(100) comment '用户名称：登录系统的用户的姓名。',
+	   Type                 char(1) comment '0.超级管理员 1.其他管理员',
+	   Password             varchar(50) comment '用户密码：用户登录系统的验证密码。',
+	   Gender               char(1) comment '用户性别
+	            1:男性
+	            2:女性
+	            3:其他',
+	   MobilePhone          varchar(20) comment '用户移动电话：用户移动电话号码。',
+	   OfficePhone          varchar(20) comment '用户办公电话：用户办公电话号码。',
+	   Email                varchar(200) comment '用户邮件：用户的邮箱地址。',
+	   Description          varchar(200) comment '用户描述：用户一些相关的备注信息',
+	   Status               char(1) comment '用户状态：1.启用 0.禁用',
+	   CreateTime           datetime comment '创建时间：记录用户的创建时间。',
+	   ModifyTime           datetime comment '更新时间',
+	   CreatorUserID              varchar(50) comment '创建者：记录用户的创建人员的名称。',
+ -->
+<mapper namespace="user">
+	<parameterMap id="user" type="com.sw.plugins.system.user.entity.User" />
+
+	<!-- 用户结果集 -->
+	<resultMap id="userResult" type="com.sw.plugins.system.user.entity.User">
+		<id property="id" column="ID" javaType="java.lang.Long" />
+		<result property="orgId" column="OrgID" />
+		<result property="account" column="Account" />
+		<result property="name" column="Name" />
+		<result property="orgName" column="OrgName" />
+		<result property="type" column="Type" />
+		<result property="position" column="Position" />
+		<result property="password" column="Password" />
+		<result property="gender" column="Gender" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="officePhone" column="OfficePhone" />
+		<result property="extensionNumber " column="ExtensionNumber " />
+		<result property="workNumber" column="WorkNumber" />
+		<result property="seatPassword" column="SeatPassword" />
+		<result property="outBoundAllowed" column="OutBoundAllowed" />
+		<result property="email" column="Email" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<result property="birthday" column="Birthday"/>
+		<result property="individualitySignature" column="IndividualitySignature" />
+		<result property="head" column="Head" />
+		<result property="organizationCode" column="organizationCode" />
+		<result property="businessTypeId" column="BusinessTypeID" />
+		
+	</resultMap>
+	
+	<!-- 用户结果集 -->
+	<resultMap id="userResultWithRole" type="com.sw.plugins.system.user.entity.User">
+		<id property="id" column="ID" javaType="java.lang.Long" />
+		<result property="orgId" column="OrgID" />
+		<result property="account" column="Account" />
+		<result property="name" column="Name" />
+		<result property="orgName" column="OrgName" />
+		<result property="type" column="Type" />
+		<result property="position" column="Position" />
+		<result property="password" column="Password" />
+		<result property="gender" column="Gender" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="officePhone" column="OfficePhone" />
+		<result property="extensionNumber " column="ExtensionNumber " />
+		<result property="workNumber" column="WorkNumber" />
+		<result property="seatPassword" column="SeatPassword" />
+		<result property="outBoundAllowed" column="OutBoundAllowed" />
+		<result property="email" column="Email" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<result property="birthday" column="Birthday"/>
+		<result property="individualitySignature" column="IndividualitySignature" />
+		<result property="head" column="Head" />
+		<result property="organizationCode" column="organizationCode" />
+		<result property="businessTypeId" column="BusinessTypeID" />
+		<collection property="roles" ofType="java.util.List" resultMap="roleResult" />
+	</resultMap>
+
+	<!-- 用户角色结果集 -->
+	<resultMap id="roleResult" type="com.sw.plugins.system.role.entity.Role">
+		<result property="id" column="RoleID" />
+		<result property="name" column="RoleName" />
+	</resultMap>
+	
+	<!-- 用户管理机构结果集 -->
+	<resultMap id="userOrgMapping" type="com.sw.plugins.system.user.entity.UserOrgMapping" >	
+		<result property="userID" column="UserID" />
+		<result property="orgId" column="OrgID" />
+    </resultMap>
+
+
+	<!-- 用户统计查询 -->
+	<select id="count" resultType="long" parameterMap="user">
+		select count(id) from SM_User u 
+		<where>
+			u.OrgID is not null
+			<if test="name!=null and name!=''">
+				and Name like '%${name}%' 
+			</if>
+			<if test="account!=null and account!=''">
+				and Account = #{account}
+			</if>
+			<if test="orgId !=null ">
+				and OrgID = ${orgId}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 用户统计查询 -->
+	<select id="count_for_user_duplication" resultType="long" parameterMap="user">
+		select count(id) from SM_User u 
+		<where>
+			u.OrgID is not null
+			<if test="account!=null and account!=''">
+				and Account = #{account}
+			</if>
+			<if test="workNumber  !=null and workNumber  != '' ">
+				and WorkNumber  = #{workNumber }
+			</if>
+			<if test="id!=null and id!=''">
+				and ID != ${id}
+			</if>
+		</where>
+	</select>
+
+	<!-- 用户通用查询 -->
+	<select id="select" resultMap="userResult" parameterMap="user">
+		select * from SM_User  u
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+				<if test="account!=null and account!=''">
+					and Account='${account}'
+				</if>		
+				<if test="orgId!=null">
+					and u.OrgId=${orgId}
+				</if>		
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 根据机构ID查询用户姓名和用户所属的机构名称 -->
+	<select id="select_userName_orgName" resultMap="userResult" parameterMap="user">
+		select u.id, u.name, o.name orgName, u.orgId
+			from SM_User u, SM_Organization o
+		<where>
+			<trim prefixOverrides="and">
+				u.orgId = o.id
+				<if test="id!=null">
+					and u.ID=${id}
+				</if>
+				<if test="orgId!=null">
+					and u.orgId=${orgId}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 根据二级机构角色获取数据授权机构的用户 -->
+	<select id="select_userName" resultMap="userResult" parameterMap="user">
+		select a.id id, a.name name from sm_user a left join SM_UserRoleMapping b on a.id = b.userid
+			where orgid in (select o.id from SM_UserOrgMapping uom, SM_Organization o
+		<where>
+			<trim prefixOverrides="and">
+				uom.OrgID = o.ID
+				<if test="id!=null">
+					and uom.UserID=${id}
+				</if>
+				<if test="paramRoleId!=null">
+					and b.roleid=${paramRoleId}
+				</if>
+			</trim>
+		</where>)
+	</select>
+	
+	<!-- 根据机构ID和岗位ID查询用户 -->
+	<select id="select_user_by_orgid_positionid" resultMap="userResult" parameterMap="user">
+		select 
+			distinct u.*
+		from SM_User u 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgId!=null">
+					and u.orgId=${orgId}
+				</if>
+				<if test="position!=null and position!=''">
+					and u.position like '%${position}%'
+				</if>
+				<!-- 
+				<![CDATA[ and m.PositionID in ]]> 
+					 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}
+		        	</foreach> 
+				<![CDATA[]]>
+				 -->
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 根据机构ID和角色ID查询用户 -->
+	<select id="select_user_by_orgid_roleid" resultMap="userResult" parameterMap="user">
+		select distinct u.*
+			from (select a.*, b.Name OrgName from SM_User a join SM_Organization b on a.OrgID = b.ID) u 
+				left join SM_UserRoleMapping m on m.UserID = u.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgId!=null">
+					and u.orgId=${orgId}
+				</if>
+				<![CDATA[ and m.RoleID in ]]> 
+					 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}
+		        	</foreach> 
+				<![CDATA[]]>
+			</trim>
+		</where>
+	</select>
+	
+	<!--  根据用户岗位查询用户  -->
+	<select id="select_user_by_positionid"  resultMap="userResult" parameterMap="user"  >
+		select distinct u.ID ,u.* from  SM_User u
+		where u.OrgID is not null and u.Position like '%${position}%'
+		<!--  
+		 <![CDATA[ m.PositionID in ]]> 
+			 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+           	 	${item}   
+        	</foreach> 
+		<![CDATA[]]>
+		-->
+	</select>
+	
+	<!--  根据用户岗位查询用户  -->
+	<select id="select_user_by_positionid_paginated"  resultMap="userResult" parameterMap="user"  >
+		select distinct a.ID,OrgId,Account,Name,Type,Password,Gender,MobilePhone,OfficePhone,ExtensionNumber,WorkNumber,SeatPassword,OutBoundAllowed,Email,Description,Status,Birthday,IndividualitySignature,Head  from (
+			select u.*,row_number() over(order by u.ID DESC) rowNum
+			from SM_User u
+			where
+				u.OrgID is not null and u.Position like '%${position}%'
+				<!-- 
+				 <![CDATA[ m.PositionID in ]]> 
+					<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}   
+		        	</foreach> 
+				<![CDATA[]]>
+				 -->
+				<if test="orgId!=null">
+					and u.orgId=${orgId}
+				</if> 
+		) a
+		where <![CDATA[ a.rowNum > ${start}and a.rowNum < ${offset} ]]>
+	</select>
+	
+	<!--  根据用户岗位查询用户总数  -->
+	<select id="count_user_by_position" resultType="Long" parameterMap="user">
+		select count(u.ID)
+			from SM_User u
+			where
+				u.OrgID is not null and u.Position like '%${position}%'
+				<!-- 
+				 <![CDATA[ m.PositionID in ]]>
+					<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+		           	 	${item}
+		        	</foreach>
+				<![CDATA[]]>
+				 -->
+				<if test="orgId!=null">
+					and u.orgId=${orgId}
+				</if>
+	</select>
+
+	<select id="select_sys_admin" resultMap="userResult" parameterMap="user">
+		select * from SM_User u where u.Type = 0 and u.OrgID is null
+	</select>
+
+	<!-- 用户分页查询 -->
+	<select id="select_paginated" resultMap="userResult" parameterMap="user">
+		select a.* from (
+			select row_number() over(order by ID DESC) as rowNum, *
+			from SM_User 
+			where
+				u.OrgID is not null
+				<if test="name!=null and name!=''">and Name like '%${name}%' </if>
+				<if test="orgId!=null">and OrgID = ${orgId} </if> 
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	
+	<!-- 用户分页查询 -->
+	<select id="select_user_of_org_paginated" resultMap="userResult" parameterMap="user">
+		select a.* from (
+			select row_number() over(order by u.ID DESC) as rowNum,u.*, org.Name OrgName
+			from  SM_User u ,SM_Organization org
+			where
+				u.OrgID = org.ID and u.OrgID is not null
+				<if test="orgTreePath!=null">and org.TreePath like '${orgTreePath}%'</if>
+				<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+				<if test="gridSearch != null and gridSearch != ''"> and ${gridSearch}</if>
+				<if test="orgId!=null and orgId!=''">and u.orgId = ${orgId}</if>
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	
+	<!--新增条件进行用户分页查询  -->
+	<select id="select_user_by_org_paginated" resultMap="userResult" parameterMap="user">
+		select a.* from (
+		select row_number() over(order by u.ID DESC) as rowNum ,u.* from 
+		(select distinct u.id,u.name,u.account,org.id orgId, org.Name OrgName,t.taskId from SM_User u ,SM_Organization org ,
+		BM_TaskDataDistribute t,BM_TaskDataDistributeQuota q
+		 where u.OrgID = org.ID and u.position  like '%${positionCode}%' and u.id=q.userId and q.TaskDistributeID=t.id)u		 			
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgTreePath!=null and orgTreePath!=''">and org.TreePath like '${orgTreePath}%'</if>
+				<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+				<if test="account!=null and account!=''">and u.Account = #{account}</if>
+				<if test="orgId!=null and orgId!=''">and u.OrgID = ${orgId}</if>
+				<if test="taskId!=null and taskId!=''">and u.taskId = ${taskId}</if>
+			</trim>
+		</where>	
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	
+	<!-- 新增条件进行用户分页统计 -->
+	<select id="count_user_by_org" resultType="Long" parameterMap="user">
+		select count(u.id) from 
+		(select distinct u.id,u.name,u.account,org.id orgId, org.Name OrgName,t.taskId from SM_User u ,SM_Organization org ,
+		BM_TaskDataDistribute t,BM_TaskDataDistributeQuota q
+		 where u.OrgID = org.ID and u.position  like '%${positionCode}%' and u.id=q.userId and q.TaskDistributeID=t.id)u		 			
+		<where>
+			<trim prefixOverrides="and">
+			<if test="orgTreePath!=null and orgTreePath!=''">
+				and org.TreePath like '${orgTreePath}%' 
+			</if>
+			<if test="account!=null and account!=''">and u.Account = #{account}</if>
+			<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+			<if test="orgId!=null and orgId!=''">and u.OrgID = ${orgId}</if>
+			<if test="taskId!=null and taskId!=''">and u.taskId = ${taskId}</if>
+			<if test="gridSearch != null and gridSearch != ''"> and ${gridSearch}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 用户分页统计 -->
+	<select id="count_user_of_org" resultType="Long" parameterMap="user">
+		select count(u.ID) from SM_User u ,SM_Organization org
+		where u.OrgID = org.ID and
+			u.OrgID is not null
+			<if test="orgTreePath!=null">
+				and org.TreePath like '${orgTreePath}%' 
+			</if>
+			<if test="gridSearch != null and gridSearch != ''">
+				and ${gridSearch} 
+			</if>
+			<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+			<if test="orgId!=null and orgId!=''">and u.orgId = ${orgId}</if>
+	</select>
+	
+	<!-- 机构权限内用户分页查询 -->
+	<select id="select_user_of_orgsource_paginated" resultMap="userResult" parameterMap="user">
+		select a.* from (
+			select row_number() over(order by u.ID DESC) as rowNum,u.*, org.Name OrgName
+			from  SM_User u ,SM_Organization org , SM_UserOrgMapping orgmapper
+			where
+				u.OrgID = org.ID and org.ID = orgmapper.OrgID and u.OrgID is not null
+				<if test="id!=null">and orgmapper.UserID = ${id}</if>
+				<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+				<if test="gridSearch != null and gridSearch != ''">
+					and ${gridSearch} 
+				</if>
+				<if test="orgId!=null and orgId!=''">and u.orgId = ${orgId}</if>
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	<!-- 新增条件进行机构权限内用户分页查询 -->
+	<select id="select_user_by_orgsource_paginated" resultMap="userResult" parameterMap="user">
+		select a.* from (
+		select row_number() over(order by u.ID DESC) as rowNum ,u.* from 
+		(select distinct u.id,u.name,u.account,org.id orgId, org.Name OrgName,org.code organizationCode,t.taskId from SM_User u ,SM_Organization org 
+		,BM_TaskDataDistribute t,BM_TaskDataDistributeQuota q
+		 where u.OrgID = org.ID  and u.position like '%${positionCode}%' and u.id=q.userId and q.TaskDistributeID=t.id)u				
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">and u.UserID = ${id}</if>
+				<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+				<if test="account!=null and account!=''">and u.Account = #{account}</if>
+				<if test="orgTreePath!=null and orgTreePath!=''">and u.OrgID in (${orgTreePath})</if>
+				<if test="taskId!=null and taskId!=''">and u.taskId = ${taskId}</if>
+			</trim>
+		</where>		
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>	
+	
+	<!-- 新增条件进行机构权限内用户分页查询 -->
+	<select id="count_user_by_orgsource" resultType="Long" parameterMap="user">
+			select count(u.id) from 
+			(select distinct u.id,u.name,u.account,org.id orgId, org.Name OrgName,t.taskId from SM_User u ,SM_Organization org 
+			,BM_TaskDataDistribute t,BM_TaskDataDistributeQuota q
+			 where u.OrgID = org.ID and  u.position  like '%${positionCode}%' and u.id=q.userId and q.TaskDistributeID=t.id)u 			
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">	and u.UserID = ${id} </if>
+				<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+				<if test="account!=null and account!=''">and u.Account = #{account}</if>
+				<if test="orgTreePath!=null and orgTreePath!=''">and u.OrgID in (${orgTreePath})</if>
+				<if test="taskId!=null and taskId!=''">and u.taskId = ${taskId}</if>
+			</trim>
+		</where>
+	</select>
+	
+	
+	<!-- 机构权限内用户分页查询 -->
+	<select id="count_user_of_orgsource" resultType="Long" parameterMap="user">
+		select count(u.ID)from SM_User u ,SM_Organization org , SM_UserOrgMapping orgmapper
+		where u.OrgID = org.ID and org.ID = orgmapper.OrgID and 
+			u.OrgID is not null
+			<if test="id!=null">
+				and orgmapper.UserID = ${id} 
+			</if>
+			<if test="gridSearch != null and gridSearch != ''">and ${gridSearch} </if>
+			<if test="name!=null and name!=''">and u.Name like '%${name}%'</if>
+			<if test="orgId!=null and orgId!=''">and u.orgId = ${orgId}</if>
+	</select>
+	
+
+	<!-- 新建用户 -->
+	<insert id="insert" parameterMap="user">
+		insert into SM_User
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="account!=null and account != ''">,Account</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="orgId!=null">,OrgID</if>
+			<if test="type!=null">,Type</if>
+			<if test="position!=null">,Position</if>
+			<if test="password!=null and password!=''">,Password</if>
+			<if test="gender!=null and gender !=''">,Gender</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone</if>
+			<if test="officePhone!=null and officePhone!=''">,OfficePhone</if>
+			<if test="extensionNumber !=null and extensionNumber !=''">,ExtensionNumber </if>
+			<if test="workNumber!=null and workNumber!=''">,WorkNumber</if>
+			<if test="seatPassword!=null and seatPassword!=''">,SeatPassword</if>
+			<if test="outBoundAllowed!=null">,OutBoundAllowed</if>
+			<if test="email!=null and email!=''">,Email</if>
+			<if test="description!=null and description!=''">,Description</if>
+			,Status
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+			<if test="birthday!=null and birthday!=''">,Birthday</if>
+			<if test="individualitySignature!=null and individualitySignature!=''">,IndividualitySignature</if>
+			<if test="head!=null and head!=''">,Head</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="account!=null and account != ''">,#{account}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+		    <if test="orgId!=null">,${orgId}</if>
+			<if test="type!=null">,${type}</if>
+			<if test="position!=null">,#{position}</if>
+			<if test="password!=null and password!=''">,#{password}</if>
+			<if test="gender!=null and gender !=''">,#{gender}</if>
+			<if test="mobilePhone!=null and mobilePhone!=''">,#{mobilePhone}</if>
+			<if test="officePhone!=null and officePhone!=''">,#{officePhone}</if>
+			<if test="extensionNumber !=null and extensionNumber !=''">,#{extensionNumber }</if>
+			<if test="workNumber!=null and workNumber!=''">,#{workNumber}</if>
+			<if test="seatPassword!=null and seatPassword!=''">,#{seatPassword}</if>
+			<if test="outBoundAllowed!=null">,${outBoundAllowed}</if>
+			<if test="email!=null and email!=''">,#{email}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			,1
+			,GETDATE()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+			<if test="birthday!=null and birthday!=''">,#{birthday}</if>
+			<if test="individualitySignature!=null and individualitySignature!=''">,#{individualitySignature}</if>
+			<if test="head!=null and head!=''">,#{head}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			  SELECT IDENT_CURRENT('SM_User')   
+		</selectKey>
+	</insert>
+
+	<!-- 更新用户 -->
+	<update id="update" parameterMap="user">
+		update SM_User
+		<set>
+			<trim prefixOverrides=",">
+				<if test="account!=null and account != ''">,Account = #{account}</if>
+				<if test="name!=null and name!=''">,Name = #{name}</if>
+				<if test="orgId!=null">,OrgID=${orgId}</if>
+				<if test="type!=null">,Type = ${type}</if>
+				<if test="position!=null">,Position = #{position}</if>
+				<if test="password!=null and password!=''">,Password = #{password}</if>
+				<if test="gender!=null and gender !=''">,Gender = #{gender}</if>
+				<if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone = #{mobilePhone}</if>
+				<if test="officePhone!=null and officePhone!=''">,OfficePhone = #{officePhone}</if>
+				<if test="extensionNumber !=null and extensionNumber !=''">,ExtensionNumber  = #{extensionNumber }</if>
+				<if test="workNumber!=null and workNumber!=''">,WorkNumber = #{workNumber}</if>
+				<if test="seatPassword!=null and seatPassword!=''">,SeatPassword = #{seatPassword}</if>
+				<if test="outBoundAllowed!=null">,OutBoundAllowed = ${outBoundAllowed}</if>
+				<if test="email!=null and email!=''">,Email = #{email}</if>
+				<if test="description!=null and description!=''">,Description = #{description}</if>
+				<if test="status!=null and status!=''">,Status = #{status}</if>
+				<if test="creatorUserId!=null">,CreatorUserID = #{creatorUserId}</if>
+				<if test="birthday!=null and birthday!=''">,Birthday = #{birthday}</if>
+				<if test="individualitySignature!=null and individualitySignature!=''">,IndividualitySignature = #{individualitySignature}</if>
+				<if test="head!=null and head!=''">,Head = #{head}</if>
+				,ModifyTime=GETDATE()
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=''">
+				and ID=${id}
+			</if>
+		</where>
+	</update>
+	
+	<update id="update_style" parameterMap="user">
+		update SM_User
+		<set>
+			<trim prefixOverrides=",">
+				<if test="style!=null and style != ''">,Style = #{style}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=''">
+				ID=${id}
+			</if>
+		</where>
+	</update>	
+	
+	<update id="update_business_type_by_id" parameterMap="user">
+		update SM_User
+		<set>
+			<trim prefixOverrides=",">
+				<if test="businessTypeId!=null and businessTypeId != ''">,BusinessTypeID = ${businessTypeId}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null and id!=''">
+				ID=${id}
+			</if>
+		</where>
+	</update>		
+
+	<!-- 用户通用删除 -->
+	<delete id="delete" parameterMap="user">
+		delete from SM_User
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+				<if test="account!=null and account!=''">
+					and Account='${account}'
+				</if>		
+			</trim>
+		</where>
+	</delete>
+
+	<delete id="delete_by_in" parameterMap="user">
+		delete from SM_User where ID in (#{id})
+	</delete>
+	
+	<update id="update_head_by_id" parameterMap="user">
+		update SM_User set Head = null where ID = ${id}
+	</update>
+	
+</mapper>

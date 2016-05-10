@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	userId               bigint not null comment '用户随机编号：系统生成',
+   	OrgID               bigint not null comment '机构ID',
+ -->
+<mapper namespace="userRoleMapping">
+	<parameterMap id="userRoleMapping" type="com.sw.plugins.system.user.entity.UserRoleMapping" />
+	
+	<!--  用户管理机构结果集  -->
+	<resultMap id="userRoleMapping" type="com.sw.plugins.system.user.entity.UserRoleMapping" >	
+		<result property="userId" column="UserID" />
+		<result property="roleId" column="RoleID" />
+    </resultMap>
+	
+	<!-- 查询用户管理的角色 -->
+    <select id="select_user_role_mapper" resultMap="userRoleMapping" parameterMap="userRoleMapping">
+		select * from SM_UserRoleMapping 
+		<where>
+				<if test="userId!=null">
+					 UserID=${userId}
+				</if>
+		</where>
+	</select>
+	
+	<!--保存用户与角色的关系 -->
+  	<insert id="insert" parameterMap="userRoleMapping">
+		insert into SM_UserRoleMapping
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,UserID</if>
+			<if test="roleId!=null">,RoleID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,${userId}</if>
+			<if test="roleId!=null">,${roleId}</if>
+		</trim>
+	</insert>
+
+	<!-- 用户角色关系统计 -->
+	<select id="count" resultType="long" parameterMap="userRoleMapping">
+		select count(*) from SM_UserRoleMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null and userId != -1"> and UserID = ${userId}</if>
+				<if test="roleId != null and roleId != -1"> and RoleID = ${roleId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 删除用户角色关系 -->
+	<delete id="delete" parameterMap="userRoleMapping">
+		delete from SM_UserRoleMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null and userId != -1"> and UserID = ${userId}</if>
+				<if test="roleId != null and roleId != -1"> and RoleID = ${roleId}</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>

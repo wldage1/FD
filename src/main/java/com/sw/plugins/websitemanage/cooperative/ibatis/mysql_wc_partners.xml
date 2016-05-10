@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="partners">
+
+	<parameterMap id="partners" type="com.sw.plugins.websitemanage.cooperative.entity.Partners" />
+
+	<resultMap id="partnersResult" type="com.sw.plugins.websitemanage.cooperative.entity.Partners">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="url" column="Url" />
+		<result property="logo" column="Logo" />
+	</resultMap>
+	<!-- 查询详细信息 -->
+	<select id="select_one" resultMap="partnersResult" parameterMap="partners">
+		SELECT 
+			ID,
+			Name,
+			Url,
+			Logo
+		FROM
+			WC_Partners 
+		<where>
+			ID = ${id}
+		</where>
+	</select>
+	<!-- 列表分页查询 -->
+	<select id="select_partners_list" resultMap="partnersResult" parameterMap="partners">
+		SELECT 
+			ID,
+			Name,
+			Url,
+			Logo
+		FROM
+			WC_Partners 
+			order by ID desc
+		limit ${start} , ${offset} 
+	</select>
+	<!-- 列表记录数 -->
+	<select id="select_partners_count" resultType="long" parameterMap="partners">
+		SELECT 
+			count(1)
+		FROM
+			WC_Partners 
+	</select>
+	<!-- 插入 -->
+	<insert id="insert_partners" parameterMap="partners">
+		INSERT INTO WC_Partners
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		    <if test="name!=null and name!=''">,Name</if>
+		    <if test="url!=null and url!=''">,Url</if>
+		    <if test="logo!=null and logo!=''">,Logo</if>
+		</trim>
+		VALUES
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="url!=null and url!=''">,#{url}</if>
+			<if test="logo!=null and logo!=''">,#{logo}</if>
+		</trim>
+	</insert>
+	<!-- 更新 -->
+	<update id="update_partners" parameterMap="partners">
+		update WC_Partners
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name = #{name}</if>
+				<if test="url!=null and url!=''">,Url = #{url}</if>
+				,Logo = #{logo}
+			</trim>
+		</set>
+		where ID = ${id}
+	</update>
+	<delete id="delete_partners" parameterMap="partners">
+		delete from WC_Partners where ID = ${id}
+	</delete>
+</mapper>

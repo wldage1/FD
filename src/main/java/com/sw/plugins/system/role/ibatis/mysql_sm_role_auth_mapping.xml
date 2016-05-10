@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   RoleID               bigint not null comment '角色ID',
+   AuthCode             varchar(100) not null comment '系统权限代码，编码为数字，具有一定的规律。格式如下：1，11，111，112，12，121，122，13，131，132……',
+-->
+<mapper namespace="roleAuthMapping">
+	<parameterMap id="roleAuthMapping" type="com.sw.plugins.system.role.entity.RoleAuthMapping" />
+	
+	<!--  用户管理机构结果集  -->
+	<resultMap id="roleAuthResult" type="com.sw.plugins.system.role.entity.RoleAuthMapping" >	
+		<result property="roleId" column="RoleID" javaType="java.lang.Long"/>
+		<result property="authCode" column="AuthCode" />
+    </resultMap>
+
+	<!-- 新建角色关系 -->
+	<insert id="insert" parameterMap="roleAuthMapping">
+		insert into SM_RoleAuthMapping
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,RoleID</if>
+			<if test="authCode!=null and authCode != ''">,AuthCode</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="roleId!=null">,${roleId}</if>
+			<if test="authCode!=null and authCode != ''">,#{authCode}</if>
+		</trim>
+	</insert>
+	
+	<!-- 角色权限关系查询 -->
+	<select id="select_role_auth_mapper" resultMap="roleAuthResult" parameterMap="roleAuthMapping">
+		select *
+		from SM_RoleAuthMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="roleId!=null">and RoleID = ${roleId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 角色权限关系统计 -->
+	<select id="count" resultType="long" parameterMap="roleAuthMapping">
+		select count(*) from SM_RoleAuthMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="authCode != null and authCode != ''">and AuthCode = #{authCode}</if>
+				<if test="roleId != null and roleId != -1">and RoleID = ${roleId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 删除角色权限关系 -->
+	<delete id="delete" parameterMap="roleAuthMapping">
+		delete from SM_RoleAuthMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="roleId != null"> and RoleID = ${roleId}</if>
+				<if test="authCode != null and authCode != ''"> and AuthCode = #{authCode}</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>

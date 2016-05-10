@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.position//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+	UserID               bigint not null comment '用户随机编号：系统生成',
+   	PositionID               bigint not null comment '岗位ID',
+ -->
+<mapper namespace="userPositionMapping">
+	<parameterMap id="userPositionMapping" type="com.sw.plugins.system.user.entity.UserPositionMapping" />
+	
+	<!--  用户岗位结果集  -->
+	<resultMap id="userPositionMapping" type="com.sw.plugins.system.user.entity.UserPositionMapping" >	
+		<result property="userId" column="UserID" />
+		<result property="positionId" column="PositionID" />
+    </resultMap>
+	
+	<!--  查询用户的岗位  -->
+    <select id="select_user_position_mapping" resultMap="userPositionMapping" parameterMap="userPositionMapping">
+		select * from SM_UserPositionMapping 
+		<where>
+				<if test="userId!=null">
+					 UserID=${userId}
+				</if>
+		</where>
+	</select>
+	
+	<!--  查询用户的岗位  -->
+    <select id="select_user_position_mapper_paginated" resultMap="userPositionMapping" parameterMap="userPositionMapping">
+		select 
+			*
+		from 
+			SM_UserPositionMapping 
+		limit ${start},${offset}   
+	</select>
+	
+	<!-- 保存用户与岗位的关系  -->
+  	<insert id="insert" parameterMap="userPositionMapping">
+		insert into SM_UserPositionMapping
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,UserID</if>
+			<if test="positionId!=null">,PositionID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="userId!=null">,${userId}</if>
+			<if test="positionId!=null">,${positionId}</if>
+		</trim>
+	</insert>
+
+	<!--  用户岗位关系统计  -->
+	<select id="count" resultType="long" parameterMap="userPositionMapping">
+		select count(*) from SM_UserPositionMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null "> and UserID = ${userId}</if>
+				<if test="positionId != null "> and PositionID = ${positionId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 删除用户岗位关系 -->
+	<delete id="delete" parameterMap="userPositionMapping">
+		delete from SM_UserPositionMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="userId != null "> and UserID = ${userId}</if>
+				<if test="positionId != null"> and PositionID = ${positionId}</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>

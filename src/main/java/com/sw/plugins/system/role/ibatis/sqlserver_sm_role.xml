@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   ID                   bigint not null auto_increment comment '角色ID',
+   ParentID             bigint comment '父角色ID：存储上一级角色ID，例如　232353，544243，123412',
+   RelationPath             varchar(1000) comment '角色关系',
+   Name                 varchar(50) comment '角色名称',
+   Description          varchar(500) comment '角色说明',
+   Type                 int comment '角色类型',
+   Status               char(1) comment '角色状态：0：开启
+                                1：禁用',
+   CreateTime           datetime comment '创建时间',
+   ModifyTime           datetime comment '更新时间',
+   CreatorUserID              varchar(50) comment '创建者',
+-->
+<mapper namespace="role">
+	<!-- 角色映射对象 -->
+	<parameterMap id="role" type="com.sw.plugins.system.role.entity.Role" />
+	<!-- 角色映射结果集 -->
+	<resultMap id="roleResult" type="com.sw.plugins.system.role.entity.Role">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="orgId" column="OrgID" />
+		<result property="orgName" column="OrgName" />
+		<result property="name" column="Name" />
+		<result property="type" column="Type" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<result property="isCommission" column="roleIsCommission" />
+	</resultMap>
+	
+	<!-- 角色映射结果集 -->
+	<resultMap id="roleResultWithAuth" type="com.sw.plugins.system.role.entity.Role">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="orgId" column="OrgID" />
+		<result property="orgName" column="OrgName" />
+		<result property="name" column="Name" />
+		<result property="type" column="Type" />
+		<result property="description" column="Description" />
+		<result property="status" column="Status" />
+		<result property="createTime" column="CreateTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<collection property="authorizations" ofType="java.util.List" resultMap="authResult" />
+	</resultMap>
+
+	<!--权仅限映射结果集 -->
+	<resultMap id="authResult" type="com.sw.core.data.entity.Authorization">
+		<result property="id" column="AuthID" />
+		<result property="code" column="Code" />
+		<result property="indexCode" column="IndexCode" />
+		<result property="relationPath" column="RelationPath" />
+		<result property="parentCode" column="ParentCode" />
+		<result property="treeLevel" column="TreeLevel" />
+		<result property="name" column="AuthName" />
+		<result property="type" column="AuthType" />
+		<result property="controller" column="Controller" />
+		<result property="dataSource" column="DataSource" />
+		<result property="icon" column="Icon" />
+		<result property="logOrNot" column="LogOrNot" />
+		<result property="navigateOrNot" column="NavigateOrNot" />
+		<result property="setAuthOrNot" column="SetAuthOrNot" />
+		<result property="setStatusOrNot" column="SetStatusOrNot" />
+		<result property="pageName" column="PageName" />
+	</resultMap>
+
+
+	<!-- 角色权限查询 -->
+	<select id="select_role_auth" resultMap="roleResultWithAuth" parameterMap="role">
+		select role.* ,
+		auth.Code Code,
+		auth.IndexCode IndexCode,
+		auth.RelationPath RelationPath,
+		auth.ParentCode ParentCode,
+		auth.TreeLevel TreeLevel,
+		auth.Name AuthName,
+		auth.Type AuthType,
+		auth.Controller Controller,
+		auth.DataSource DataSource,
+		auth.Icon Icon,
+		auth.LogOrNot LogOrNot,
+		auth.NavigateOrNot NavigateOrNot,
+		auth.SetAuthOrNot SetAuthOrNot,
+		auth.SetStatusOrNot SetStatusOrNot,
+		auth.PageName PageName
+		from SM_Role role,SM_RoleAuthMapping mapper,SM_Authorization auth
+		<where>
+			role.ID = mapper.RoleID and mapper.AuthCode = auth.Code
+			<if test="id!=null">
+				and role.ID=${id}
+			</if>
+			<if test="type!=null">
+				and role.Type=${type}
+			</if>
+		</where>
+	</select>
+
+	<select id="select_auth" resultMap="authResult" parameterMap="role">
+		select 
+		auth.Code Code,
+		auth.IndexCode IndexCode,
+		auth.RelationPath RelationPath,
+		auth.ParentCode ParentCode,
+		auth.TreeLevel TreeLevel,
+		auth.Name AuthName,
+		auth.Type AuthType,
+		auth.Controller Controller,
+		auth.DataSource DataSource,
+		auth.Icon Icon,
+		auth.LogOrNot LogOrNot,
+		auth.NavigateOrNot NavigateOrNot,
+		auth.SetAuthOrNot SetAuthOrNot,
+		auth.SetStatusOrNot SetStatusOrNot,
+		auth.PageName PageName
+		from SM_RoleAuthMapping mapper,SM_Authorization auth
+		<where>
+			mapper.AuthCode = auth.Code
+			<if test="id!=null">
+				and mapper.RoleID=${id}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 通用角色查询 -->
+	<select id="select" resultMap="roleResult" parameterMap="role">
+		select * from SM_Role
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+				<if test="name!=null">
+					and Name=#{name}
+				</if>
+				<if test="orgId!=null">
+					and OrgID=${orgId}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 角色机构查询 -->
+	<select id="select_role_with_org" resultMap="roleResult" parameterMap="role">
+		select role.id,role.OrgID,role.Name,role.Description,org.Name OrgName 
+		from SM_Role role left join SM_Organization org on role.OrgID = org.ID 
+		where role.Type != 0
+		<if test="orgId != null">and role.OrgID = ${orgId}</if>
+	</select>
+
+	<!-- 角色机构分页查询 -->
+	<select id="select_role_with_org_paginated" resultMap="roleResult" parameterMap="role">
+		select a.* from (
+			select row_number() over(order by role.ID DESC)  rowNum, role.id,role.OrgID,role.Name,role.Description,org.Name OrgName
+			from SM_Role role left join SM_Organization org on role.OrgID = org.ID 
+			where role.Type != 0
+			<if test="orgId != null">and role.OrgID = ${orgId}</if>
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	
+	<!-- 机构下的角色查询 -->
+	<select id="select_role_of_org" resultMap="roleResult" parameterMap="role">
+		select role.id,role.OrgID,role.Name,role.Description,org.Name OrgName,org.IsCommission roleIsCommission
+		from SM_Role role left join SM_Organization org on role.OrgID = org.ID 
+		where role.Type != 0
+		<if test="orgId != null">and org.ID in <![CDATA[ (${orgId})]]></if>
+	</select>
+	
+	<!-- 机构下的角色分页查询 -->
+	<select id="select_role_of_org_paginated" resultMap="roleResult" parameterMap="role">
+		select a.* from (
+			select row_number() over(order by role.ID DESC)  rowNum, role.id,role.OrgID,role.Name,role.Description,org.Name OrgName
+			from SM_Role role left join SM_Organization org on role.OrgID = org.ID 
+			where role.Type != 0
+			<if test="orgId != null">and org.ID in <![CDATA[ (${orgId})]]></if>
+			<if test="gridSearch != null and gridSearch != ''">
+				AND ${gridSearch} 
+			</if>
+		) a
+		where a.rowNum> ${start} and a.rowNum<![CDATA[<${offset}]]>
+	</select>
+	
+	<!-- 机构下的角色统计 -->
+	<select id="count_role_of_org" resultType="Long" parameterMap="role">
+		select count(role.id) 
+		from SM_Role role left join SM_Organization org on role.OrgID = org.ID 
+		where role.Type != 0
+		<if test="orgId != null">and org.ID in <![CDATA[ (${orgId})]]></if>
+		<if test="gridSearch != null and gridSearch != ''">
+			and ${gridSearch} 
+		</if>
+	</select>
+	
+	<!-- 角色统计查询 -->
+	<select id="count" resultType="long" parameterMap="role">
+		select count(ID) from SM_Role
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name !=null ">
+					and Name = #{name}
+				</if>
+				<if test="type!=null">
+					and Type=${type}
+				</if>
+				<if test="orgId!=null">
+					and OrgID=${orgId}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+
+	<!-- 角色新增 -->
+	<insert id="insert" parameterMap="role">
+		insert into SM_Role
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgId !=null">,OrgID</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="type!=null">,Type</if>
+			<if test="description!=null and description!=''">,Description</if>
+			,Status
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgId!=null ">,${orgId}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="type!=null">,#{type}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			,1
+			,GETDATE()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			SELECT IDENT_CURRENT('SM_Role')   
+		</selectKey>
+	</insert>
+
+	<!-- 角色更新 -->
+	<update id="update" parameterMap="role">
+		update SM_Role
+		<set>
+			<trim prefixOverrides=",">
+				<if test="orgId!=null">,OrgID=${orgId}</if>
+				<if test="name!=null and name!=''">,Name=#{name}</if>
+				<if test="description!=null and description!=''">,Description=#{description}</if>
+				<if test="status!=null and status!=''">,Status=#{status}</if>
+				<if test="creatorUserId!=null">,CreatorUserID=${creatorUserId}</if>
+				,ModifyTime=GETDATE()
+			</trim>
+		</set>
+		where ID = ${id}
+	</update>
+
+	<!-- 删除角色 -->
+	<delete id="delete" parameterMap="role">
+		delete from SM_Role where ID = ${id} 
+	</delete>
+	
+	<!-- 删除角色 -->
+	<delete id="delete_by_orgid" parameterMap="role">
+		delete from SM_Role where OrgID = ${orgId} 
+	</delete>
+
+</mapper>

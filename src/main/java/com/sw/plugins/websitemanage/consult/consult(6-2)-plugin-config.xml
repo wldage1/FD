@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<websitemanage name="网站管理" icon="images/menu/website-management.png">
+		<consult isNav="true" isSetAuth="sub" isStatus="true" name="网站咨询" icon="images/menu/consultive-management-website consult.png">
+			<language>
+				<value>/lanaguage/consultMessages_zh_CN.properties</value>
+			</language>
+			<handle isNav="true" isLog="true" name="处理" icon="images/icon/create.png" />
+		</consult>
+	</websitemanage>
+</plugins>
