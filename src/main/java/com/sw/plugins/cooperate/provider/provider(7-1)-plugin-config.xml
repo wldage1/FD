@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<cooperate name="客户中心" icon="images/menu/cooperate-center.png">
+		<provider isNav="true" isSetAuth="sub" isStatus="true" name="供应商管理" icon="images/menu/customer-center-supplier management.png">
+			<language>
+				<value>/language/providerMessages_zh_CN.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<detail isNav="true" isLog="true" name="详细" icon="images/icon/detail.png"/>
+			<provideruser isNav="true" isLog="true" name="用户管理" icon="images/icon/detail.png">
+				<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+				<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+				<resetpassword isNav="true" isLog="true" isSetAuth="true" name="重置密码"/> 
+				<detail isNav="true" isLog="true" name="详细" icon="images/icon/detail.png"/>
+				<stop isNav="true" isLog="true" name="禁用" icon="images/icon/outage.png"/>
+			</provideruser>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/> 
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+			<status isNav="true" isLog="true" name="停用" icon="images/icon/outage.png"/>
+		</provider>
+	</cooperate>
+</plugins>
