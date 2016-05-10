@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+   ID                   bigint not null auto_increment comment '字典内容ID',
+   Code                varchar(100) not null comment '字典字段1',
+   Name                 varchar(100) not null comment '字典字段2',
+-->
+<mapper namespace="dictionary">
+	<parameterMap id="dictionary" type="com.sw.plugins.config.dictionary.entity.Dictionary" />
+	<parameterMap id="dictionaryItem" type="com.sw.plugins.config.dictionary.entity.DictionaryItem"/>
+	<resultMap id="dictionaryResult" type="com.sw.plugins.config.dictionary.entity.Dictionary">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="code" column="Code" />
+		<result property="description" column="Description" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+	</resultMap>
+
+	<!-- 字典通用查询 -->
+	<select id="select" resultMap="dictionaryResult" parameterMap="dictionary">
+		select * from SC_Dictionary
+		<where>	
+			<trim prefixOverrides="and">
+				<if test="id != null and id!=''">
+			 	 and ID=${id}
+				</if>
+			 	<if test="code !=null and code !=''">
+			 	 and Code=#{code}
+				</if>
+			</trim>
+		</where>
+		order by id asc
+	</select>
+	
+	<select id="select_count" resultType="java.lang.Long" parameterMap="dictionary">
+		select count(*) from SC_Dictionary
+		<where>	
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!=''">
+			 	 and ID=${id}
+				</if>
+			 	<if test="code != null and code !=''">
+			 	 and Code=#{code}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="count_for_duplicate" resultType="java.lang.Long" parameterMap="dictionary">
+		select count(*) from SC_Dictionary
+		<where>
+			<trim prefixOverrides="and">
+				<if test="code != null and code !=''">
+				 	 or Code=#{code}
+				</if>
+				<if test="name != null and name !=''">
+				 	 or Name=#{name}
+				</if>
+			</trim>
+			<if test="id!=null and id!=''">
+				and ID != ${id}
+			</if>
+		</where>
+	</select>		
+	
+	<insert id="insert" parameterMap="dictionary">
+		insert into SC_Dictionary
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,Name</if>
+			<if test="code!=null and code != ''">,Code</if>
+			<if test="description!=null and description != ''">,Description</if>
+			,CreateTime,CreatorUserID
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,#{name}</if>
+			<if test="code!=null and code!= ''">,#{code}</if>
+			<if test="description!=null and description != ''">,#{description}</if>
+			,now(),${creatorUserId}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>
+	</insert>
+		
+	<update id="update" parameterMap="dictionary">
+		update SC_Dictionary
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="name !=null and name !=''">,Name = #{name}</if>
+				<if test="code !=null and code !=''">,Code = #{code}</if>
+				<if test="description!=null and description != ''">,Description = #{description}</if>
+				,ModifyTime = now()
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+			 	<if test="id!=null and id!=''">
+			 	 and ID=${id}
+				</if>		
+			</trim>
+		</where>		
+	</update>		
+		
+	<delete id="delete" parameterMap="dictionary">
+		delete from SC_Dictionary
+		<where>
+			<trim prefixOverrides="and">
+			 	<if test="id!=null and id!=''">
+			 	 and ID=${id}
+				</if>
+			 	<if test="code !=null and code !=''">
+			 	 and Code=#{code}
+				</if>				
+			</trim>
+		</where>			
+	</delete>
+	
+	<!-- 删除所有数据并重置主键 -->
+	<delete id="delete_over_key">
+		truncate table SC_Dictionary
+	</delete>
+	
+    <!-- 插入字典条目 -->
+	<insert id="insertDictionaryItem" useGeneratedKeys="true" keyProperty="id" parameterMap="dictionaryItem">
+		insert into SC_DictionaryItem
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="dictionaryId !=null ">,DictionaryID</if>
+			<if test="dictionaryCode !=null and dictionaryCode !=''">,DictionaryCode</if>
+			<if test="itemName !=null and itemName !=''">,ItemName</if>
+			<if test="itemValue !=null and itemValue !=''">,ItemValue</if>
+			,CreateTime
+			,CreatorUserID
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="dictionaryId !=null ">,${dictionaryId}</if>
+			<if test="dictionaryCode !=null and dictionaryCode !=''">,#{dictionaryCode}</if>
+			<if test="itemName !=null and itemName !=''">,#{itemName}</if>
+			<if test="itemValue !=null and itemValue !=''">,#{itemValue}</if>
+			,now(),${creatorUserId}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>
+	</insert>
+		<!-- 删除字典条目 -->
+	<delete id="delete_dictionary_items_by_code" parameterMap="dictionaryItem">
+		delete from SC_DictionaryItem where DictionaryCode=#{dictionaryCode}
+	</delete>
+</mapper>

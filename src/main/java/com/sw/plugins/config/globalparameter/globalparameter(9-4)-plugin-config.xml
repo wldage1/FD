@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限 all:全部权限 sub:当前功能下级权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<config name="系统配置" icon="images/menu/system-configuration.png">
+		<globalparameter isNav="true" isSetAuth="sub" isStatus="true" name="全局参数配置" icon="images/menu/system-configuration-global commands.png">
+			<language>
+				<value>/language/globalparameterMessages_zh_CN.properties</value>
+			</language>
+			<modify isNav="true" isLog="true" name="修改"/>
+			<save isNav="true" isLog="true" name="保存"/>
+			<cancel isNav="true" isLog="true" name="取消"/>
+			<modifycom isNav="true" isLog="true" name="修改"/>
+			<createcom isNav="true" isLog="true" name="创建"/>
+		</globalparameter>
+	</config>
+</plugins>

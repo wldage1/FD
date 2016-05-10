@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ 
+<mapper namespace="globalParameter">
+	<parameterMap type="com.sw.plugins.config.globalparameter.entity.GlobalParameter" id="globalParameter" />
+	<resultMap type="com.sw.plugins.config.globalparameter.entity.GlobalParameter" id="globalParameterResult">
+		<result property="id" column="ID" />
+		<result property="code" column="Code"/>
+		<result property="name" column="Name"/>
+		<result property="dictionaryCode" column="DictionaryCode"/>
+		<result property="codeItem" column="CodeItem"/>
+		<result property="orgID" column="OrgID"/>
+		<result property="value" column="Value"/>
+		<result property="createTime" column="CreateTime"/>
+		<result property="modifyTime" column="ModifyTime"/>
+		<result property="creatorUserId" column="CreatorUserID"/>
+	</resultMap>
+	
+	<select id="select" parameterMap="globalParameter" resultMap="globalParameterResult">
+		select * from SC_GlobalParameter sg where orgid is null
+		<if test="orgID!=null and orgID!=''"> and orgID = #{orgID}</if>
+	</select>
+	<select id="selectCom" parameterMap="globalParameter" resultMap="globalParameterResult">
+		select sg.name,value,so.name as orgname,sg.code,sg.id  from SC_GlobalParameter sg join SM_Organization so on sg.orgid=so.id  where so.IsCommission=1
+		<if test="orgID!=null and orgID!=''"> and sg.orgID = #{orgID}</if>
+		<if test="codeItem!=null and codeItem!=''">
+			<![CDATA[ and sg.code in ]]> 
+				<foreach item="item" index="index" collection="codeItem" open="(" separator="," close=")">   
+		       	 	'${item}'
+		    	</foreach> 
+			<![CDATA[]]>
+			
+		</if>
+	</select>
+	
+	<select id="select_sys_one" parameterMap="globalParameter" resultMap="globalParameterResult">
+		select * from SC_GlobalParameter where Code = #{code}
+	</select>
+	
+	<select id="select_one" parameterMap="globalParameter" resultMap="globalParameterResult">
+		select * from SC_GlobalParameter sg join SM_Organization so on sg.orgid=so.id where sg.Code = #{code}
+	</select>
+	<select id="select_one_com" parameterMap="globalParameter" resultMap="globalParameterResult">
+		select sg.name,value,sg.code,so.name as orgname,sg.id,sg.orgid from SC_GlobalParameter sg join SM_Organization so on sg.orgid=so.id  where so.IsCommission=1
+		<if test="id!=null and id!=''"> and sg.id = #{id}</if>
+	</select>
+	
+	<select id="count" parameterMap="globalParameter" resultType="Long">
+		select count(*) from SC_GlobalParameter where 1=1
+		<if test="code!=null and code!=''"> and Code = #{code}</if>
+	</select>
+	<select id="count_for_code" parameterMap="globalParameter" resultType="Long">
+		select count(*) from SC_GlobalParameter where 1=1
+		<if test="code!=null and code!=''"> and Code = #{code}</if>
+		<if test="orgID!=null and orgID!=''"> and orgID = #{orgID}</if>
+		<if test="id!=null and id!=''"> and id != #{id}</if>
+	</select>
+	
+	<insert	id="insert" parameterMap="globalParameter">
+		insert into SC_GlobalParameter
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgID!=null and orgID!=''">,orgID</if>
+			<if test="code!=null and code!=''">,code</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="value!=null and value!=''">,Value</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgID!=null and orgID!=''">,#{orgID}</if>
+			<if test="code!=null and code!=''">,#{code}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="value!=null and value!=''">,#{value}</if>
+			,now()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>	
+	</insert>
+	
+	<update id="update" parameterMap="globalParameter">
+		update SC_GlobalParameter
+		<set> 
+			<trim prefixOverrides="," >
+				<if test="name!=null and name!=''">,name = #{name}</if>
+				<if test="value!=null and value!=''">,Value = #{value}</if>
+				,ModifyTime = now()
+			</trim>
+		</set>
+			where ID = ${id} 
+	</update>
+	
+	<update id="update_by_code" parameterMap="globalParameter">
+		update SC_GlobalParameter
+		<set> 
+			<trim prefixOverrides="," >
+				<if test="value!=null and value!=''">,Value = #{value}</if>
+				,ModifyTime = now()
+			</trim>
+		</set>
+			where Code = #{code} 
+	</update>
+	
+	<delete id="delete" parameterMap="globalParameter">
+		delete from SC_GlobalParameter
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id != null and id != ''">
+					and ID = ${id}
+				</if>
+				<if test="code != null and code != ''">
+					and Code = #{code}
+				</if>
+			</trim>
+		</where>
+	</delete>
+</mapper>    

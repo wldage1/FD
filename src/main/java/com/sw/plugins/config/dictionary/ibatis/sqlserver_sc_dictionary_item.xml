@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+    <!-- 
+   ID                   bigint not null auto_increment comment '字典内容ID',
+   ItemName                 varchar(100) comment '字典字段1',
+   DictionaryCode        varchar(100) comment '字典ID',
+   CreateTime           datetime,
+   ModifyTime           datetime,
+   CreatorUserID              bigint,
+   -->
+<mapper namespace="dictionaryItem">
+	<parameterMap id="dictionaryItem" type="com.sw.plugins.config.dictionary.entity.DictionaryItem"/>
+	
+	<!-- 字典结果集 -->
+	<resultMap id="dictionaryItemResult" type="com.sw.plugins.config.dictionary.entity.DictionaryItem">
+		<id property="id" column="ID" />
+		<result property="dictionaryId" column="DictionaryID" />
+		<result property="dictionaryCode" column="DictionaryCode" />
+		<result property="itemName" column="ItemName" />
+		<result property="itemValue" column="ItemValue" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+	</resultMap>
+	
+	<!-- 新建字典 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterMap="dictionaryItem">
+		insert into SC_DictionaryItem
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="dictionaryId !=null ">,DictionaryID</if>
+			<if test="dictionaryCode !=null and dictionaryCode !=''">,DictionaryCode</if>
+			<if test="itemName !=null and itemName !=''">,ItemName</if>
+			<if test="itemValue !=null and itemValue !=''">,ItemValue</if>
+			,CreateTime
+			,CreatorUserID
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="dictionaryId !=null ">,${dictionaryId}</if>
+			<if test="dictionaryCode !=null and dictionaryCode !=''">,#{dictionaryCode}</if>
+			<if test="itemName !=null and itemName !=''">,#{itemName}</if>
+			<if test="itemValue !=null and itemValue !=''">,#{itemValue}</if>
+			,GETDATE(),${creatorUserId}
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			SELECT IDENT_CURRENT('SC_DictionaryItem')   
+		</selectKey>
+	</insert>
+	
+	<!-- 更新字典 -->
+	<update id="update" parameterMap="dictionaryItem">
+		update SC_DictionaryItem
+		<set>			
+			<trim prefixOverrides=",">
+				<if test="dictionaryCode !=null and dictionaryCode !=''">,DictionaryCode = #{dictionaryCode}</if>
+				<if test="itemName !=null and itemName !=''">,ItemName = #{itemName}</if>
+				<if test="itemValue !=null and itemValue !=''">,ItemValue = #{itemValue}</if>
+				,ModifyTime=GETDATE() 
+			</trim>
+		</set>
+		<where>
+		 	<if test="id!=null and id!=0">
+		 	 ID=${id}
+			</if>
+		</where>		
+	</update>
+	
+	<!-- 字典通用查询 -->
+	<select id="select" resultMap="dictionaryItemResult" parameterMap="dictionaryItem">
+		select *
+	    from SC_DictionaryItem dict
+		<where>
+			<trim prefixOverrides="and">
+				<if test="dictionaryCode!=null and dictionaryCode!=''">
+			 	 and dict.DictionaryCode=#{dictionaryCode}
+				</if>
+				<if test="id!=null and id!=''">
+			 	 and dict.ID=${id}
+				</if>
+			 	<if test="itemName !=null and itemName !=''">
+			 	 and dict.ItemName=#{itemName}
+				</if>
+				<if test="itemValue !=null and itemValue !=''">
+			 	 and dict.ItemValue=#{itemValue}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 判断字典值是否重复 -->
+	<select id="count_check_itemvalue" resultType="long" parameterMap="dictionaryItem">
+		select count(id)  from SC_DictionaryItem dict
+		<where>
+			<trim prefixOverrides="and">
+				<if test="dictionaryCode!=null and dictionaryCode!=''">
+			 	 and dict.DictionaryCode=#{dictionaryCode}
+				</if>
+			 	<if test="itemValue !=null and itemValue !=''">
+			 	 and dict.ItemValue=${itemValue}
+				</if>
+				<if test="id!=null and id!=''">
+			 	and dict.id != ${id}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 判断字典名是否重复 -->
+	<select id="count_check_itemname" resultType="long" parameterMap="dictionaryItem">
+		select count(id)  from SC_DictionaryItem dict
+		<where>
+			<trim prefixOverrides="and">
+				<if test="dictionaryCode!=null and dictionaryCode!=''">
+			 	 and dict.DictionaryCode=#{dictionaryCode}
+				</if>
+				<if test="itemName !=null and itemName !=''">
+			 	 and dict.itemName=#{itemName}
+				</if>
+				<if test="id!=null and id!=''">
+			 	 and dict.id != ${id}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 字典统计查询 -->
+	<select id="select_count" resultType="long" parameterMap="dictionaryItem">
+		select count(id) from SC_DictionaryItem
+		<where>
+			<trim prefixOverrides="and">
+				<if test="itemName!=null and itemName!=''">
+			 	 and ItemName like CONCAT('%',#{itemName},'%')
+				</if>
+			 	<if test="dictionaryCode!=null and dictionaryCode!=''">
+			 	 and DictionaryCode like CONCAT('%',#{dictionaryCode},'%')
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 查询字典类型是否有对应的字典值 -->
+	<select id="select_count_for_sort" resultType="java.lang.Long" parameterMap="dictionaryItem">
+		select count(*) from SC_DictionaryItem where DictionaryCode = #{dictionaryCode}
+	</select>
+	
+	<!-- 字典分页查询 -->
+	<select id="select_paginated" resultMap="dictionaryItemResult" parameterMap="dictionaryItem">
+		select *
+		from SC_DictionaryItem dict
+	
+	</select>
+	
+	<!-- 删除字典 -->
+	<delete id="delete" parameterMap="dictionaryItem">
+		delete from SC_DictionaryItem where ID=${id}
+	</delete>
+	
+	<select id="selectMap" resultType="java.util.HashMap" parameterMap="dictionaryItem">
+		select ItemValue as keyval,ItemName as value from SC_DictionaryItem
+		<where>
+			<trim prefixOverrides="and">
+				<if test="itemName!=null and itemName!=''">
+					and ItemName = #{itemName}
+				</if>
+				<if test="id!=null and id!=''">
+					and ID = ${id}
+				</if>
+				<if test="itemValue != null and itemValue!=''">
+					and ItemValue = #{itemValue}
+				</if>
+				<if test="dictionaryCode!=null and dictionaryCode!=''">
+					and DictionaryCode = #{dictionaryCode}
+				</if>
+				<if test="dictionaryId!=null">
+					and DictionaryId = ${dictionaryId}
+				</if>
+			</trim>
+		</where>
+	</select>
+</mapper>

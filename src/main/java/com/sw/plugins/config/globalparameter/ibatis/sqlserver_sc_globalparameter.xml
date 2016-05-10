@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ 
+<mapper namespace="globalParameter">
+	<parameterMap type="com.sw.plugins.config.globalparameter.entity.GlobalParameter" id="globalParameter" />
+	<resultMap type="com.sw.plugins.config.globalparameter.entity.GlobalParameter" id="globalParameterResult">
+		<result property="id" column="ID" />
+		<result property="code" column="Code"/>
+		<result property="name" column="Name"/>
+		<result property="value" column="Value"/>
+		<result property="orgId" column="OrgID" />
+		<result property="createTime" column="CreateTime"/>
+		<result property="modifyTime" column="ModifyTime"/>
+		<result property="creatorUserId" column="CreatorUserID"/>
+	</resultMap>
+	
+	<select id="select" parameterMap="globalParameter" resultMap="globalParameterResult">
+		select * from SC_GlobalParameter where OrgID = ${orgId} order by ID 
+	</select>
+	
+	<select id="select_one" parameterMap="globalParameter" resultMap="globalParameterResult">
+		select * from SC_GlobalParameter where OrgID = ${orgId} and Code = #{code}
+	</select>
+	
+	<select id="count" parameterMap="globalParameter" resultType="Long">
+		select count(*) from SC_GlobalParameter where OrgID = ${orgId} 
+		<if test="code!=null and code!=''"> and Code = #{code}</if>
+	</select>
+	
+	<insert	id="insert" parameterMap="globalParameter">
+		insert into SC_GlobalParameter
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgId!=null">,OrgID</if>
+			<if test="code!=null and code!=''">,Code</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="value!=null and value!=''">,Value</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgId!=null">,${orgId}</if>
+			<if test="code!=null and code!=''">,#{code}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="value!=null and value!=''">,#{value}</if>
+			,GETDATE()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			SELECT IDENT_CURRENT('SC_GlobalParameter')  
+		</selectKey>	
+	</insert>
+	
+	<update id="update" parameterMap="globalParameter">
+		update SC_GlobalParameter
+		<set> 
+			<trim prefixOverrides="," >
+				<if test="value!=null and value!=''">,Value = #{value}</if>
+				,ModifyTime = GETDATE()
+			</trim>
+		</set>
+			where ID = ${id} 
+	</update>
+	
+	<delete id="delete" parameterMap="globalParameter">
+		delete from SC_GlobalParameter
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id != null and id != ''">
+					and ID = ${id}
+				</if>
+				<if test="code != null and code != ''">
+					and Code = #{code}
+				</if>
+			</trim>
+		</where>
+	</delete>
+</mapper>    
