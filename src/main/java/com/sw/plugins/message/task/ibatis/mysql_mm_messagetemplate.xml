@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="messageTemplate">
+	<parameterMap id="messageTemplate" type="com.sw.plugins.message.task.entity.MessageTemplate"/>
+	
+	<resultMap id="messageTemplateResult" type="com.sw.plugins.message.task.entity.MessageTemplate">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="messageTaskID" column="MessageTaskID" />
+		<result property="name" column="Name" />
+		<result property="type" column="Type" />
+		<result property="status" column="Status" />
+		<result property="content" column="Content" />
+		<result property="createTime" column="CreateTime" />
+		<result property="code" column="code" />
+		<result property="taskName" column="taskName" />
+	</resultMap>
+	
+	<select id="select" resultMap="messageTemplateResult" parameterMap="messageTemplate">
+		select id, name,type, status, content,code
+		from MM_MessageTemplate
+		<where>
+			<if test="messageTaskID != null">messageTaskID=${messageTaskID}</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="messageTemplate">
+		insert into MM_MessageTemplate
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="messageTaskID!=null">,MessageTaskID</if>
+			<if test="name!=null and name!= ''">,Name</if>
+			<if test="type!=null">,Type</if>
+			<if test="status!=null">,Status</if>
+			<if test="content!=null and content!= ''">,Content</if>
+			<if test="code!=null and code!= ''">,Code</if>
+			,CreateTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="messageTaskID!=null">,${messageTaskID}</if>
+			<if test="name!=null and name!= ''">,#{name}</if>
+			<if test="type!=null">,${type}</if>
+			<if test="status!=null">,${status}</if>
+			<if test="content!=null and content!= ''">,#{content}</if>
+			<if test="code!=null and code!= ''">,#{code}</if>
+			,now()
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>		
+	</insert>
+	
+	<update id="update" parameterMap="messageTemplate">
+		update MM_MessageTemplate
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null">,Status=${status}</if>
+				<if test="name!=null and name!= ''">,name=#{name}</if>
+				<if test="content!=null and content!=''">,Content=#{content}</if>
+			</trim>
+		</set>
+		where id=${id}
+	</update>
+	
+	<delete id="delete" parameterMap="messageTemplate">
+		delete from MM_MessageTemplate where ID = ${id}
+	</delete>
+		<!-- 查询消息模板 -->
+	<select id="selectByOne" resultMap="messageTemplateResult" parameterMap="messageTemplate">
+		select Content,m.code,t.name as taskName from MM_MessageTemplate m ,MM_MessageTask t  where t.id=m.MessageTaskID and m.code=#{code}
+	</select>
+</mapper>

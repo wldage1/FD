@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="sendMessage">
+	    <parameterMap id="sendMessage" type="com.sw.plugins.message.task.entity.SendMessage"/>
+		<parameterMap id="member" type="com.sw.plugins.customer.member.entity.Member"/>
+	
+	<!-- 理财师机构结果集 -->
+	<resultMap id="memberResult" type="com.sw.plugins.customer.member.entity.Member">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="teamID" column="TeamID" />
+		<result property="account" column="Account" />
+		<result property="password" column="Password" />
+		<result property="name" column="Name" />
+		<result property="nickName" column="NickName" />
+		<result property="portrait" column="Portrait" />
+		<result property="individualitySignature" column="IndividualitySignature" />
+		<result property="type" column="Type" />
+		<result property="level" column="Level" />
+		<result property="points" column="Points" />
+		<result property="postCode" column="PostCode " />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="cardImage" column="CardImage" />
+		<result property="province" column="Province" />
+		<result property="city" column="City" />
+		<result property="position" column="Position" />
+		<result property="gender" column="Gender" />
+		<result property="birthday" column="Birthday" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="homePhone" column="HomePhone" />
+		<result property="email" column="Email" />
+		<result property="qQ" column="QQ" />
+		<result property="weiXin" column="WeiXin" />
+		<result property="weiBo" column="WeiBo" />
+		<result property="emailValidateCode" column="EmailValidateCode" />
+		<result property="sMValidateCode" column="SMValidateCode" />
+		<result property="address" column="Address" />
+		<result property="bank" column="Bank" />
+		<result property="bankAccout" column="BankAccout" />
+		<result property="card" column="Card" />
+		<result property="status" column="Status" />
+		<result property="delStatus" column="DelStatus" />
+		<result property="style" column="Style" />
+		<result property="question" column="Question" />
+		<result property="answer" column="Answer" />
+		<result property="registerTime" column="RegisterTime" />
+		<result property="lastLoginIP" column="LastLoginIP" />
+		<result property="lastLoginTime" column="LastLoginTime" />
+		<result property="clientCount" column="clientCount" />
+		
+	</resultMap>
+	<resultMap id="sendMessageResult" type="com.sw.plugins.message.task.entity.SendMessage">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="memberName" column="memberName" />
+		<result property="nickName" column="NickName" />
+		<result property="gender" column="Gender" />
+		<result property="messageTaskID" column="MessageTaskID" />
+		<result property="sendWay" column="SendWay" />
+		<result property="sendUserType" column="SendUserType" />
+		<result property="sendUserID" column="SendUserID" />
+		<result property="content" column="Content" />
+		<result property="status" column="Status" />
+		<result property="sendTime" column="SendTime" />
+		<result property="validTime" column="ValidTime" />
+		<result property="receiverUserType" column="ReceiverUserType" />
+		<result property="receiverUserID" column="ReceiverUserID" />
+	</resultMap>
+	
+	<!-- 理财师统计 -->
+	<select id="select_send_message_member_count" resultType="long" parameterMap="member">	
+		select count(ID) from  MC_Member where ifnull(DelStatus,0)<![CDATA[<>2]]>
+		<if test="name!=null and name!=''"> and Name like '%${name}%' </if>
+		<if test="teamID!=null and teamID!=''">
+		    and teamID in ${teamAndOrgIDs}
+		</if>
+		<if test="status!=null and status!=''">
+				     and mm.status = ${status} 
+				</if>
+				<if test="province!=null and province!=''">
+				     and mm.Province = ${province} 
+				</if>
+				<if test="city!=null and city!=''">
+				     and mm.City = ${city} 
+				</if>
+				<if test="gender!=null and gender!=''">
+				     and mm.Gender = ${gender} 
+				</if>
+	</select>
+	<!-- 获取理财师分页查询 -->
+	<select id="select_send_message_member" resultMap="memberResult" parameterMap="member">
+		select mm.id,mm.name,mm.type,mm.nickname,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,case when mto.OrgType=1 
+		then mt.name when mto.OrgType=0 then mo.name end as teamname,mm.teamID,mto.OrgType FROM MC_Member mm 
+	    left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id 
+		left join MC_Organization mo on mto.orgid=mo.id  
+           where ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status<![CDATA[<>4]]>
+				<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="teamID!=null">
+				</if>
+				<if test="status!=null and status!=''">
+				     and mm.status = ${status} 
+				</if>
+				<if test="province!=null and province!=''">
+				     and mm.Province = ${province} 
+				</if>
+				<if test="city!=null and city!=''">
+				     and mm.City = ${city} 
+				</if>
+				<if test="gender!=null and gender!=''">
+				     and mm.Gender = ${gender} 
+				</if>
+		limit ${start},${offset}
+	</select>
+	<!-- 根据团队和机构的id查询MC_TeamOrOrg表的ID -->
+	<select  id="select_send_message_member_teamid" >
+	<!-- 插入到发送消息表 -->
+	</select>
+	<insert id="insert" parameterMap="sendMessage">
+        insert into MM_SendMessage
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="messageTaskID!=null">,MessageTaskID</if>
+            <if test="sendWay!=null">,SendWay</if>
+            <if test="sendUserType!=null">,SendUserType</if>
+            <if test="sendUserID!=null">,SendUserID</if>
+            <if test="content!=null and contetent!=''">,Content</if>
+            <if test="status!=null">,Status</if>
+            ,SendTime
+            <if test="validTime!=null and validTime!=''">,ValidTime</if>
+            <if test="receiverUserType!=null">,ReceiverUserType</if>
+            <if test="receiverUserID!=null">,ReceiverUserID</if>
+            ,CreateTime
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+         <if test="messageTaskID!=null">,${messageTaskID}</if>
+            <if test="sendWay!=null">,${sendWay}</if>
+            <if test="sendUserType!=null">,${sendUserType}</if>
+            <if test="sendUserID!=null">,${sendUserID}</if>
+            <if test="content!=null and contetent!=''">,#{content}</if>
+            <if test="status!=null">,${status}</if>
+            ,now()
+            <if test="validTime!=null and validTime!=''">,#{validTime}</if>
+            <if test="receiverUserType!=null">,${receiverUserType}</if>
+            <if test="receiverUserID!=null">,${receiverUserID}</if>
+            ,now()
+        </trim>
+        <selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>
+    </insert>
+    <!-- 查询任务消息明细 -->
+    <select id="select_task_message_detail" resultMap="sendMessageResult" parameterMap="sendMessage">
+		select ms.id, ms.SendWay,ms.Status,ms.SendUserID,Content,ms.SendUserType, date_format(ms.SendTime,'%Y-%c-%d %H:%i:%s') as SendTime
+		,ValidTime,ReceiverUserType,ReceiverUserID,mm.name as memberName
+		,mm.nickname,mm.gender
+		from MM_SendMessage ms ,MC_Member mm 
+		<where>
+			ms.MessageTaskID = ${messageTaskID} and mm.id=ms.ReceiverUserID 
+			<if test="memberName!=null and memberName!=''">
+				   and mm.name like '%${memberName}%' 
+			</if>
+			<if test="sendTime!=null and sendTime!=''">
+				   and mm.name = #{sendTime} 
+			</if>
+		</where>
+		order by ms.SendTime desc limit ${start},${offset}
+	</select>
+	<!-- 统计消息发送数 -->
+	<select id="count_task_message_detail" resultType="long"  parameterMap="sendMessage">
+		select count(ms.id) from MM_SendMessage ms ,MC_Member mm 
+		<where>
+			ms.MessageTaskID = ${messageTaskID} and mm.id=ms.ReceiverUserID 
+			<if test="memberName!=null and memberName!=''">
+				   and mm.name like '%${memberName}%' 
+			</if>
+			<if test="sendTime!=null and sendTime!=''">
+				   and mm.name = #{sendTime} 
+			</if>
+		</where>
+	</select>
+	<!-- 查询理财师信息 -->
+	<select id="selectMemberInfo" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+	     select id,Account,name,NickName,Email as RECEIVEUSEREMAIL,WeiXin,WeiBo,MobilePhone as MOBILEPHONE from MC_Member where id= ${id}
+	</select>
+	<!-- 查询后台用户（运营人员和居间公司人员）信息 -->
+	<select id="selectUserInfo" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+	     select id,Account,name,Email as RECEIVEUSEREMAIL,MobilePhone as MOBILEPHONE from SM_User where id= ${id}
+	</select>
+	<!-- 查询供应商用户信息 -->
+	<select id="selectProviderUserInfo" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+	     select id,Account,name,Email as RECEIVEUSEREMAIL,MobilePhone as MOBILEPHONE from PC_ProviderUser where id= ${id}
+	</select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productEvaluate">
+    
+    <parameterMap type="com.sw.plugins.product.comment.entity.ProductEvaluate" id="productEvaluate"/>
+    
+    <!-- 产品评价结果集 -->
+    <resultMap type="com.sw.plugins.product.comment.entity.ProductEvaluate" id="productEvaluateResult">
+        <result property="id" column="ID"/>
+        <result property="productId" column="ProductID"/>
+        <result property="memberId" column="MemberID"/>
+        <result property="evaluate" column="Evaluate"/>
+        <result property="description" column="Description"/>
+        <result property="evaluateTime" column="EvaluateTime"/>
+    </resultMap>
+    
+    <!-- 产品评价分页查询 -->
+    <select id="selectPaginated" resultMap="productEvaluateResult" parameterMap="productEvaluate">
+        select e.ID, p.ShortName ProductShortName, e.Evaluate, m.Name MemberName, m.NickName MemberNickName, c.Description from PM_ProductEvaluate e
+        	left join PM_Product p on e.ProductID = p.ID
+        		left join MC_Member m on e.MemberID = m.ID
+        			left join PM_EvaluateComplaint c on e.ID = c.EvaluateID
+        				where e.ProductID = ${productId} and e.Type = 1
+    </select>
+    
+    <!-- 产品评价统计查询 -->
+    <select id="count" resultType="long" parameterMap="productEvaluate">
+        select count(e.id) from PM_ProductEvaluate e
+        	left join PM_Product p on e.ProductID = p.ID
+        		left join MC_Member m on e.MemberID = m.ID
+        			where e.ProductID = ${productId} and e.Type = 1
+    </select>
+</mapper>

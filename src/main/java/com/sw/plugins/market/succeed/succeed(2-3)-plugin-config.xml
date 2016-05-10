@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<market name="销售中心" icon="images/menu/sales-center.png">
+		<succeed isNav="true" isSetAuth="sub" isStatus="true" name="成功订单" icon="images/menu/sales-center-succeed order.png">
+			<language>
+				<value>/language/orderMessages_zh_CN.properties</value>
+			</language>
+			<detail isNav="true"  name="查看" icon="images/icon/detail.png"/>
+			<redeemDetail isNav="true"  name="查看" icon="images/icon/detail.png"/>
+		</succeed>
+	</market>
+</plugins>

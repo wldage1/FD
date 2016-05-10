@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<message name="消息中心" icon="images/menu/message-center.png">
+	 <task isNav="true" isSetAuth="sub" isStatus="true" name="任务配置" icon="images/menu/message-center-message config.png">
+		   	<language>
+				<value>/language/messageTaskMessages_zh_CN.properties</value>
+			</language>
+		    <custom isNav="true"  name="自定义任务" />
+		    <create isNav="true"  name="创建" icon="images/icon/create.png"/>
+			<modify isNav="true"  name="修改" icon="images/icon/modify.png"/>
+			<delete isNav="true"  name="删除" icon="images/icon/delete.png"/>
+			<sendDetail isNav="true"  name="发送明细" icon="images/icon/detail.png"/>
+		    <config isNav="true"  name="内置任务" >
+			   <messageConfig isNav="true"  name="配置"  />
+		    </config>
+	  </task>
+	</message>
+</plugins>

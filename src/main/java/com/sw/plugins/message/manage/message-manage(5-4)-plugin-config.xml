@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<message name="消息中心" icon="images/menu/message-center.png">
+	<!-- 	<manage isNav="true" isSetAuth="sub" isStatus="true" name="消息管理" icon="images/menu/message-center-message management.png">
+			<language>
+				<value>/language/receiverMessageMessages_zh_CN.properties</value>
+			</language>
+			<delete isNav="true"  name="删除" icon="images/icon/detail.png"/>
+		</manage> -->
+	</message>
+</plugins>

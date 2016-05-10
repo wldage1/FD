@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productAttributeGroup">
+
+	<parameterMap id="productAttributeGroup" type="com.sw.plugins.product.attribute.entity.ProductAttributeGroup" />
+	
+	<resultMap id="productAttributeGroupResult" type="com.sw.plugins.product.attribute.entity.ProductAttributeGroup">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="code" column="Code" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+	</resultMap>
+	
+	<!-- 产品属性组延时加载查询 -->
+	<select id="select_one" resultMap="productAttributeGroupResult" >
+		select  PM_ProductAttributeGroup.ID , PM_ProductAttributeGroup.Name , PM_ProductAttributeGroup.Code  
+		from PM_ProductAttributeGroup
+		where ID=${value}
+	</select>
+	
+	<!-- 产品属性组通用查询 -->
+	<select id="select" resultMap="productAttributeGroupResult" parameterMap="productAttributeGroup">
+		select  PM_ProductAttributeGroup.ID , PM_ProductAttributeGroup.Name , PM_ProductAttributeGroup.Code  
+		from PM_ProductAttributeGroup
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="name!=null and name!=''">and Name like '%${name}%' </if>
+				<if test="code!=null and code!=''">and Code like '%${code}%' </if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 产品属性组分页查询 -->
+	<select id="select_paginated" resultMap="productAttributeGroupResult" parameterMap="productAttributeGroup">
+		select 
+			*
+		from 
+			PM_ProductAttributeGroup 
+		limit ${start},${offset}
+	</select>
+	
+	<!-- 产品属性组通用统计查询 -->
+	<select id="count" resultType="long"  parameterMap="productAttributeGroup">
+		select  count(id) 
+		from PM_ProductAttributeGroup
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="name!=null and name!=''">and Name like '%${name}%' </if>
+				<if test="code!=null and code!=''">and Code like '%${code}%' </if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 新增产品属性 -->
+	<insert id="insert" parameterMap="productAttributeGroup">
+		insert into PM_ProductAttributeGroup
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="code!=null and code!=''">,Code</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="code!=null and code!=''">,#{code}</if>
+			,now()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey
+		</selectKey>
+	</insert>
+
+	<!-- 更新产品属性 -->
+	<update id="update" parameterMap="productAttributeGroup">
+		update PM_ProductAttributeGroup
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name=#{name}</if>
+				<if test="code!=null and code!=''">,Code=#{code}</if>
+				,ModifyTime=now() 
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<!-- 删除产品属性 -->
+	<delete id="delete" parameterMap="productAttributeGroup">
+		delete from PM_ProductAttributeGroup Where ID=${id}
+	</delete>
+	
+</mapper>

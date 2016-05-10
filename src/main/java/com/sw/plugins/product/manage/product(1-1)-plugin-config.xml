@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<product name="产品中心" icon="images/menu/product-center.png">
+		<manage isNav="true" isSetAuth="sub" isStatus="true" name="产品管理" icon="images/menu/product-center-product management.png">
+			<language>
+				<value>/language/productMessages_zh_CN.properties</value>
+				<value>/language/productMessages_en_US.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+			<detail isNav="true"  name="查看" icon="images/icon/detail.png"/>
+			<examine isSetAuth="all" isNav="true" isLog="true"  isStatus="true"  name="审核" icon="images/icon/detail.png"/>
+			<examineratify isNav="true" isLog="true" name="批准" icon="images/icon/detail.png"/>
+			<examineunratify isNav="true" isLog="true" name="不批准" icon="images/icon/detail.png"/>
+			<release isNav="true" isLog="true" name="开启" icon="images/icon/Enabled.png"/>
+			<notrelease isNav="true" isLog="true" name="关闭" icon="images/icon/outage.png"/>
+	<!--    <updatestatus isNav="true" isLog="true" name="状态变更" icon="images/icon/detail.png"/> -->
+			<bindinformation isNav="true" isLog="true" name="绑定资讯" icon="images/icon/detail.png">
+			<create isNav="true" isLog="true" name="创建资讯" icon="images/icon/create.png"/>
+			<detail isNav="true" isLog="true" name="查看" icon="images/icon/detail.png"/>
+			</bindinformation>
+			<bind isNav="true" isLog="true" name="绑定" icon="images/icon/detail.png" />
+			<unbind isNav="true" isLog="true" name="取消绑定" icon="images/icon/detail.png" />
+			<!-- <recommend isNav="true" isLog="true" name="秒杀" icon="images/icon/detail.png" /> -->
+			<attachment isNav="true" isStatus="true" name="资料上传" icon="images/icon/detail.png"/>
+			<setBetweenCompany isNav="true"  name="设置居间公司" icon="images/icon/modify.png"/>
+			<modifyall isNav="true" isLog="true" name="高级修改" icon="images/icon/modify.png"/>
+			<bindorganization isNav="true" isStatus="true" name="指定销售机构" icon="images/icon/modify.png"/>
+			<salertype  name="指定销售方" icon="images/icon/modify.png"/>
+		</manage>
+	</product>
+</plugins>

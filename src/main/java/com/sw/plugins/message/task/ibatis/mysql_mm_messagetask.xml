@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="messageTask">
+	<parameterMap id="messageTask" type="com.sw.plugins.message.task.entity.MessageTask"/>
+	<parameterMap id="messageReceiverConfig" type="com.sw.plugins.message.task.entity.MessageReceiverConfig"/>
+	<parameterMap id="messageTemplate" type="com.sw.plugins.message.task.entity.MessageTemplate"/>
+	<parameterMap id="user" type="com.sw.plugins.system.user.entity.User" />
+	
+	
+	
+	<resultMap id="messageTaskResult" type="com.sw.plugins.message.task.entity.MessageTask">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="name" column="Name" />
+		<result property="code" column="Code" />
+		<result property="type" column="Type" />
+		<result property="sendType" column="SendType" />
+		<result property="status" column="Status" />
+		<result property="sendFrequency" column="SendFrequency" />
+		<result property="quartzMonth" column="QuartzMonth" />
+		<result property="quartzWeek" column="QuartzWeek" />
+		<result property="quartzDay" column="QuartzDay" />
+		<result property="quartzHour" column="QuartzHour" />
+		<result property="quartzExpression" column="QuartzExpression" />
+		<result property="isConfigReceiver" column="IsConfigReceiver" />
+		<result property="receiverRoles" column="ReceiverRoles" />
+		<result property="createTime" column="CreateTime" />
+	</resultMap>
+	<resultMap id="userMessageResult" type="com.sw.plugins.message.task.entity.UserMessage">
+		<id property="userID" column="ID" javaType="java.lang.Long" />
+		<result property="userName" column="Name" />
+		<result property="userType" column="userType" />
+	</resultMap>
+	<resultMap id="messageReceiverConfigResult" type="com.sw.plugins.message.task.entity.MessageReceiverConfig">
+		<id property="messageTaskID" column="messageTaskID" javaType="java.lang.Long" />
+		<result property="receiverType" column="ReceiverType" />
+		<result property="receiverID" column="ReceiverID" />
+	</resultMap>
+		<!-- 用户结果集 -->
+	<resultMap id="userResult" type="com.sw.plugins.system.user.entity.User">
+		<id property="id" column="ID" javaType="java.lang.Long" />
+		<result property="isCommission" column="IsCommission" />
+	</resultMap>
+	<!-- 分页查询 -->
+	<select id="select" resultMap="messageTaskResult" parameterMap="messageTask">
+		select id, name, code, type, sendType, status
+		from MM_MessageTask
+		<where>
+		  <trim prefixOverrides="and">
+		    <if test="name != null and name != ''">and Name like '%${name}%' </if>
+		    <if test="code != null and code != ''">and Code like '%${code}%' </if>
+			<if test="type != null">and type=${type}</if>
+			<if test="isConfigReceiver != null">and IsConfigReceiver=${isConfigReceiver}</if>
+		  </trim>	
+		</where>
+		 order by CreateTime DESC limit ${start},${offset}
+	</select>
+	<!-- 查询消息任务集合 -->
+	<select id="selectList" resultMap="messageTaskResult" parameterMap="messageTask">
+		select id, name, code, type, sendType, status
+		from MM_MessageTask
+		<where>
+		  <trim prefixOverrides="and">
+		    <if test="name != null and name != ''">and Name like '%${name}%' </if>
+			<if test="type != null">and type=${type}</if>
+			<if test="status != null">and status=${status}</if>
+		  </trim>	
+		</where>
+	</select>
+	
+	<select id="select_count" resultType="long"  parameterMap="messageTask">
+		select count(id)
+		from MM_MessageTask
+		<where>
+		    <if test="name != null and name != ''">and Name like '%${name}%' </if>
+		    <if test="code != null and code != ''">and Code like '%${code}%' </if>
+			<if test="type != null">and type=${type}</if>
+			<if test="isConfigReceiver != null">and IsConfigReceiver=${isConfigReceiver}</if>
+		</where>
+	</select>
+	
+	<select id="select_code_conunt" resultType="long"  parameterMap="messageTask">
+		select count(id)
+		from MM_MessageTask
+		<where>
+			<trim prefixOverrides="and">
+				Code=#{code}
+				<if test="id != null">and ID!=${id}</if>
+			    <if test="type != null">and Type=${type}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="messageTask">
+		insert into MM_MessageTask
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,Name</if>
+			<if test="code!=null and code!= ''">,Code</if>
+			<if test="type!=null">,Type</if>
+			<if test="sendType!=null">,SendType</if>
+			<if test="status!=null">,Status</if>
+			<if test="sendFrequency!=null">,SendFrequency</if>
+			<if test="quartzMonth!=null">,QuartzMonth</if>
+			<if test="quartzWeek!=null">,QuartzWeek</if>
+			<if test="quartzDay!=null">,QuartzDay</if>
+			<if test="quartzHour!=null">,QuartzHour</if>
+			<if test="quartzExpression!=null and quartzExpression != ''">,QuartzExpression</if>
+			<if test="isConfigReceiver!=null">,IsConfigReceiver</if>
+			,CreateTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,#{name}</if>
+			<if test="code!=null and code!= ''">,#{code}</if>
+			<if test="type!=null">,${type}</if>
+			<if test="sendType!=null">,${sendType}</if>
+			<if test="status!=null">,${status}</if>
+			<if test="sendFrequency!=null">,${sendFrequency}</if>
+			<if test="quartzMonth!=null">,${quartzMonth}</if>
+			<if test="quartzWeek!=null">,${quartzWeek}</if>
+			<if test="quartzDay!=null">,${quartzDay}</if>
+			<if test="quartzHour!=null">,${quartzHour}</if>
+			<if test="quartzExpression !=null and quartzExpression != ''">,#{quartzExpression}</if>
+			<if test="isConfigReceiver!=null">,${isConfigReceiver}</if>
+			,now()
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>		
+	</insert>
+	
+	<select id="select_messageTask" resultMap="messageTaskResult" parameterMap="messageTask">
+		select id, name, code, type, sendType,ReceiverRoles, status,mt.QuartzDay,mt.QuartzHour,mt.QuartzExpression,mt.QuartzWeek,mt.QuartzMonth,
+		mt.SendFrequency,mt.RelationCode,IsConfigReceiver from MM_MessageTask mt
+		<where>
+			<trim prefixOverrides="and">
+				<if test="type != null">and type=${type}</if>
+				<if test="id != null">and id=${id}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<update id="update" parameterMap="messageTask">
+		update MM_MessageTask
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!= ''">,Name=#{name}</if>
+				<if test="code!=null and code!= ''">,Code=#{code}</if>
+				<if test="type!=null">,Type=${type}</if>
+				<if test="sendType!=null">,SendType=${sendType}</if>
+				<if test="status!=null">,Status=${status}</if>
+				<if test="sendFrequency!=null">,SendFrequency=${sendFrequency}</if>
+				<if test="quartzMonth!=null">,QuartzMonth=${quartzMonth}</if>
+				<if test="quartzWeek!=null">,QuartzWeek=${quartzWeek}</if>
+				<if test="quartzDay!=null">,QuartzDay=${quartzDay}</if>
+				<if test="quartzHour!=null">,QuartzHour=${quartzHour}</if>
+				<if test="isConfigReceiver!=null">,IsConfigReceiver=${isConfigReceiver}</if>
+				<if test="receiverRoles!=null">,ReceiverRoles=#{receiverRoles}</if>
+			</trim>
+		</set>
+		where id=${id}
+	</update>
+	<!-- 查询任务已发送消息数 -->
+	<select id="count_message_task_send" resultType="long"  parameterMap="messageTask">
+	    select count(1) from MM_SendMessage where MessageTaskID=${id}
+	</select>
+	<!-- 删除任务 -->
+	<delete id="delete" parameterMap="messageTask">
+		delete from MM_MessageTask where id=${id}
+	</delete>
+	<!-- 保存接收者配置 -->
+	<insert id="insertReceiverConfig" parameterMap="messageReceiverConfig">
+		insert into MM_MessageReceiverConfig
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="messageTaskID!=null">,MessageTaskID</if>
+			<if test="receiverID!=null">,ReceiverID</if>
+			<if test="receiverType!=null">,ReceiverType</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="messageTaskID!=null">,${messageTaskID}</if>
+			<if test="receiverID!=null">,${receiverID}</if>
+			<if test="receiverType!=null">,${receiverType}</if>
+		</trim>
+	</insert>
+	<!-- 根据配置的接收者id -->
+	<select id="select_config_receivers" resultMap="userMessageResult"  parameterMap="messageTemplate">
+	     select mmrc.ReceiverID as userID,
+         case when (mmrc.ReceiverType=1 or mmrc.ReceiverType=4) then u.Name when mmrc.ReceiverType=2 then pu.name end as userName
+         ,mmrc.ReceiverType as userType from MM_MessageTask mmt,MM_MessageTemplate tpl ,MM_MessageReceiverConfig  mmrc 
+         LEFT JOIN sm_user u on  u.ID=mmrc.ReceiverID and (mmrc.ReceiverType=1 or mmrc.ReceiverType=4)
+         LEFT JOIN pc_provideruser pu on pu.ID=mmrc.ReceiverID and mmrc.ReceiverType=2
+         where tpl.MessageTaskID=mmt.ID and mmrc.MessageTaskID=mmt.ID and tpl.code=#{code} 
+	</select>
+	<!-- 删除消息任务对应的接收者设置信息 -->
+	<delete id="delete_config_receivers" parameterMap="messageTask">
+		delete from MM_MessageReceiverConfig where MessageTaskID=${id}
+	</delete>
+	<!-- 查询已配置的用户id集合 -->
+	<select id="select_message_receiver_config" resultMap="messageReceiverConfigResult"  parameterMap="messageTask">
+		select * from MM_MessageTask mmt,MM_MessageReceiverConfig mmrc 
+		<where>
+			<trim prefixOverrides="and">
+				mmrc.MessageTaskID=mmt.ID and mmrc.ReceiverType in (1,2,4) and mmt.id=${id}
+			</trim>
+		</where>
+	</select>
+	
+		<!-- 根据机构ID和角色ID查询用户 -->
+	<select id="select_message_config_user_by_orgid_roleid" resultMap="userResult" parameterMap="user">
+		select distinct u.*
+			from (select a.id,b.isCommission,a.OrgID from SM_User a join SM_Organization b on a.OrgID = b.ID) u 
+				left join SM_UserRoleMapping m on m.UserID = u.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="orgId!=null">
+					and u.orgId=${orgId}
+				</if>
+				<![CDATA[ and m.RoleID in ]]> 
+					 <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+		           	 	${item}
+		        	</foreach> 
+				<![CDATA[]]>
+				<if test="receiverIDs!=null and receiverIDs !=''">
+				     and u.id not in <![CDATA[(${receiverIDs})]]>
+				</if>
+			</trim>
+		</where>
+	</select>
+</mapper>

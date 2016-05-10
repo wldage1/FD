@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<product name="产品中心" icon="images/menu/product-center.png">
+		<clearedproduct isNav="true" isStatus="true" name="已结束产品" icon="images/menu/product-center-remaining products.png">
+		    <cleareddetail isNav="true"  name="查看" icon="images/icon/detail.png"/>
+		</clearedproduct>
+	</product>
+</plugins>

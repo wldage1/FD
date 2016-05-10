@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<message name="消息中心" icon="images/menu/message-center.png">
+		<send isNav="true" isSetAuth="sub" isStatus="true" name="消息发送" icon="images/menu/message-center-instant messaging.png">
+			<language>
+				<value>/language/sendMessageMessages_zh_CN.properties</value>
+			</language>
+		</send>
+	</message>
+</plugins>

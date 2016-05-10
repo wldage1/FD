@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="receiverMessage">
+	<parameterMap id="receiverMessage" type="com.sw.plugins.message.task.entity.ReceiverMessage"/>
+	
+	<resultMap id="receiverMessageResult" type="com.sw.plugins.message.task.entity.ReceiverMessage">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="receiverUserID" column="ReceiverUserID" />
+		<result property="type" column="Type" />
+		<result property="sourceID" column="SourceID" />
+		<result property="title" column="title" />
+		<result property="isReaded" column="IsReaded" />
+		<result property="sendUserType" column="SendUserType" />
+		<result property="sendUserID" column="SendUserID" />
+		<result property="validTime" column="ValidTime" />
+		<result property="readTime" column="ReadTime" />
+		<result property="createTime" column="CreateTime" />
+		<result property="sendUserName" column="SendUserName" />
+		<result property="receiverName" column="ReceiverName" />
+	</resultMap>
+	
+	<select id="select" resultMap="receiverMessageResult" parameterMap="receiverMessage">
+		SELECT * from (select re.id, re.receiverUserID, re.sourceID, re.title, re.isReaded,DATE_FORMAT(re.CreateTime,'%Y-%m-%d %T') as CreateTime,
+			DATE_FORMAT(ReadTime,'%Y-%m-%d %T') as ReadTime,
+			case 
+			  WHEN re.SendUserID =-1 THEN '系统消息' 
+			  WHEN re.SendUserType =3  THEN mm2.Name
+			  WHEN re.SendUserType =2  THEN p2.name
+			  WHEN re.SendUserType in (1,4)  THEN u2.name
+			end as SendUserName,
+			case 
+			  WHEN re.ReceiverUserType =3  THEN mm.Name
+			  WHEN re.ReceiverUserType =2  THEN p.name
+			  WHEN re.ReceiverUserType in (1,4)  THEN u.name
+			end as ReceiverName
+			from MM_ReceiverMessage re 
+			LEFT JOIN MC_Member  mm on re.ReceiverUserID = mm.ID 
+			LEFT JOIN MC_Member  mm2 on re.SendUserID=mm2.ID
+			LEFT JOIN PC_ProviderUser p on p.ID=re.ReceiverUserID 
+			LEFT JOIN PC_ProviderUser p2 on p2.ID=re.SendUserID 
+			LEFT JOIN SM_User u on u.ID=re.ReceiverUserID 
+			LEFT JOIN SM_User u2 on u2.id=re.SendUserID
+		 <where>
+		  <trim prefixOverrides="and">
+		     (ReceiverUserType=1 or ReceiverUserType=4)
+		    <if test="receiverUserID != null"> and ReceiverUserID=${receiverUserID} </if>
+		     and SendWay=1
+		  </trim>	
+		</where>
+		ORDER BY re.CreateTime DESC) tt  ORDER BY tt.isReaded ASC
+		limit ${start},${offset} 
+	</select>
+	
+	<select id="select_count" resultType="long"  parameterMap="receiverMessage">
+		select count(id)
+		from MM_ReceiverMessage
+		<where>
+		   <trim prefixOverrides="and">
+		     (ReceiverUserType=1 or ReceiverUserType=4)
+		    <if test="receiverUserID != null"> and ReceiverUserID=${receiverUserID} </if>
+		     and SendWay=1
+		  </trim>	
+		</where>
+	</select>
+	
+	<delete id="delete" parameterMap="receiverMessage">
+		delete from MM_ReceiverMessage where ID = ${id}
+	</delete>
+	<!-- 保存到接收表 -->
+	<insert id="insert" parameterMap="receiverMessage">
+        insert into MM_ReceiverMessage
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="receiverUserType!=null">,ReceiverUserType</if>
+            <if test="receiverUserID!=null">,ReceiverUserID</if>
+            <if test="type!=null">,Type</if>
+            <if test="sourceID!=null">,SourceID</if>
+            <if test="title!=null and title!=''">,Title</if>
+            <if test="isReaded!=null">,IsReaded</if>
+            <if test="sendUserType!=null">,SendUserType</if>
+            <if test="sendUserID!=null">,SendUserID</if>
+            <if test="validTime!=null">,ValidTime</if>
+            ,CreateTime
+            <if test="readTime!=null">,ReadTime</if>
+            <if test="sendWay!=null">,SendWay</if>
+            <if test="sendMessageID!=null">,SendMessageID</if>
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="receiverUserType!=null">,${receiverUserType}</if>
+            <if test="receiverUserID!=null">,${receiverUserID}</if>
+            <if test="type!=null">,${type}</if>
+            <if test="sourceID!=null">,${sourceID}</if>
+            <if test="title!=null and title!=''">,#{title}</if>
+            <if test="isReaded!=null">,${isReaded}</if>
+            <if test="sendUserType!=null">,${sendUserType}</if>
+            <if test="sendUserID!=null">,${sendUserID}</if>
+            <if test="validTime!=null and validTime!=''">,${validTime}</if>
+            ,now()
+            <if test="readTime!=null">,#{readTime}</if>
+            <if test="sendWay!=null">,${sendWay}</if>
+            <if test="sendMessageID!=null">,${sendMessageID}</if>
+        </trim>
+    </insert>
+    <update id="update" parameterMap="receiverMessage">
+		update MM_ReceiverMessage
+		<set>
+			<trim prefixOverrides=",">
+				<if test="receiverUserType!=null">,ReceiverUserType=${receiverUserType}</if>
+				<if test="ReceiverUserID!=null">,ReceiverUserID=${receiverUserID}</if>
+				<if test="type!=null">,Type=${type}</if>
+				<if test="sourceID!=null">,SourceID=${sourceID}</if>
+				<if test="title!=null and title !=''">,Status=#{title}</if>
+				<if test="isReaded!=null">,IsReaded=${isReaded}</if>
+				<if test="sendUserType!=null">,SendUserType=${sendUserType}</if>
+				<if test="SendUserID!=null">,QuartzWeek=${sendUserID}</if>
+				<if test="validTime!=null">,ValidTime=${validTime}</if>
+				<if test="readTime!=null">,ReadTime=now()</if>
+				<if test="sendWay!=null">,SendWay=${sendWay}</if>
+				<if test="sendMessageID!=null">,sendMessageID=${sendMessageID}</if>
+			</trim>
+		</set>
+		where id=${id}
+	</update>
+	<!-- 我的收件箱消息提示,查询未读消息 -->
+	<select id="select_my_message_id" resultType="long"  parameterMap="receiverMessage">
+		select id from MM_ReceiverMessage
+		<where>
+		   <trim prefixOverrides="and">
+		     (ReceiverUserType=1 or ReceiverUserType=4)
+		    <if test="receiverUserID != null"> and ReceiverUserID=${receiverUserID} </if>
+		     and SendWay=1 and IsReaded=0
+		  </trim>	
+		</where>
+	</select>
+</mapper>

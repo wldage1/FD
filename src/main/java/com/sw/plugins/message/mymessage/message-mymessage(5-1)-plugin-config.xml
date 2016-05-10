@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<message name="消息中心" icon="images/menu/message-center.png">
+      	<mymessage isNav="true" isSetAuth="sub" isStatus="true" name="我的消息" icon="images/menu/message-center-message management.png">
+      		<delete isNav="true"  name="删除" icon="images/icon/detail.png"/>
+        </mymessage>
+	</message>
+</plugins>

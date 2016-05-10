@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<incentivefee name="返利费用管理" icon="images/menu/sales-center.png">
+		<incentive isNav="true" isSetAuth="sub" isStatus="true" name="返利配置" icon="images/menu/sales-center-print cover.png">
+			<language>
+				<value>/language/incentiveMessages_zh_CN.properties</value>
+			</language>
+			<modify isNav="true" name="修改" icon="images/icon/modify.png"/>
+			<delete isNav="true" name="删除" icon="images/icon/Del.png"/>
+			<save isNav="true" name="保存" icon="images/icon/save.png"/>
+			<reset isNav="true" name="取消" icon="images/icon/restore.png"/>
+		</incentive>
+	</incentivefee>
+</plugins>

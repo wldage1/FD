@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="saleManageMessage">
+
+	<parameterMap id="saleManageMessage" type="com.sw.plugins.market.salemanage.entity.SaleManageMessage" />
+
+	<resultMap id="saleManageMessage" type="com.sw.plugins.market.salemanage.entity.SaleManageMessage">
+		<result property="memberId" column="MemberID" />
+		<result property="productId" column="ProductID" />
+		<result property="subProductId" column="SubProductID" />
+		<result property="subProductType" column="SubProductType" />
+		<result property="orderId" column="OrderID" />
+		<result property="productName" column="ProductName" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="share" column="Share" javaType="java.math.BigDecimal"/>
+	</resultMap>
+	
+	<resultMap id="userMessage" type="com.sw.plugins.message.task.entity.UserMessage">
+		<result property="userID" column="UserID" />
+		<result property="userName" column="UserName" />
+		<result property="userType" column="UserType"/>
+		<result property="email" column="Email"/>
+	</resultMap>
+	
+	<!-- 查询收藏了指定产品的理财师 -->
+	<select id="select_product_favorities" resultMap="userMessage" parameterMap="saleManageMessage">
+		select
+			m.ID UserID,m.Name UserName,3 UserType,m.Email email
+		from
+			MC_Favorites f left join MC_Member m on f.MemberID = m.ID
+		where 
+			f.ProductID = ${productId}
+	</select>
+	
+	<!-- 查询预约了指定产品的理财师 -->
+	<select id="select_product_ordered" resultMap="userMessage" parameterMap="saleManageMessage">
+		select
+			m.ID UserID,m.Name UserName,3 UserType,m.Email email
+		from
+			TC_Order o left join MC_Member m on o.MemberID = m.ID
+		where 
+			o.ProductID = ${productId}
+		group by m.ID
+	</select>
+	
+	<!-- 查询订单对应的理财师 -->
+	<select id="select_orders_member" resultMap="userMessage" parameterMap="saleManageMessage">
+		select
+			m.ID UserID,m.Name UserName,3 UserType,m.Email email
+		from
+			TC_Order o left join MC_Member m on o.MemberID = m.ID
+		where 
+			o.ID = ${orderId}
+	</select>
+	
+	<!-- 获取消息内容 -->
+	<select id="select_product_elements" resultMap="saleManageMessage" parameterMap="saleManageMessage">
+		select
+			ID ProductID,Name ProductName
+		from
+			PM_Product
+		where 
+			ID = ${productId}
+	</select>
+	
+	<!-- 获取消息内容 -->
+	<select id="select_product_and_subproduct_elements" resultMap="saleManageMessage" parameterMap="saleManageMessage">
+		select
+			sp.ProductID,sp.ID SubProductID,p.Name ProductName,sp.Type SubProductType
+		from
+			PM_Product p right join PM_SubProduct sp on p.ID = sp.ProductID
+		where 
+			sp.ID = ${subProductId}
+	</select>
+	
+	<!-- 获取消息内容 -->
+	<select id="select_order_elements" resultMap="saleManageMessage" parameterMap="saleManageMessage">
+		select
+			ID OrderID,ProductID,SubProductID,OrderNumber,Share
+		from
+			TC_Order
+		where 
+			ID = ${orderId}
+	</select>
+	
+	
+</mapper>

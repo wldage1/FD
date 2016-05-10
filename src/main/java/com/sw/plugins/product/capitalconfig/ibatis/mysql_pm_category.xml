@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productCategory">
+
+	<parameterMap id="productCategory" type="com.sw.plugins.product.capitalconfig.entity.ProductCategory" />
+
+	<resultMap id="productCategoryResult" type="com.sw.plugins.product.capitalconfig.entity.ProductCategory">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="code" column="Code" />
+		<result property="treePath" column="TreePath" />
+		<result property="treeLevel" column="TreeLevel" />
+		<result property="isChildNode" column="IsChildNode" />
+		<result property="parentId" column="ParentID" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+	</resultMap>
+	
+	<!-- 产品分类通用查询 -->
+	<select id="select" resultMap="productCategoryResult" parameterMap="productCategory">
+		select  PM_InvestCategory.ID , PM_InvestCategory.Name , PM_InvestCategory.Code , PM_InvestCategory.ParentID , PM_InvestCategory.TreePath , PM_InvestCategory.TreeLevel , PM_InvestCategory.IsChildNode,PM_InvestCategory.SortNum 
+		from PM_InvestCategory   
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="name!=null and name!= ''">and Name=#{name}</if>
+				<if test="code!=null and code!= ''">and Code=#{code}</if>
+				<if test="parentId!=null">and ParentID=${parentId}</if>
+			</trim>
+		</where>
+		order by CreateTime desc,SortNum desc
+	</select>
+	
+	<!-- 产品分类延时加载查询 -->
+	<select id="select_one"  resultMap="productCategoryResult">
+		select  PM_InvestCategory.ID , PM_InvestCategory.Name , PM_InvestCategory.Code , PM_InvestCategory.ParentID , PM_InvestCategory.TreePath , PM_InvestCategory.TreeLevel , PM_InvestCategory.IsChildNode 
+		from PM_InvestCategory
+		where ID=${value}
+	</select>
+	
+	<!-- 产品分类名称、code不能重复的效验 -->
+	
+	<select id="check_code" resultType="long">
+		select count(*) 
+		from PM_InvestCategory
+		<where>
+			<trim prefixOverrides="and">
+				<if test="code!=null">
+					and Code=#{code}
+				</if>
+				<if test="name!=null">
+					and Name=#{name}
+				</if>
+				<if test="parentId!=null">
+					and ParentID=#{parentId} 
+				</if>
+				<if test="id!=null">
+					and ID!=#{id}
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 新增产品分类 -->
+	<insert id="insert" parameterMap="productCategory">
+		insert into PM_InvestCategory
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,Name</if>
+			<if test="code!=null and code!= ''">,Code</if>
+			<if test="parentId!=null">,ParentID</if>
+			<if test="treePath!=null and treePath!= ''">,TreePath</if>
+			<if test="treeLevel!=null">,TreeLevel</if>
+			<if test="isChildNode!=null">,IsChildNode</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!= ''">,#{name}</if>
+			<if test="code!=null and code!= ''">,#{code}</if>
+			<if test="parentId!=null">,${parentId}</if>
+			<if test="treePath!=null and treePath!= ''">,#{treePath}</if>
+			<if test="treeLevel!=null">,${treeLevel}</if>
+			<if test="isChildNode!=null">,${isChildNode}</if>
+			,now()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>		
+	</insert>
+
+	<!-- 更新产品分类 -->
+	<update id="update" parameterMap="productCategory">
+		update PM_InvestCategory
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!= ''">,Name=#{name}</if>
+				<if test="code!=null and code!= ''">,Code=#{code}</if>
+				<if test="parentId!=null">,ParentID=${parentId}</if>
+				<if test="treeLevel!=null">,TreeLevel=${treeLevel}</if>
+				<if test="treePath!=null and treePath!= ''">,TreePath=#{treePath}</if>
+				<if test="isChildNode!=null">,IsChildNode=${isChildNode}</if>
+				<if test="sortNum!=null">,SortNum=${sortNum}</if>
+				,ModifyTime=now()
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<!-- 删除产品分类 -->
+	<delete id="delete" parameterMap="productCategory">
+		delete from PM_InvestCategory Where ID=${id}
+	</delete>
+	
+</mapper>

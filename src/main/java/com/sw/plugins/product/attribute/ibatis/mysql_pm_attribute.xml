@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productAttribute">
+
+	<parameterMap id="productAttribute" type="com.sw.plugins.product.attribute.entity.ProductAttribute" />
+
+	<resultMap id="productAttributeResult" type="com.sw.plugins.product.attribute.entity.ProductAttribute">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="code" column="Code" />
+		<result property="investCategoryId" column="InvestCategoryID" />
+		<result property="validationRuleId" column="ValidationRuleID" />
+		<result property="isNotNull" column="IsNotNull" />
+		<result property="isEnabled" column="IsEnabled" />
+		<result property="isForQuery" column="IsForQuery" />
+		<result property="pageShowType" column="PageShowType" />
+		<result property="defaultValue" column="DefaultValue" />
+		<result property="sortNumber" column="SortNumber" />
+		<result property="productId" column="ProductID" />
+		<result property="productName" column="ProductName" />
+		<result property="productAttributeValue" column="ProductAttributeValue" />
+		<result property="productCode" column="ProductCode" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID"/>
+	</resultMap>
+	
+	<!-- 产品属性组通用查询 -->
+	<select id="select" resultMap="productAttributeResult" parameterMap="productAttribute">
+		select  *  
+		from PM_ProductAttribute
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="investCategoryId!=null">and InvestCategoryID=${investCategoryId}</if>
+			</trim>
+		</where>
+		order by SortNumber 
+	</select>
+	
+	<!-- 产品属性组通用统计查询 -->
+	<select id="count" resultType="long"  parameterMap="productAttribute">
+		select  count(id) 
+		from PM_ProductAttribute
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="investCategoryId!=null">and InvestCategoryID=${investCategoryId}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="select_by_bussiness_type_product" resultMap="productAttributeResult" parameterMap="productAttribute">
+		select pa.*,pro.ID ProductID,pro.Name ProductName,pro.Code ProductCode,pav.Value ProductAttributeValue
+		from PM_Product pro,PM_ProductAttributeGroup pag,PM_ProductAttribute pa,PM_ProductAttributeValue pav
+		where pro.InvestCategoryID=pag.ID and pag.ID=pa.InvestCategoryID and pa.ID=pav.AttributeID
+	</select>	
+	
+	<!-- 检查产品属性名称和code是否重复 -->
+	<select id="checkAttribute" resultType="long" parameterMap="productAttribute">
+		select count(*) 
+		from PM_ProductAttributeGroup
+		<where>
+		<trim prefixOverrides="and">
+			<if test="id!=null">
+				and ID!=${id}
+			</if>
+			<if test="name!=null and name!=''">
+			and Name=#{name}
+			</if>
+			<if test="code!=null">and Code=#{code}</if>
+		</trim>
+		
+		</where>
+	</select>
+	
+	<!-- 新增产品属性 -->
+	<insert id="insert" parameterMap="productAttribute">
+		insert into PM_ProductAttribute
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="code!=null and code!=''">,Code</if>
+			<if test="investCategoryId!=null">,InvestCategoryID</if>
+			<if test="validationRuleId!=null">,ValidationRuleID</if>
+			<if test="isNotNull!=null">,IsNotNull</if>
+			<if test="isEnabled!=null">,IsEnabled</if>
+			<if test="isForQuery!=null">,IsForQuery</if>
+			<if test="pageShowType!=null">,PageShowType</if>
+			<if test="defaultValue!=null and DefaultValue!=''">,DefaultValue</if>
+			<if test="sortNumber!=null">,SortNumber</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="code!=null and code!=''">,#{code}</if>
+			<if test="investCategoryId!=null">,${investCategoryId}</if>
+			<if test="validationRuleId!=null">,${validationRuleId}</if>
+			<if test="isNotNull!=null">,${isNotNull}</if>
+			<if test="isEnabled!=null">,${isEnabled}</if>
+			<if test="isForQuery!=null">,${isForQuery}</if>
+			<if test="pageShowType!=null">,${pageShowType}</if>
+			<if test="defaultValue!=null and DefaultValue!=''">,#{defaultValue}</if>
+			<if test="sortNumber!=null">,${sortNumber}</if>
+			,now()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>
+	</insert>
+
+	<!-- 更新产品属性 -->
+	<update id="update" parameterMap="productAttribute">
+		update PM_ProductAttribute
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name=#{name}</if>
+				<if test="code!=null and code!=''">,Code=#{code}</if>
+				<if test="investCategoryId!=null">,InvestCategoryID=${investCategoryId}</if>
+				<if test="validationRuleId!=null">,ValidationRuleID=${validationRuleId}</if>
+				<if test="isNotNull!=null">,IsNotNull=${isNotNull}</if>
+				<if test="isEnabled!=null">,IsEnabled=${isEnabled}</if>
+				<if test="isForQuery!=null">,IsForQuery=${isForQuery}</if>
+				<if test="pageShowType!=null">,PageShowType=${pageShowType}</if>
+				<if test="defaultValue!=null and DefaultValue!=''">,DefaultValue=#{defaultValue}</if>
+				<if test="sortNumber!=null">,SortNumber=${sortNumber}</if>
+				,ModifyTime=now() 
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<!-- 删除产品属性 -->
+	<delete id="delete" parameterMap="productAttribute">
+		delete from PM_ProductAttribute Where ID=${id}
+	</delete>
+	
+</mapper>

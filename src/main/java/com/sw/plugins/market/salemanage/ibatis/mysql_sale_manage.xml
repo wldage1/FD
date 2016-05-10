@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="saleManage">
+
+	<parameterMap id="saleManage" type="com.sw.plugins.market.salemanage.entity.SaleManage" />
+
+	<resultMap id="saleManageResult" type="com.sw.plugins.market.salemanage.entity.SaleManage">
+		<result property="id" column="ID" />
+		<result property="productId" column="ProductID" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="rmId" column="RmID" />
+		<result property="rmShortName" column="RmShortName" />
+		<result property="rmName" column="RmName" />
+		<result property="rmLevel" column="RmLevel" />
+		<result property="teamShortName" column="TeamShortName" />
+		<result property="teamType" column="TeamType"  />
+		<result property="teamId" column="TeamID"  />
+		<result property="clientName" column="ClientName" />
+		<result property="iDCard" column="IDCard" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="commissionPayTime" column="CommissionPayTime" />
+		<result property="clientName" column="ClientName" />
+		<result property="investAmount" column="InvestAmount" javaType="java.math.BigDecimal"/>
+		<result property="share" column="Share" javaType="java.math.BigDecimal"/>
+		<result property="pushShare" column="PushShare" javaType="java.math.BigDecimal"/>
+		<result property="tradeStatus" column="TradeStatus" />
+		<result property="pushStatus" column="pushStatus" />
+		<result property="docStatus" column="DocStatus" />
+		<result property="shareTime" column="ShareTime" />
+		<result property="payTime" column="PayTime" />
+		<result property="payAmount" column="PayAmount" javaType="java.math.BigDecimal"/>
+		<result property="count" column="Count" />
+		<result property="favoritesTime" column="FavoritesTime"  />
+		<result property="payProgress" column="PayProgress"  />
+	</resultMap>
+	
+	<resultMap id="saleManageAmountMap" type="java.util.HashMap">
+		<result property="payAmount" column="PayAmount" />
+		<result property="share" column="Share" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="orderTime" column="OrderTime" />
+	</resultMap>
+	
+	<select id="select_trade_info" resultMap="saleManageResult" parameterMap="saleManage">
+		select 
+			ID,TradeStatus,PayProgress,PayAmount
+		from 
+			TC_Order
+		where
+			ID = ${orderId}
+	</select>
+	
+	<!-- 订单查询 -->
+	<select id="select_order_with_team" resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			orders.ID 
+			,orders.OrderNumber
+			,member.NickName RmShortName
+			,member.ID RmID
+			,member.`Name` RmName
+			,member.`Level` RmLevel
+			,orders.ClientName ClientName
+			,orders.IDCard
+			,orders.OrderTime
+			,DATE_FORMAT(orders.CommissionPayTime,'%Y-%m-%d') CommissionPayTime
+			,orders.InvestAmount/1000000 InvestAmount
+			,orders.PayProgress PayProgress
+			,orders.PayAmount/1000000 PayAmount
+			,orders.Share/1000000 Share
+			,orders.TradeStatus TradeStatus
+			,mto.OrgID TeamID,mto.OrgType TeamType 
+   			,(case when mto.OrgType = 0 then mo.ShortName else mt.ShortName end ) TeamShortName
+		from 
+			TC_Order orders 
+			left join MC_Member member on orders.MemberID = member.ID
+            left join MC_TeamOrOrg mto on orders.TeamID = mto.ID
+            left join MC_Team mt on mto.OrgID = mt.ID  
+            left join MC_Organization mo on mto.OrgID = mo.ID
+		where 
+			<if test="1 == isTotalShare">
+				orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				orders.SubProductID = ${subProductId}
+			</if>
+		group by orders.ID
+		order by orders.OrderTime DESC
+	</select>
+	
+	<!-- 在途订单查询 -->
+	<select id="select_new_order" resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			orders.ID 
+			,orders.OrderNumber
+			,member.NickName RmShortName
+			,member.`Name` RmName
+			,member.`Level` RmLevel
+			,orders.ClientName ClientName
+			,orders.IDCard
+			,orders.OrderTime
+			,DATE_FORMAT(orders.CommissionPayTime,'%Y-%m-%d') CommissionPayTime
+			,orders.InvestAmount/1000000 InvestAmount
+			,(case when mto.OrgType = 0 then mo.ShortName else mt.ShortName end ) TeamShortName
+		from 
+			TC_Order orders 
+			left join MC_Member member on orders.MemberID = member.ID
+			left join MC_TeamOrOrg mto on orders.TeamID = mto.ID 
+			left join MC_Team mt on mto.OrgID = mt.ID  
+            left join MC_Organization mo on mto.OrgID = mo.ID
+		where 
+			orders.TradeStatus = 1
+			<if test="null != amountLimit">
+				and orders.InvestAmount &lt; ${amountLimit}*1000000
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+		group by orders.ID
+		order by
+			<if test=" 0 == operate">
+				orders.IDCard
+			</if>
+			<if test=" 1 == operate">
+				orders.InvestAmount DESC,orders.CommissionPayTime ASC
+			</if>
+			<if test=" 2 == operate">
+				orders.CommissionPayTime ASC,orders.InvestAmount DESC
+			</if>
+			<if test=" 3 == operate">
+				orders.InvestAmount DESC,orders.OrderTime ASC
+			</if>
+			<if test=" 4 == operate">
+				orders.OrderTime ASC,member.`Level` DESC
+			</if>
+		<!-- limit ${start} , ${offset} -->
+	</select>
+	
+	<!-- 到账订单查询 -->
+	<select id="select_payed_order" resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			orders.ID 
+			,orders.OrderNumber
+			,member.NickName RmShortName
+			,member.`Name` RmName
+			,member.`Level` RmLevel
+			,orders.ClientName ClientName
+			,orders.OrderTime
+			,DATE_FORMAT(orders.CommissionPayTime,'%Y-%m-%d') CommissionPayTime
+			,orders.PayTime
+			,orders.InvestAmount/1000000 InvestAmount
+			,orders.PayAmount/1000000 PayAmount
+			,orders.Share/1000000 Share
+			,(case when mto.OrgType = 0 then mo.ShortName else mt.ShortName end ) TeamShortName
+		from 
+			TC_Order orders 
+			left join MC_Member member on orders.MemberID = member.ID
+			left join MC_TeamOrOrg mto on orders.TeamID = mto.ID
+			left join MC_Team mt on mto.OrgID = mt.ID  
+            left join MC_Organization mo on mto.OrgID = mo.ID
+		where 
+			(orders.TradeStatus = 4 or orders.TradeStatus = 2) and orders.PayProgress != 0
+			<if test="null != orderNumber and '' != orderNumber">
+				and orders.orderNumber = '${orderNumber}'
+			</if>
+			<if test="null != amountLimit">
+				and orders.InvestAmount &lt; ${amountLimit}*1000000
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+		group by orders.ID
+		order by
+			<if test=" 1 == operate">
+				orders.InvestAmount DESC,orders.CommissionPayTime ASC
+			</if>
+			<if test=" 2 == operate">
+				orders.CommissionPayTime ASC,orders.InvestAmount DESC
+			</if>
+			<if test=" 3 == operate">
+				orders.InvestAmount DESC,orders.OrderTime ASC
+			</if>
+			<if test=" 4 == operate">
+				orders.OrderTime ASC,member.`Level` DESC
+			</if>
+		<!-- limit ${start} , ${offset} -->
+	</select>
+	
+	<!-- 配额订单查询 -->
+	<select id="select_shared_order" resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			orders.ID 
+			,orders.OrderNumber
+			,member.NickName RmShortName
+			,member.`Name` RmName
+			,member.`Level` RmLevel
+			,orders.ClientName ClientName
+			,orders.OrderTime
+			,DATE_FORMAT(orders.CommissionPayTime,'%Y-%m-%d') CommissionPayTime
+			,orders.InvestAmount/1000000 InvestAmount
+			,orders.ShareTime
+			,orders.TradeStatus
+			,orders.Share/1000000 Share
+			,(case when mto.OrgType = 0 then mo.ShortName else mt.ShortName end ) TeamShortName
+		from 
+			TC_Order orders left join MC_Member member on orders.MemberID = member.ID
+			left join MC_TeamOrOrg mto on orders.TeamID = mto.ID
+			left join MC_Team mt on mto.OrgID = mt.ID  
+            left join MC_Organization mo on mto.OrgID = mo.ID 
+		where 
+			orders.PayProgress = 0 and (orders.TradeStatus = 2 or orders.TradeStatus = 12)
+			<if test="null != orderNumber and '' != orderNumber">
+				and orders.orderNumber = '${orderNumber}'
+			</if>
+			<if test="null != amountLimit">
+				and orders.InvestAmount &lt; ${amountLimit}*1000000
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+		group by orders.ID
+		order by
+			<if test=" 1 == operate">
+				orders.InvestAmount DESC,orders.CommissionPayTime ASC
+			</if>
+			<if test=" 2 == operate">
+				orders.CommissionPayTime ASC,orders.InvestAmount DESC
+			</if>
+			<if test=" 3 == operate">
+				orders.InvestAmount DESC,orders.OrderTime ASC
+			</if>
+			<if test=" 4 == operate">
+				orders.OrderTime ASC,member.`Level` DESC
+			</if>
+		<!-- limit ${start} , ${offset} -->
+	</select>
+
+	<select id="count_new_order" resultType="Long" parameterMap="saleManage">
+		select
+			count(orders.ID)
+		from 
+			TC_Order orders
+		where 
+			orders.TradeStatus = 1
+			<if test="null != amountLimit">
+				and orders.InvestAmount &lt; ${amountLimit}*1000000
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+	</select>
+	
+	<select id="count_payed_order" resultType="Long" parameterMap="saleManage">
+		select
+			count(orders.ID)
+		from 
+			TC_Order orders
+		where 
+			(orders.TradeStatus = 4 or orders.TradeStatus = 2) and orders.PayProgress != 0
+			<if test="null != orderNumber and '' != orderNumber">
+				and orders.orderNumber = '${orderNumber}'
+			</if>
+			<if test="null != amountLimit">
+				and orders.InvestAmount &lt; ${amountLimit}*1000000
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+	</select>
+	
+	<select id="count_payed_order_amount" resultType="Long" parameterMap="saleManage">
+		select
+			IFNULL(sum(PayAmount)/1000000,0)
+		from 
+			TC_Order orders
+		where 
+			(orders.TradeStatus = 4 or orders.TradeStatus = 2) and orders.PayProgress != 0
+			<if test="null != orderNumber and '' != orderNumber">
+				and orders.orderNumber = '${orderNumber}'
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+	</select>
+	
+	<select id="count_shared_order" resultType="Long" parameterMap="saleManage">
+		select
+			count(orders.ID)
+		from 
+			TC_Order orders
+		where 
+			orders.PayProgress = 0 and (orders.TradeStatus = 2 or orders.TradeStatus = 12)
+			<if test="null != orderNumber and '' != orderNumber">
+				and orders.orderNumber = '${orderNumber}'
+			</if>
+			<if test="null != amountLimit">
+				and orders.InvestAmount &lt; ${amountLimit}*1000000
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+	</select>
+	
+	<select id="count_shared_order_amount" resultType="Long" parameterMap="saleManage">
+		select
+			IFNULL(sum(Share)/1000000,0)
+		from 
+			TC_Order orders
+		where 
+			orders.PayProgress = 0 and (orders.TradeStatus = 2 or orders.TradeStatus = 12)
+			<if test="null != orderNumber and '' != orderNumber">
+				and orders.orderNumber = '${orderNumber}'
+			</if>
+			<if test="1 == isTotalShare">
+				and orders.ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				and orders.SubProductID = ${subProductId}
+			</if>
+	</select>
+
+	<update id="update_share" parameterMap="saleManage">
+		update 
+			TC_Order
+		set
+			share = ${share}*1000000,ShareTime = now()
+		where 
+			ID=${orderId}
+	</update>
+	
+	<update id="update_share_and_tradestatus" parameterMap="saleManage">
+		update 
+			TC_Order
+		set
+			share = ${share}*1000000,TradeStatus = ${tradeStatus},ShareTime = now()
+		where 
+			ID=${orderId}
+	</update>
+	
+	<update id="update_share_tradestatus_and_payprogress" parameterMap="saleManage">
+		update 
+			TC_Order
+		set
+			share = ${share}*1000000,TradeStatus = ${tradeStatus},PayProgress = ${payProgress},ShareTime = now()
+		where 
+			ID=${orderId}
+	</update>
+	
+	<update id="update_order_tradestatus" parameterMap="saleManage">
+		update 
+			TC_Order
+		set
+			TradeStatus = ${tradeStatus}
+		where 
+			ID=${orderId}
+	</update>
+	
+	<update id="update_product_sellstatus" parameterMap="saleManage">
+		update 
+			PM_Product
+		set
+			SellStatus = ${sellStatus}
+		where 
+			ID=${productId}
+	</update>
+	
+	<update id="update_product_sellstatus_isredeem_and_isadd" parameterMap="saleManage">
+		update 
+			PM_Product
+		set
+			SellStatus = ${sellStatus},IsRedeem = ${isRedeem},IsAdd = ${isAdd}
+		where 
+			ID=${productId}
+	</update>
+	
+	<update id="update_product_is_remittance" parameterMap="saleManage">
+		update 
+			PM_SubProduct
+		set
+			IsRemittance = ${isRemittance}
+		where
+			<if test="1 == isTotalShare">
+				ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				ID = ${subProductId}
+			</if>
+	</update>
+	
+	<update id="update_product_is_favorites" parameterMap="saleManage">
+		update 
+			PM_SubProduct
+		set
+			IsFavorites = ${isFavorites}
+		where 
+			<if test="1 == isTotalShare">
+				ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				ID = ${subProductId}
+			</if>
+	</update>
+	
+	<update id="update_product_is_order" parameterMap="saleManage">
+		update 
+			PM_SubProduct
+		set
+			IsOrder = ${isOrder}
+		where 
+			<if test="1 == isTotalShare">
+				ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				ID = ${subProductId}
+			</if>
+	</update>
+	
+	<update id="update_product_is_order_and_remittance" parameterMap="saleManage">
+		update 
+			PM_SubProduct
+		set
+			IsRemittance = ${isOrderAndRemittance},IsOrder = ${isOrderAndRemittance}
+		where
+			<if test="1 == isTotalShare">
+				ProductID = ${productId}
+			</if>
+			<if test="0 == isTotalShare">
+				ID = ${subProductId}
+			</if>
+	</update>
+
+	<update id="update_product_sellstatus_and_raisefinishtime" parameterMap="saleManage">
+		update 
+			PM_Product
+		set
+			SellStatus = ${sellStatus} , raiseFinishTime = now()
+		where 
+			ID=${productId}
+	</update>
+	
+	<update id="update_product_sellstatus_founddate_and_stopdate" parameterMap="saleManage">
+		update 
+			PM_Product
+		set
+			SellStatus = ${sellStatus} 
+			<if test="foundDate !=  null and foundDate != '' ">
+			, FoundDate = #{foundDate} 
+			</if>
+			<if test="stopDate !=  null and stopDate != '' ">
+			, StopDate = #{stopDate}
+			</if>
+		where 
+			ID=${productId}
+	</update>
+	
+	
+	<!-- 查询主产品有效订单 -->
+	<select id="select_product_orders"  resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			ID,SubProductID,CAST(Share/1000000 as DECIMAL(16,0)) Share,CAST(PushShare/1000000 AS DECIMAL) PushShare,CAST(PayAmount/1000000 AS DECIMAL) PayAmount,CAST(InvestAmount/1000000 AS DECIMAL) InvestAmount,TradeStatus,PushStatus,DocStatus
+		from
+			TC_Order
+		where 
+			ProductID = ${productId} and (TradeStatus in (1,2,4))
+	</select>
+	
+	
+	<!-- 查询子产品有效订单 -->
+	<select id="select_sub_product_orders" resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			ID,ProductID,CAST(Share/1000000 as DECIMAL(16,0)) Share,CAST(PushShare/1000000 AS DECIMAL) PushShare,CAST(PayAmount/1000000 AS DECIMAL) PayAmount,CAST(InvestAmount/1000000 AS DECIMAL) InvestAmount,TradeStatus,PushStatus,DocStatus
+		from
+			TC_Order
+		where 
+			SubProductID = ${subProductId} and (TradeStatus in (1,2,4))
+	</select>
+	
+	<!-- 责任额度配给主产品有效订单 -->
+	<select id="select_product_orders_by_pushshare"  resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			o.ID,o.SubProductID,o.Share/1000000 Share,o.PushShare/1000000 PushShare,o.PayAmount/1000000 PayAmount,o.InvestAmount/1000000 InvestAmount,o.TradeStatus
+		from
+			TC_Order o left join PM_SubProduct p on o.SubProductID = p.ID
+		where 
+			o.ProductID = ${productId} and  o.PushStatus = 0 and p.isRemittance = 0  
+			and o.PayProgress in (0,1) and o.TradeStatus in (1,2) and o.TradeType = 1
+	</select>
+	
+	<!-- 责任额度配给子产品有效订单 -->
+	<select id="select_sub_product_orders_by_pushshare" resultMap="saleManageResult" parameterMap="saleManage">
+		select
+			o.ID,o.SubProductID,o.Share/1000000 Share,o.PushShare/1000000 PushShare,o.PayAmount/1000000 PayAmount,o.InvestAmount/1000000 InvestAmount,o.TradeStatus
+		from
+			TC_Order o left join PM_SubProduct p on o.SubProductID = p.ID
+		where 
+			o.SubProductID = ${subProductId} and  o.PushStatus = 0 and p.isRemittance = 0  
+			and o.PayProgress in (0,1) and o.TradeStatus in (1,2) and o.TradeType = 1
+	</select>
+	
+	<!-- 查询主产品订单每日统计量 -->
+	<select id="select_product_orders_day_count" resultMap="saleManageAmountMap" parameterMap="saleManage">
+		select
+			IFNULL(sum(PayAmount)/1000000,0) PayAmount, IFNULL(sum(Share)/1000000,0) Share, IFNULL(sum(InvestAmount)/1000000,0) InvestAmount,date_format(OrderTime,'%Y-%m-%d') OrderTime
+		from
+			TC_Order
+		where 
+			ProductID = ${productId} and (TradeStatus in (1,2,4))
+		GROUP by 
+			date_format(OrderTime,'%Y-%m-%d')
+		order by OrderTime
+	</select>
+	
+	<!-- 查询子产品订单每日统计量 -->
+	<select id="select_sub_product_orders_day_count" resultMap="saleManageAmountMap" parameterMap="saleManage">
+		select
+			IFNULL(sum(PayAmount)/1000000,0) PayAmount, IFNULL(sum(Share)/1000000,0) Share, IFNULL(sum(InvestAmount)/1000000,0) InvestAmount,date_format(OrderTime,'%Y-%m-%d') OrderTime
+		from
+			TC_Order
+		where 
+			SubProductID = ${subProductId} and (TradeStatus in (1,2,4))
+		GROUP by 
+			date_format(OrderTime,'%Y-%m-%d')
+		order by OrderTime
+	</select>
+	
+	<select id="count_product_fund_condition" resultType="Long" parameterMap="saleManage">
+		select count(ID) from TC_Order where TradeStatus = 4 and (ContractNumber is null or ContractNumber = '') and ProductID = ${productId}
+	</select>
+	
+	
+</mapper>

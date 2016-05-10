@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<product name="产品中心" icon="images/menu/product-center.png">
+		<capitalconfig isNav="true" isSetAuth="sub" isStatus="true" name="资金投向" icon="images/menu/product-center-money.png">
+			<language>
+				<value>/language/categoryMessages_zh_CN.properties</value>
+				<value>/language/categoryMessages_en_US.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+			
+			<language>
+				<value>/language/attributeMessages_zh_CN.properties</value>
+				<value>/language/attributeMessages_en_US.properties</value>
+			</language>
+			<attribute name="产品属性" isNav="true"  isLog="true" icon="images/icon/modify.png"/>
+		</capitalconfig>
+	</product>
+</plugins>

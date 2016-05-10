@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+    <product name="产品中心" icon="images/menu/product-center.png">
+        <comment isNav="true" isSetAuth="sub" isStatus="true" name="产品评价" icon="images/menu/evaluation-management-product evaluation.png">
+            <language>
+                <value>/language/commentMessages_zh_CN.properties</value>
+            </language>
+            <push isNav="true" isLog="true" name="推送问卷" icon="images/icon/send.png"/>
+            <evaluate isNav="true" isLog="true" name="评价详细" icon="images/icon/detail.png"/>
+        </comment>
+    </product>
+</plugins>

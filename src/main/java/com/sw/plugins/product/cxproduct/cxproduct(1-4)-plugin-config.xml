@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<product name="产品中心" icon="images/menu/product-center.png">
+		<cxproduct isNav="true" isStatus="true" name="存续产品" icon="images/menu/product-center-remaining products.png">
+		    <cxdetail isNav="true"  name="查看" icon="images/icon/detail.png"/>
+		    <clearproduct isNav="false" name="清算" icon="images/icon/detail.png"/>
+		</cxproduct>
+	</product>
+</plugins>
