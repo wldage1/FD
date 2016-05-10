@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="links">
+
+	<parameterMap id="links" type="com.sw.plugins.websitemanage.friendlylink.entity.Links" />
+
+	<resultMap id="linksResult" type="com.sw.plugins.websitemanage.friendlylink.entity.Links">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="url" column="Url" />
+		<result property="logo" column="Logo" />
+	</resultMap>
+	<!-- 查询详细信息 -->
+	<select id="select_one" resultMap="linksResult" parameterMap="links">
+		SELECT 
+			ID,
+			Name,
+			Url,
+			Logo
+		FROM
+			WC_Links 
+		<where>
+			ID = ${id}
+		</where>
+	</select>
+	<!-- 列表分页查询 -->
+	<select id="select_links_list" resultMap="linksResult" parameterMap="links">
+		SELECT 
+			ID,
+			Name,
+			Url,
+			Logo
+		FROM
+			WC_Links 
+		order by ID desc limit ${start} , ${offset}
+	</select>
+	<!-- 列表记录数 -->
+	<select id="select_links_count" resultType="long" parameterMap="links">
+		SELECT 
+			count(1)
+		FROM
+			WC_Links 
+	</select>
+	<!-- 插入 -->
+	<insert id="insert_links" parameterMap="links">
+		INSERT INTO WC_Links
+		<trim prefix="(" prefixOverrides="," suffix=")">
+		    <if test="name!=null and name!=''">,Name</if>
+		    <if test="url!=null and url!=''">,Url</if>
+		    <if test="logo!=null and logo!=''">,Logo</if>
+		</trim>
+		VALUES
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="url!=null and url!=''">,#{url}</if>
+			<if test="logo!=null and logo!=''">,#{logo}</if>
+		</trim>
+	</insert>
+	<!-- 更新 -->
+	<update id="update_links" parameterMap="links">
+		update WC_Links
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name = #{name}</if>
+				<if test="url!=null and url!=''">,Url = #{url}</if>
+				,Logo = #{logo}
+			</trim>
+		</set>
+		where ID = ${id}
+	</update>
+	<delete id="delete_links" parameterMap="links">
+		delete from WC_Links where ID = ${id}
+	</delete>
+</mapper>

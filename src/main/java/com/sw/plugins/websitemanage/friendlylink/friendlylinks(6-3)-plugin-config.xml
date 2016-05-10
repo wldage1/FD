@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<websitemanage name="网站管理" icon="images/menu/website-management.png">
+		<friendlylink isNav="true" isSetAuth="all" isStatus="true" name="友情链接" icon="images/menu/system-configuration-blogroll.png">
+			<language>
+				<value>/language/friendlylinkMessages_zh_CN.properties</value>
+				<value>/language/friendlylinkMessages_en_US.properties</value>
+			</language>
+			<create isNav="true" isLog="true"  name="创建"/>
+			<modify isNav="true" isLog="true"  name="修改"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+		</friendlylink>
+	</websitemanage>
+</plugins>
