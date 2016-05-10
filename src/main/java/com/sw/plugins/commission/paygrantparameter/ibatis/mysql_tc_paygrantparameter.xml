@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="paygrantparameter">
+
+	<parameterMap id="paygrantparameter" type="com.sw.plugins.commission.paygrantparameter.entity.PayGrantParameter" />
+
+	<resultMap id="paygrantparameterResult" type="com.sw.plugins.commission.paygrantparameter.entity.PayGrantParameter">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="approvedDeadline" column="ApprovedDeadline" />
+		<result property="payDate" column="PayDate" />
+		<result property="type" column="Type" />
+		<result property="orgID" column="OrgID" />
+	</resultMap>
+	
+	<select id="select_paginated" parameterMap="paygrantparameter" resultMap="paygrantparameterResult">
+		select * from TC_PayGrantParameters p
+		<where>
+			<trim prefixOverrides="and">
+			<if test="type!=null">and Type = ${type}</if>
+			<if test="orgID!=null">and p.OrgID = ${orgID}</if>
+			</trim>
+		</where>
+		order by Type,ApprovedDeadline,PayDate
+	</select>
+	
+	<select id="select_count" resultType="long">
+		select count(id) from TC_PayGrantParameters
+	</select>
+	
+	<insert id="insert" parameterMap="paygrantparameter">
+		insert into TC_PayGrantParameters
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="approvedDeadline!=null">,ApprovedDeadline</if>
+			<if test="payDate!=null">,PayDate</if>
+			<if test="type!=null">,Type</if>
+			<if test="orgID!=null">,OrgID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null">,'${name}'</if>
+			<if test="approvedDeadline!=null">,${approvedDeadline}</if>
+			<if test="payDate!=null">,#{payDate}</if>
+			<if test="type!=null">,#{type}</if>
+			<if test="orgID!=null">,#{orgID}</if>
+		</trim>
+	</insert>
+	
+	<update id="update" parameterMap="paygrantparameter">
+		update TC_PayGrantParameters
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">, Name='${name}'</if>
+				<if test="approvedDeadline!=null">, ApprovedDeadline = ${approvedDeadline}</if>
+				<if test="payDate != null">, PayDate = ${payDate}</if>
+			</trim>
+		</set>
+		where ID = ${id}
+	</update>
+	
+	<delete id="delete">
+		delete from TC_PayGrantParameters where ID = ${id}
+	</delete>
+	
+</mapper>

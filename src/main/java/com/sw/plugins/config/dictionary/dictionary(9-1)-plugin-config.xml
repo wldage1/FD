@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<config name="系统配置" icon="images/menu/system-configuration.png">
+<!--		<dictionaryitem isNav="true" isSetAuth="all" isStatus="true" name="数据字典" icon="images/menu/sc_dic.png">
+			<language>
+				<value>/language/dictionaryitemMessages_zh_CN.properties</value>
+				<value>/language/dictionaryitemMessages_en_US.properties</value>
+			</language>
+			<create isNav="true" isLog="true"  isSetAuth="true" name="创建"/>
+			<modify isNav="true" isLog="true"  isSetAuth="true" name="修改"/>
+			<delete isNav="true" isLog="true"  isSetAuth="true" name="删除"/>
+		</dictionaryitem>
+		-->
+		<dictionary isNav="true" isSetAuth="all" isStatus="true" name="字典管理" icon="images/menu/system-configuration-dictionary managed.png">
+			<language>
+				<value>/language/dictionaryMessages_zh_CN.properties</value>
+				<value>/language/dictionaryMessages_en_US.properties</value>
+			</language>
+			<itemCreate isNav="true" isLog="true"  isSetAuth="true" name="创建"/>
+			<itemModify isNav="true" isLog="true"  isSetAuth="true" name="修改"/>
+			<itemSave isNav="true" isLog="true" isSetAuth="true" name="保存"/>
+			<itemReset isNav="true" isLog="true" isSetAuth="true" name="取消" />
+			<itemDelete isNav="true" isLog="true"  isSetAuth="true" name="删除"/>
+			<create isNav="true" isLog="true"  name="创建"/>
+			<modify isNav="true" isLog="true"  name="修改"/>
+			<save isNav="true" isLog="true" name="保存" />
+			<reset isNav="true" isLog="true" name="取消"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+		</dictionary>
+	</config>
+</plugins>

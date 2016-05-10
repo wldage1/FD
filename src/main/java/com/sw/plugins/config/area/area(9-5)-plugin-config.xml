@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<config name="系统配置" icon="images/menu/system-configuration.png">
+		<area isNav="true" isSetAuth="sub" isStatus="true" name="地区管理" icon="images/menu/system-management-regional management.png">
+			<language>
+				<value>/language/areaMessages_zh_CN.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/> 
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+		</area>
+	</config>
+</plugins>

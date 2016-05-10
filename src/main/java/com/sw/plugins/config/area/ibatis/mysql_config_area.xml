@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="area">
+	<parameterMap id="area" type="com.sw.plugins.config.area.entity.Area" />
+	
+	<resultMap id="areaResult" type="com.sw.plugins.config.area.entity.Area">
+		<result property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="code" column="Code"/>
+		<result property="name" column="Name"/>
+		<result property="isChildNode" column="IsChildNode"/>
+		<result property="treeLevel" column="TreeLevel"/>
+		<result property="treePath" column="TreePath"/>
+		<result property="parentId" column="ParentId"/>
+		<result property="parentName" column="ParentName"/>
+		<result property="pinyin" column="Pinyin"/>
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+	</resultMap>
+
+	<select id="select_area_treeLevel_parentId" resultMap="areaResult" parameterMap="area">
+		select id, name from SC_Area
+		<where>
+			<trim prefixOverrides="and">
+				<if test="treeLevel!=null">and TreeLevel=${treeLevel}</if>
+				<if test="parentId!=null">and ParentId=${parentId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 地区通用查询 -->
+	<select id="select" resultMap="areaResult" parameterMap="area">
+		select * from SC_Area a
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and a.ID=${id}</if>
+				<if test="code!=null">and a.Code=#{code}</if>
+				<if test="name!=null">and a.Name=#{name}</if>
+				<if test="treeLevel!=null">and a.TreeLevel=${treeLevel}</if>
+				<if test="treePath!=null and treePath!= ''">and a.TreePath like '#{treePath}%'</if>
+				<if test="ischildNode">and a.IschildNode=${ischildNode}</if>
+				<if test="parentId!=null">and a.ParentId=${parentId}</if>
+				<if test="pinyin!=null">and a.Pinyin=#{pinyin}</if>
+			</trim>
+		</where>
+		order by id desc
+	</select>
+	
+	<!-- 查询上级地区 -->
+	<select id="select_area_parent" resultMap="areaResult" parameterMap="area">
+		select case parentid when 0 then 'dingjidiqu' else (select name from SC_Area where id=b.parentid) end as parentname,b.*
+   			from SC_Area b where parentid=(
+				select parentid from SC_Area
+					<where>
+						<trim prefixOverrides="and">
+							<if test="id!=null">and ID=${id}</if>
+						</trim>
+					</where>)
+	</select>
+	
+	<!-- 地区带上级地区名称查询 -->
+	<select id="select_area" resultMap="areaResult" parameterMap="area">
+	select b.id,b.code,b.name,b.IsChildNode,b.treeLevel,b.treePath, b.parentId,b.pinyin,b.createTime,b.modifyTime, 
+	b.creatorUserId,(case when b.treelevel = 1 then 'dingjidiqu' else a.name end) as parentname  from SC_Area a right join SC_Area b on b.parentid=a.id
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and b.ID=#{id}</if>
+				<if test="code!=null">and b.Code=#{code}</if>
+				<if test="name!=null">and b.Name=#{name}</if>
+				<if test="treeLevel!=null">and b.TreeLevel=#{treeLevel}</if>
+				<if test="treePath!=null and treePath!= ''">and b.TreePath like '#{treePath}%'</if>
+				<if test="isChildNode!=null">and b.IsChildNode=#{isChildNode}</if>
+				<if test="parentId!=null">and b.ParentId=#{parentId}</if>
+				<if test="pinyin!=null">and b.Pinyin=#{pinyin}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 判断是否有下级地区 -->
+	<select id="count_area_parent" resultType="long" parameterMap="area">
+		select count(id) from SC_Area 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id !=null ">and parentId = ${id}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="count" resultType="long" parameterMap="area">
+		select count(id) from SC_Area 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id !=null ">and ID != ${id}</if>
+				<if test="code!=null and code!= ''">and Code=#{code}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="count_by_parentId" resultType="long" parameterMap="area">
+		select count(id) from SC_Area 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="parentId !=null ">and Parentid = ${parentId}</if>
+				<if test="id !=null ">and ID != ${id}</if>
+				<if test="name!=null and name!= ''">and Name=#{name}</if>
+			</trim>
+		</where>
+	</select>
+		<!-- 删除地区 -->
+	<delete id="delete" parameterMap="area">
+		delete from SC_Area
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+			</trim>
+		</where>
+	</delete>
+		<!-- 新增地区 -->
+	<insert id="insert" parameterMap="area">
+		insert into SC_Area
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="treeLevel!=null">, TreeLevel</if>
+			<if test="treePath!=null">,TreePath</if>
+			<if test="isChildNode!=null">,IsChildNode</if>
+			<if test="parentId!=null">,ParentId</if>
+			<if test="code!=null ">,Code</if>
+			<if test="name!=null">,Name</if>
+			<if test="pinyin!=null">,Pinyin</if>
+			,CreateTime
+			,ModifyTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="treeLevel!=null">,#{treeLevel}</if>
+			<if test="treePath!=null ">,#{treePath}</if>
+			<if test="isChildNode!=null">,#{isChildNode}</if>
+			<if test="parentId!=null">,#{parentId}</if>
+			<if test="code!=null">,#{code}</if>
+			<if test="name!=null">,#{name}</if>
+			<if test="pinyin!=null">,#{pinyin}</if>
+			,now()
+			,now()
+			<if test="creatorUserId!=null">,#{creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>		
+	</insert>
+		<!-- 更新地区 -->
+	<update id="update" parameterMap="area">
+		update SC_Area
+		<set>
+			<trim prefixOverrides=",">
+				<if test="code!=null">,Code=#{code}</if>
+				<if test="treeLevel!=null">,TreeLevel=#{treeLevel}</if>
+				<if test="name!=null">, Name=#{name}</if>
+				<if test="treePath!=null">,TreePath=#{treePath}</if>
+				<if test="isChildNode!=null">,IsChildNode=#{isChildNode}</if>
+				<if test="parentId!=null">,ParentId=#{parentId}</if>
+				<if test="pinyin!=null">,Pinyin=#{pinyin}</if>
+				,ModifyTime=now()
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	
+</mapper>
