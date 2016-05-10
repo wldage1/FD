@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="position">
+
+	<parameterMap id="position" type="com.sw.plugins.config.position.entity.Position" />
+
+	<resultMap id="positionResult" type="com.sw.plugins.config.position.entity.Position">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="code" column="Code" />
+		<result property="url" column="Url" />
+		<result property="picture" column="Picture" />
+	</resultMap>
+	
+	<select id="select" resultMap="positionResult" parameterMap="position">
+		select * from WC_Position
+		<where>
+			<if test="id != null">ID = ${id}</if>
+		</where>
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="position">
+		select count(ID) from WC_Position
+		<where>
+			<if test="id != null">ID = ${id}</if>
+		</where>
+	</select>
+	
+	<select id="count_by_code" resultType="Long" parameterMap="position">
+		select count(ID) from WC_Position
+		<where>
+			<if test="code != null">Code = #{code}</if>
+		</where>
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insert" parameterMap="position">
+		insert into WC_Position
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" name !=null ">,Name</if>
+			<if test=" code !=null ">,Code</if>
+			<if test=" url  !=null ">,Url</if>
+			<if test=" picture  !=null ">,Picture</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" name !=null ">,#{name}</if>
+			<if test=" code !=null ">,#{code}</if>
+			<if test=" url  !=null ">,#{url}</if>
+			<if test=" picture  !=null ">,#{picture}</if>
+		</trim>
+	</insert>
+	
+	
+	<!-- 更新产品 -->
+	<update id="update" parameterMap="position">
+		update WC_Position
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" name !=null ">,name = #{name}</if>
+				<if test=" url  !=null ">,url = #{url}</if>
+				<if test=" picture  !=null ">,picture = #{picture}</if>
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<update id="update_by_code" parameterMap="position">
+		update WC_Position
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" name !=null ">,name = #{name}</if>
+				<if test=" url  !=null ">,url = #{url}</if>
+				<if test=" picture  !=null ">,picture = #{picture}</if>
+			</trim>
+		</set>
+		Where Code=#{code}
+	</update>
+	
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterMap="position">
+		delete from WC_Position Where ID=${id}
+	</delete>
+	
+</mapper>

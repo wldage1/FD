@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!-- 
+
+-->
+<mapper namespace="validationRule">
+	<parameterMap id="validationRule" type="com.sw.plugins.config.validationrule.entity.ValidationRule" />
+	<resultMap id="validationRuleResult" type="com.sw.plugins.config.validationrule.entity.ValidationRule">
+		<result property="id" column="ID" />
+		<result property="name" column="Name" />
+		<result property="ruleContent" column="RuleContent" />
+		<result property="promptMessage" column="PromptMessage" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserId" />
+	</resultMap>
+	<select id="select" resultMap="validationRuleResult" parameterMap="validationRule">
+		select * from SC_ValidationRule
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id != null and id!=''">and ID = ${id}</if>
+				<if test="name !=null and name!=''">
+					and Name =#{name}
+				</if>
+			</trim>
+		</where>
+		order by id desc
+	</select>
+	<!-- 验证规则分页查询 -->
+	<select id="select_validation_rule_paginated" resultMap="validationRuleResult" parameterMap="validationRule">
+		select 
+			id,Name,ruleContent,promptMessage
+		from 
+			SC_ValidationRule 
+		<if test="name !=null and name!=''">where Name like '%${name}%'</if>
+		limit ${start},${offset} 
+	</select>
+		<!-- 验证规则统计查询 -->
+	<select id="count" resultType="long" parameterMap="validationRule">
+		select count(ID) from SC_ValidationRule
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name !=null  and name!=''">
+					and Name like '%${name}%'
+				</if>
+				<if test="id != null and id!=''">and ID = ${id}</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 验证规则分页统计查询 -->
+	<select id="count_validation_rule_paginated" resultType="long" parameterMap="validationRule">
+		select count(ID) from SC_ValidationRule
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name !=null  and name!=''">
+					and Name like '%#{name}%'
+				</if>
+				<if test="id != null and id !=''">and ID = ${id}</if>
+			</trim>
+		</where>
+	</select>
+		<!-- 验证规则新增 -->
+	<insert id="insert" parameterMap="validationRule">
+		insert into SC_ValidationRule
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name !=null"> ,Name</if>
+			<if test="ruleContent!=null">,RuleContent</if>
+			<if test="promptMessage!=null">,PromptMessage</if>
+			,CreateTime
+			,ModifyTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="name!=null">,#{name}</if>
+			<if test="ruleContent !=null">,#{ruleContent}</if>
+			<if test="promptMessage !=null">,#{promptMessage}</if>
+			,now()
+			,now()
+			<if test="creatorUserId!=null">,#{creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey   
+		</selectKey>
+	</insert>
+
+	<!-- 验证规则更新 -->
+	<update id="update" parameterMap="validationRule">
+		update SC_ValidationRule
+		<set>
+			<trim prefixOverrides=",">
+			<if test="name !=null" >,Name=#{name}</if>
+			<if test="ruleContent !=null">,RuleContent=#{ruleContent}</if>
+			<if test="promptMessage !=null">,PromptMessage=#{promptMessage}</if>
+			<if test="creator!=null">,Creator = #{creator}</if>
+			,ModifyTime=now()		
+		</trim>
+		</set>
+		<where>
+			<if test="id!=null">
+				ID=${id}
+			</if>
+		</where>
+	</update>
+	<!-- 验证规则删除 -->
+	<delete id="delete" parameterMap="validationRule">
+		delete from SC_ValidationRule
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>		
+			</trim>
+		</where>		
+	</delete>
+</mapper>

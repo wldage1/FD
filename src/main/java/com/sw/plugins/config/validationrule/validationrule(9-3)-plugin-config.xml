@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<config name="系统配置" icon="images/menu/system-configuration.png">
+		<validationrule isNav="true" isSetAuth="sub" isAuthorize="false" isStatus="true" name="验证规则" icon="images/menu/system-configuration-validation rule.png">
+			<language>
+				<value>/language/validationruleMessages_zh_CN.properties</value>		
+			</language>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<modify isNav="true"  isStatus="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+			
+		</validationrule>
+	</config>
+</plugins>

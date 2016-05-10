@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ 
+<mapper namespace="websiteSetting">
+	<parameterMap type="com.sw.plugins.config.websitesetting.entity.WebsiteSetting" id="websiteSetting" />
+	<resultMap type="com.sw.plugins.config.websitesetting.entity.WebsiteSetting" id="websiteSettingResult">
+		<result property="id" column="ID" />
+		<result property="code" column="Code"/>
+		<result property="name" column="Name"/>
+		<result property="value" column="Value"/>
+	</resultMap>
+	
+	<select id="select_baseInfo" parameterMap="websiteSetting" resultMap="websiteSettingResult">
+		select * from WC_WebsiteSetting where code in ('Websites','Name','Status','Keyword','Record','Copyright','CloseMessage','Discription','Phone','Address','PostCode','Email','AddresserEmail','AboutUs','ContactUs','Declare','ParameterMemberRegisterState')
+	</select>
+	
+	<select id="select_SMPT" parameterMap="websiteSetting" resultMap="websiteSettingResult">
+		select * from WC_WebsiteSetting where code in ('SMTPIP','SMTPPort','SMTPUserName','SMTPPassword')
+	</select>
+	
+	<select id="select_webInfo" parameterMap="websiteSetting" resultMap="websiteSettingResult">
+		select * from WC_WebsiteSetting where code in ('AboutUs','ContactUs','Declare')
+	</select>
+	
+	<select id="select_webLogo" parameterMap="websiteSetting" resultMap="websiteSettingResult">
+		select * from WC_WebsiteSetting where code = 'Logo'
+	</select>
+	
+	<select id="select_one" parameterMap="websiteSetting" resultMap="websiteSettingResult">
+		select * from WC_WebsiteSetting 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID = #{id}</if>
+				<if test="name!=null and name!=''">and Name = #{name}</if>
+				<if test="code!=null and code!=''">and Code = #{code}</if>
+				<if test="value!=null and value!=null">and Value = #{value}</if>			
+			</trim>
+		</where>
+	</select>
+	
+	<update id="update" parameterMap="websiteSetting">
+		update WC_WebsiteSetting 
+		<set> 
+			<trim prefixOverrides="," >
+				,Value = #{value}
+			</trim>
+		</set>
+			where ID = ${id} 
+	</update>
+	
+	<insert id="insert" parameterMap="websiteSetting">
+		insert into WC_WebsiteSetting
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code !=null and code!=''">,Code</if>
+			<if test="name !=null and name !=''">,Name</if>
+			<if test="value !=null and value !=''">,Value</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code !=null and code!=''">,#{code}</if>
+			<if test="name !=null and name !=''">,#{name}</if>
+			<if test="value !=null and value!=''">,${value}</if>
+		</trim>
+	</insert>
+</mapper>
