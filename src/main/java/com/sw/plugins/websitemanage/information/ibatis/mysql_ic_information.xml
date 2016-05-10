@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="information">
+    
+    <parameterMap type="com.sw.plugins.websitemanage.information.entity.Information" id="information" />
+	
+    <!-- 资讯结果集 -->
+    <resultMap type="com.sw.plugins.websitemanage.information.entity.Information" id="informationResult">
+        <result property="id" column="ID"/>
+        <result property="orgId" column="OrgID"/>
+        <result property="type" column="Type"/>
+        <result property="title" column="Title"/>
+        <result property="shorterTitle" column="ShorterTitle"/>
+        <result property="shortestTitle" column="ShortestTitle"/>
+        <result property="titleImage" column="TitleImage"/>
+        <result property="keyword" column="Keyword"/>
+        <result property="summary" column="Summary"/>
+        <result property="source" column="Source"/>
+        <result property="author" column="Author"/>
+        <result property="content" column="Content"/>
+        <result property="freed" column="Freed"/>
+        <result property="url" column="Url"/>
+        <result property="released" column="Released"/>
+        <result property="createTime" column="CreateTime"/>
+    </resultMap>
+    
+    <!-- 资讯分页查询 -->
+    <select id="selectPagintedList" resultMap="informationResult" parameterMap="information">
+        select i.ID, i.Type, i.Title, i.Source, i.Released, p.ProductID,DATE_FORMAT(i.CreateTime,'%Y-%m-%d %T') as CreateTime
+        	from IC_Information i left join PM_ProductInformationMapping p on i.id = p.InformationID
+		        <where>
+		            <trim prefixOverrides="and">
+			            <if test="type!=null">and Type = ${type}</if>
+			            <if test="title!=null and title!=''">and Title like '%${title}%'</if>
+		            </trim>
+		        </where>
+		         order by i.CreateTime desc
+	        		limit ${start},${offset}
+    </select>
+    
+    <!-- 资讯统计查询 -->
+    <select id="count" resultType="long" parameterMap="information">
+        select count(id) from IC_Information
+	        <where>
+	            <trim prefixOverrides="and">
+		            <if test="type!=null">and Type = ${type}</if>
+		            <if test="title!=null and title!=''">and Title like '%${title}%'</if>
+	            </trim>
+	        </where>
+    </select>
+    
+    <!-- 资讯单个查询 -->
+    <select id="selectOne" resultMap="informationResult" parameterMap="information">
+        select * from IC_Information where ID = ${id}
+    </select>
+    
+    <!-- 通过标题查询资讯 -->
+    <select id="selectOneByTitle" resultMap="informationResult" parameterMap="information">
+        select ID from IC_Information where Title = #{title}
+    </select>
+    
+    <!-- 通过标题查询资讯数目 -->
+    <select id="checkForTitle" resultType="long" parameterMap="information">
+        select count(id) 
+        	from IC_Information
+        		<where>
+		            <trim prefixOverrides="and">
+		        		Title = #{title}
+			            <if test="id!=null">and ID != ${id}</if>
+		            </trim>
+		        </where> 
+    </select>
+    
+    <!-- 新增资讯 -->
+    <insert id="insert" parameterMap="information">
+        insert into IC_Information
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="orgId!=null">,OrgID</if>
+            <if test="type!=null">,Type</if>
+            <if test="title!=null and title!=''">,Title</if>
+            <if test="shorterTitle!=null and shorterTitle!=''">,ShorterTitle</if>
+            <if test="shortestTitle!=null and shortestTitle!=''">,ShortestTitle</if>
+            <if test="titleImage!=null and titleImage!=''">,TitleImage</if>
+            <if test="keyword!=null and keyword!=''">,Keyword</if>
+            <if test="summary!=null and summary!=''">,Summary</if>
+            <if test="source!=null and source!=''">,Source</if>
+            <if test="author!=null and author!=''">,Author</if>
+            <if test="content!=null and content!=''">,Content</if>
+            <if test="freed!=null">,Freed</if>
+            <if test="url!=null and url!=''">,Url</if>
+            <if test="released!=null">,Released</if>
+            ,CreateTime
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="orgId!=null">,${orgId}</if>
+            <if test="type!=null">,${type}</if>
+            <if test="title!=null and title!=''">,#{title}</if>
+            <if test="shorterTitle!=null and shorterTitle!=''">,#{shorterTitle}</if>
+            <if test="shortestTitle!=null and shortestTitle!=''">,#{shortestTitle}</if>
+            <if test="titleImage!=null and titleImage!=''">,#{titleImage}</if>
+            <if test="keyword!=null and keyword!=''">,#{keyword}</if>
+            <if test="summary!=null and summary!=''">,#{summary}</if>
+            <if test="source!=null and source!=''">,#{source}</if>
+            <if test="author!=null and author!=''">,#{author}</if>
+            <if test="content!=null and content!=''">,#{content}</if>
+            <if test="freed!=null">,${freed}</if>
+            <if test="url!=null and url!=''">,#{url}</if>
+            <if test="released!=null">,${released}</if>
+            ,now()
+        </trim>
+        <selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>
+    </insert>
+    
+    <!-- 资讯修改 -->
+    <update id="update" parameterMap="information">
+        update IC_Information
+        <set>
+            <trim prefixOverrides=",">
+	            <if test="type!=null">,Type=${type}</if>
+	            <if test="title!=null and title!=''">,Title=#{title}</if>
+	            <if test="shorterTitle!=null and shorterTitle!=''">,ShorterTitle=#{shorterTitle}</if>
+	            <if test="shortestTitle!=null and shortestTitle!=''">,ShortestTitle=#{shortestTitle}</if>
+	            <if test="titleImage!=null and titleImage!=''">,TitleImage=#{titleImage}</if>
+	            <if test="keyword!=null and keyword!=''">,Keyword=#{keyword}</if>
+	            <if test="summary!=null and summary!=''">,Summary=#{summary}</if>
+	            <if test="source!=null and source!=''">,Source=#{source}</if>
+	            <if test="author!=null and author!=''">,Author=#{author}</if>
+	            <if test="content!=null and content!=''">,Content=#{content}</if>
+	            <if test="freed!=null">,Freed=${freed}</if>
+	            <if test="url!=null and url!=''">,Url=#{url}</if>
+	            <if test="released!=null">,Released=${released}</if>
+            </trim>
+        </set>
+        where ID=${id}
+    </update>
+    
+    <!-- 资讯删除 -->
+    <delete id="delete" parameterMap="information">
+        delete from IC_Information where ID = ${id}
+    </delete>
+    
+    <!-- 产品关联资讯查询 -->
+    <select id="selectRelateProduct" resultMap="informationResult" parameterMap="information">
+        select i.ID, i.Title, p.ProductID from IC_Information i left join PM_ProductInformationMapping p on i.ID = p.InformationID
+        	where i.Type = ${type} and (p.ProductID = ${productId} or p.ProductID is null)
+		        <if test="title!=null and title!=''">and i.Title like '%${title}%'</if>
+        			limit ${start},${offset}
+    </select>
+    
+    <!-- 产品关联资讯统计查询 -->
+    <select id="selectRelateProductCount" resultType="long" parameterMap="information">
+        select count(id) from IC_Information i left join PM_ProductInformationMapping p on i.ID = p.InformationID
+        	where i.Type = ${type} and (p.ProductID = ${productId} or p.ProductID is null)
+	            <if test="title!=null and title!=''">and i.Title like '%${title}%'</if>
+    </select>
+    
+    <!-- 删除资讯标题图片 -->
+    <update id="deleteTitleImage" parameterMap="information">
+        update IC_Information set TitleImage = null where ID = ${id}
+    </update>
+
+</mapper>

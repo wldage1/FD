@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<websitemanage name="网站管理" icon="images/menu/website-management.png">
+		<information isNav="true" isSetAuth="sub" isStatus="true" name="内容管理" icon="images/menu/parameter-management-information management.png">
+			<language>
+				<value>/language/informationMessages_zh_CN.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<detail isNav="true" isLog="true" name="详细" icon="images/icon/detail.png"/>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/> 
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+			<relate isNav="true" isLog="true" name="关联产品" icon="images/icon/sync.png"/>
+			<setrelate isNav="true" isLog="true" name="关联" icon="images/icon/sync.png"/>
+		</information>
+	</websitemanage>
+</plugins>
