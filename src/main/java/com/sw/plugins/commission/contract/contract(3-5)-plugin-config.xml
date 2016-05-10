@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	name:权限中文描述
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isStatus:是否记录状态
+-->
+<plugins>
+	<commission name="居间费管理" icon="images/menu/intermediary-fee-management.png">
+		<contract isNav="true" isSetAuth="sub" isStatus="true" name="合同管理" icon="images/menu/sales-center_contract management.png">	
+			<language>
+				<value>/language/contractMessages_zh_CN.properties</value>
+				<value>/language/contractMessages_en_US.properties</value>
+			</language>
+			<contract isNav="true" isSetAuth="sub" isStatus="true" name="机构合同管理" icon="images/menu/sys_org.png"/>
+			<agreement isNav="true" isSetAuth="sub" isStatus="true" name="网签协议管理" icon="images/menu/sys_org.png"/>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+			<start isNav="true" isLog="true" name="启用" icon="images/icon/detail.png"/>
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/detail.png"/>
+			<detail isNav="true" isLog="true" name="详细" icon="images/icon/detail.png"/>
+			<contractcreate isNav="true" isLog="true" name="上传" icon="images/icon/create.png"/>
+			<contractmodify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/>
+			<contractstart isNav="true" isLog="true" name="启用" icon="images/icon/detail.png"/>
+			<!-- <contractupload isNav="true" isLog="true" name="合同上传" icon="images/icon/detail.png"/>-->
+			<contractdelete isNav="true" isLog="true" name="删除" icon="images/icon/detail.png"/>
+			<dowmload isNav="true" isLog="true" name="下载" icon="images/icon/detail.png"/>
+		</contract>
+	</commission>
+</plugins>
