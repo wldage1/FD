@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="memberPayDetail">
+
+	<parameterMap id="memberPayDetail" type="com.sw.plugins.commission.fagrant.entity.MemberPayDetail" />
+
+	<resultMap id="memberPayDetailResult" type="com.sw.plugins.commission.fagrant.entity.MemberPayDetail">
+		<result property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="memberPayID" column="MemberPayID" />
+		<result property="commissionID" column="CommissionID" />
+		<result property="payAmount" column="PayAmount" />
+		<!--   历史订单表   -->
+		<association property="orderHistory" column="orderID" 
+					 javaType="com.sw.plugins.market.order.entity.Order" resultMap="orderResult"/>
+		<!--   居间费记录表   -->
+		<association property="commission" column="orderID" 
+					 javaType="com.sw.plugins.commission.adjust.entity.Commission" resultMap="commissionResult"/>
+		<!--   居间费支付记录表   -->
+		<association property="memberPayRecord" column="orderID" 
+					 javaType="com.sw.plugins.commission.fagrant.entity.MemberPayRecord" resultMap="memberPayRecordResult"/>
+	</resultMap>
+	
+	<resultMap id="orderResult" type="com.sw.plugins.market.order.entity.Order">
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="clientName" column="ClientName" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="clientName" column="ClientName" />
+		<result property="deadline" column="Deadline" />
+		<result property="profitRatio" column="ProfitRatio" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="payMoneyStopTime" column="PayMoneyStopTime" />
+		<result property="share" column="Share" />
+		<result property="payTime" column="payTime" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="assignedShare" column="assignedShare" />
+		<result property="payProgress" column="PayProgress" />
+		<result property="remark" column="Remark" />
+	</resultMap>
+	
+	<resultMap id="commissionResult" type="com.sw.plugins.commission.adjust.entity.Commission">
+		<result property="orderID" column="OrderID" />
+		<result property="memberID" column="MemberID" />
+		<result property="teamID" column="TeamID" />
+		<result property="orgID" column="OrgID" />
+		<result property="productID" column="ProductID" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="incentiveFeeRate" column="IncentiveFeeRate" />
+		<result property="commissionProportion" column="CommissionProportion" />
+		<result property="commission" column="Commission" />
+		<result property="agreementTemplateID" column="AgreementTemplateID" />
+	</resultMap>
+	
+	<resultMap id="memberPayRecordResult" type="com.sw.plugins.commission.fagrant.entity.MemberPayRecord">
+		<result property="memberID" column="MemberID" />
+		<result property="amount" column="Amount" />
+		<result property="salesTax" column="SalesTax" />
+		<result property="constructionTax" column="ConstructionTax" />
+		<result property="educationalSurtax" column="EducationalSurtax" />
+		<result property="localEducationalCost" column="LocalEducationalCost" />
+		<result property="personalIncomeTax" column="PersonalIncomeTax" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="accountID" column="AccountID" />
+		<result property="accountName" column="AccountName" />
+	</resultMap>
+	
+	<insert id="insert" parameterMap="memberPayDetail">
+		insert into TC_MemberPayDetail
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="memberPayID!=null">, MemberPayID</if>
+	 		<if test="commissionID!=null">, CommissionID</if>
+	 		<if test="payAmount!=null">, PayAmount</if>
+	 	</trim>
+	 	values 
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="memberPayID!=null">, ${memberPayID}</if>
+	 		<if test="commissionID!=null">, ${commissionID}</if>
+	 		<if test="payAmount!=null">, ${payAmount}</if>
+	 	</trim>
+	 	<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>
+	</insert>
+	
+</mapper>

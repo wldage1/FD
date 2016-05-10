@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="teamororgpayrecord">
+
+	<parameterMap id="teamororgpayrecord" type="com.sw.plugins.commission.organizationgrant.entity.TeamOrOrgPayRecord" />
+
+	<resultMap id="teamOrOrgPayRecordResult" type="com.sw.plugins.commission.organizationgrant.entity.TeamOrOrgPayRecord">
+		<result property="id" column="ID" />
+		<result property="sourceID" column="SourceID" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="payAmount2" column="PayAmount2" />
+		<result property="accountID" column="AccountID" />
+		<result property="accountName" column="AccountName" />
+		<result property="bankName" column="BankName" />
+		<result property="remark" column="Remark" />
+		<result property="teamOrOrgRemark" column="TeamOrOrgRemark" />
+		<result property="status" column="Status" />
+		<result property="payTime" column="PayTime" />
+		<result property="payDate" column="PayDate" />
+	</resultMap>
+	
+	<select id="select_one" resultMap="teamOrOrgPayRecordResult" parameterMap="teamororgpayrecord">
+		select id, payAmount, sourceID, payDate
+		from TC_TeamOrOrgPayRecord
+		where
+		<trim prefixOverrides="and">
+			<if test="sourceID!=null and sourceID!= ''"> and SourceID=${sourceID}</if>
+			<if test="payDate!=null and payDate!= ''"> and PayDate=#{payDate}</if>
+			<if test="status!=null and status!= ''"> and Status=${status}</if>
+		</trim>
+	</select>
+	
+	<update id="update_payAmount" parameterMap="teamororgpayrecord">
+		update TC_TeamOrOrgPayRecord set PayAmount = ${payAmount},PayAmount2 = ${payAmount} where ID = ${id}
+	</update>
+	
+	<update id="update" parameterMap="teamororgpayrecord">
+		update TC_TeamOrOrgPayRecord 
+		set status = ${status}
+		<if test="payTime!=null and payTime!= ''">,payTime=#{payTime}</if>
+		where
+			<trim prefixOverrides="and">
+				<if test="id!=null and id!= ''"> and ID=${id}</if>
+			</trim>
+	</update>
+	
+	<insert id="insert" parameterMap="teamororgpayrecord">
+		insert into TC_TeamOrOrgPayRecord
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="sourceID!=null and sourceID!= ''">,SourceID</if>
+			<if test="payAmount!=null and payAmount != ''">,PayAmount</if>
+			<if test="payAmount2!=null and payAmount2 != ''">,PayAmount2</if>
+			<if test="accountID!=null and accountID != ''">,AccountID</if>
+			<if test="accountName!=null and accountName != ''">,AccountName</if>
+			<if test="bankName!=null and bankName != ''">,BankName</if>
+			<if test="remark!=null and remark != ''">,Remark</if>
+			<if test="teamOrOrgRemark!=null and teamOrOrgRemark != ''">,TeamOrOrgRemark</if>,Status
+			<if test="payDate!=null and payDate != ''">,PayDate</if>
+			,PayTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="sourceID!=null and sourceID!= ''">,${sourceID}</if>
+			<if test="payAmount!=null and payAmount!= ''">,${payAmount}</if>
+			<if test="payAmount2!=null and payAmount2!= ''">,${payAmount2}</if>
+			<if test="accountID!=null and accountID!= ''">,#{accountID}</if>
+			<if test="accountName!=null and accountName!= ''">,#{accountName}</if>
+			<if test="bankName!=null and bankName!= ''">,#{bankName}</if>
+			<if test="remark!=null and remark!= ''">,#{remark}</if>
+			<if test="teamOrOrgRemark!=null and teamOrOrgRemark!= ''">,#{teamOrOrgRemark}</if>,0
+			<if test="payDate!=null and payDate!= ''">,#{payDate}</if>
+			,NOW()
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			  select LAST_INSERT_ID() as generatedKey      
+		</selectKey>
+	</insert>
+<!--	
+	<select id="select_sum_commission" resultType="BigDecimal" parameterMap="teamororgpayrecord">
+		select SUM(PayAmount2) from TC_TeamOrOrgPayRecord tr
+		left join TC_TeamOrOrgPayDetail td on td.TeamPayID = tr.ID
+		left join TC_Commission tc on tc.ID = td.CommissionID
+		left join SM_Organization mo on mo.ID = tc.OrgID
+		where SourceID = ${sourceID} and tc.OrgID = ${companyID} and DATE_FORMAT(PayTime,'%Y-%m') BETWEEN ${stageTime}
+	</select>
+-->	
+	<select id="select_sum_commission" resultType="BigDecimal" parameterMap="teamororgpayrecord">
+		select SUM(Commission) from TC_Commission tc
+		left join SM_Organization mo on mo.ID = tc.OrgID
+		left join TC_TeamOrOrgPayDetail td on tc.ID = td.CommissionID
+		left join TC_TeamOrOrgPayRecord tr on td.TeamPayID = tr.ID
+		where tr.SourceID = ${sourceID} and tr.Status in (1,2) and tc.OrgID = ${companyID} and DATE_FORMAT(PayTime,'%Y-%m-%d') BETWEEN ${stageTime}
+	</select>
+	
+	<select id="select_sum_commission1" resultType="BigDecimal" parameterMap="teamororgpayrecord">
+		select SUM(Commission) from TC_Commission tc
+		left join TC_MemberPayDetail td on tc.ID = td.CommissionID
+		left join TC_MemberPayRecord tr on td.MemberPayID = tr.ID
+		left join MC_TeamOrOrg mt on mt.ID = tc.TeamID
+		where mt.OrgID = ${sourceID} and tr.Status in (1,2) and tc.OrgID = ${companyID} and mt.OrgType = 1 and DATE_FORMAT(PayTime,'%Y-%m-%d') BETWEEN ${stageTime}
+	</select>
+	
+	<!-- 成功订单数(已支付居间费) -->
+	<select id="select_success_count" resultType="long" parameterMap="teamororgpayrecord">
+		select count(tc.OrderID) from TC_TeamOrOrgPayRecord tr 
+		left join TC_TeamOrOrgPayDetail td on td.TeamPayID = tr.ID
+		left join TC_Commission tc on td.CommissionID = tc.ID
+		left join SM_Organization mo on mo.ID = tc.OrgID
+		where tr.SourceID = ${sourceID} and tr.Status in (1,2) and mo.ID = ${companyID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${stageTime}
+	</select>
+	
+	<select id="select_success_count1" resultType="long" parameterMap="teamororgpayrecord">
+		SELECT COUNT(tc.OrderID) from TC_Commission tc 
+		LEFT JOIN MC_TeamOrOrg mt on mt.id = tc.teamID
+		LEFT JOIN TC_MemberPayDetail td on tc.id= td.commissionid
+		LEFT JOIN TC_MemberPayRecord tr on tr.ID = td.MemberPayID													<!-- orgtype (0:机构  1：团队)  -->
+		where mt.OrgID = ${sourceID} and tr.Status in (1,2) and tc.OrgID = ${companyID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${stageTime} and mt.OrgType =1
+	</select>
+	
+	<select id="select_subproduct" resultMap="teamOrOrgPayRecordResult" parameterMap="teamororgpayrecord">
+		SELECT tc.SubProductID from TC_TeamOrOrgPayRecord tr 
+		left join TC_TeamOrOrgPayDetail td on td.TeamPayID = tr.ID
+		left join TC_Commission tc on td.CommissionID = tc.ID
+		left join SM_Organization mo on mo.ID = tc.OrgID
+		where tc.IsPay = 0 and tr.Status in (1,2) and mo.ID = ${companyID} and tr.SourceID = ${sourceID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${stageTime} group by tc.SubProductID
+	</select>
+	
+	<select id="select_subproduct1" resultMap="teamOrOrgPayRecordResult" parameterMap="teamororgpayrecord">
+		SELECT tc.SubProductID from TC_MemberPayRecord tr 
+		left join TC_MemberPayDetail td on td.MemberPayID = tr.ID
+		left join TC_Commission tc on td.CommissionID = tc.ID
+		left join SM_Organization mo on mo.ID = tc.OrgID
+		left join MC_TeamOrOrg mt on mt.ID = tc.TeamID
+		where tc.IsPay = 0 and tr.Status in (1,2) and mo.ID = ${companyID} and mt.OrgID = ${sourceID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${stageTime} group by tc.SubProductID
+	</select>
+</mapper>

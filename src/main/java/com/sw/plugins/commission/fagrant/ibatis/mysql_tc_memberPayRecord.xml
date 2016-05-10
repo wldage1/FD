@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="memberPayRecord">
+
+	<parameterMap id="memberPayRecord" type="com.sw.plugins.commission.fagrant.entity.MemberPayRecord" />
+
+	<resultMap id="memberPayRecordResult" type="com.sw.plugins.commission.fagrant.entity.MemberPayRecord">
+		<result property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="payDate" column="PayDate" />
+		<result property="memberID" column="MemberID" />
+		<result property="amount" column="Amount" />
+		<result property="actualPayAmount" column="ActualPayAmount" />
+		<result property="salesTax" column="SalesTax" />
+		<result property="constructionTax" column="ConstructionTax" />
+		<result property="educationalSurtax" column="EducationalSurtax" />
+		<result property="localEducationalCost" column="LocalEducationalCost" />
+		<result property="personalIncomeTax" column="PersonalIncomeTax" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="accountID" column="AccountID" />
+		<result property="accountName" column="AccountName" />
+		<result property="bankName" column="BankName" />
+		<result property="remark" column="Remark" />
+		<result property="rmRemark" column="RMRemark" />
+		<result property="status" column="Status" />
+		<result property="payTime" column="PayTime" />
+		<result property="shoudPayStatrDate" column="ShoudPayStatrDate" />
+		<result property="shouldPayEndDate" column="ShouldPayEndDate" />
+		<result property="taxAssessmentTime" column="TaxAssessmentTime" />
+		<result property="bondedStauts" column="BondedStauts" />
+	</resultMap>
+	
+	<insert id="insert" parameterMap="memberPayRecord">
+		insert into TC_MemberPayRecord
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="payDate!=null and payDate!=''">, PayDate</if>
+	 		<if test="memberID!=null">, MemberID</if>
+	 		<if test="amount!=null">, Amount</if>
+	 		<if test="actualPayAmount!=null">, ActualPayAmount</if>
+	 		<if test="salesTax!=null">, SalesTax</if>
+	 		<if test="constructionTax!=null">, ConstructionTax</if>
+	 		<if test="educationalSurtax!=null">, EducationalSurtax</if>
+	 		<if test="localEducationalCost!=null">, LocalEducationalCost</if>
+	 		<if test="personalIncomeTax!=null">, PersonalIncomeTax</if>
+	 		<if test="payAmount!=null">, PayAmount</if>
+	 		<if test="accountID!=null">, AccountID</if>
+	 		<if test="accountName!=null and accountName!=''">, AccountName</if>
+	 		<if test="bankName!=null and bankName!=''">, BankName</if>
+	 		<if test="remark!=null and remark!=''">, Remark</if>
+	 		<if test="rmRemark!=null and rmRemark!=''">, RMRemark</if>
+	 		<if test="status!=null">, Status</if>
+	 		<if test="payTime!=null and payTime!=''">, PayTime</if>
+	 		<if test="shoudPayStatrDate!=null and shoudPayStatrDate!=''">,shoudPayStatrDate</if>
+	 		<if test="shouldPayEndDate!=null and shouldPayEndDate!=''">, shouldPayEndDate</if>,BondedStauts,TaxAssessmentTime
+	 	</trim>
+	 	values 
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="payDate!=null and payDate!=''">, #{payDate}</if>
+	 		<if test="memberID!=null">, ${memberID}</if>
+	 		<if test="amount!=null">, ${amount}</if>
+	 		<if test="actualPayAmount!=null">, ${actualPayAmount}</if>
+	 		<if test="salesTax!=null">, ${salesTax}</if>
+	 		<if test="constructionTax!=null">, ${constructionTax}</if>
+	 		<if test="educationalSurtax!=null">, ${educationalSurtax}</if>
+	 		<if test="localEducationalCost!=null">, ${localEducationalCost}</if>
+	 		<if test="personalIncomeTax!=null">, ${personalIncomeTax}</if>
+	 		<if test="payAmount!=null">, ${payAmount}</if>
+	 		<if test="accountID!=null">, ${accountID}</if>
+	 		<if test="accountName!=null and accountName!=''">, #{accountName}</if>
+	 		<if test="bankName!=null and bankName!=''">, #{bankName}</if>
+	 		<if test="remark!=null and remark!=''">, #{remark}</if>
+	 		<if test="rmRemark!=null and rmRemark!=''">, #{rmRemark}</if>
+	 		<if test="status!=null">, ${status}</if>
+	 		<if test="payTime!=null and payTime!=''">, #{payTime}</if>
+	 		<if test="shoudPayStatrDate!=null and shoudPayStatrDate!=''">,#{shoudPayStatrDate}</if>
+	 		<if test="shouldPayEndDate!=null and shouldPayEndDate!=''">, #{shouldPayEndDate}</if>,0,
+	 		<if test="taxAssessmentTime!=null and taxAssessmentTime!=''">#{taxAssessmentTime}</if>
+	 		<if test="taxAssessmentTime ==null or taxAssessmentTime ==''">now()</if>
+	 	</trim>
+	 	<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>
+	</insert>
+	
+	<!-- 主表格列表查询  -->
+	<select id="select_paginated" resultMap="memberPayRecordResult"  parameterMap="memberPayRecord">
+		select CONCAT(m.Name,'(', m.NickName, ')') memberName, mpr.BankName bankName, mpr.AccountName accountName, 
+			mpr.AccountID accountID, m.IDCard iDCard, mpr.PayDate, mpr.ActualPayAmount/1000000 payAmount, 
+			mpr.Amount amount, mpr.SalesTax salesTax, mpr.ConstructionTax constructionTax,
+			mpr.EducationalSurtax educationalSurtax, mpr.LocalEducationalCost localEducationalCost, 
+			mpr.PersonalIncomeTax personalIncomeTax, mpr.ID, mpr.Status, mpr.PayTime, c.ID commissionID, 
+			c.AgreementTemplateID agreementTemplateID, c.MemberID memberID
+		from TC_MemberPayRecord mpr left join TC_MemberPayDetail mpd on mpd.MemberPayID=mpr.ID
+			left join TC_Commission c on mpd.CommissionID=c.ID
+			left join TC_OrderHistory oh on c.OrderID=oh.ID
+			left join PM_Product p on p.ID=c.ProductID
+			left join MC_Member m on m.ID=c.MemberID
+		<where>
+			oh.TradeStatus = 7 and oh.PayProgress=2
+			<if test="statusStr!=null">and mpr.Status in ${statusStr}</if>
+			<if test="orgID != null">and p.OrgId=${orgID}</if>
+			<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+			<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+			<if test="payTimeStart !=null and payTimeStart!='' ">
+ 	 			<![CDATA[and (mpr.PayTime>=#{payTimeStart})]]>
+ 	 		</if>
+			<if test="payTimeEnd !=null and payTimeEnd!='' ">
+				<![CDATA[and ((mpr.PayTime<=#{payTimeEnd}) or mpr.PayTime like CONCAT('%',#{payTimeEnd},'%'))]]>
+			</if>
+			<if test="payDateStart !=null and payDateStart!='' ">
+ 	 			<![CDATA[and (mpr.PayDate>=#{payDateStart})]]>
+ 	 		</if>
+			<if test="payDateEnd !=null and payDateEnd!='' ">
+				<![CDATA[and ((mpr.PayDate<=#{payDateEnd}) or mpr.PayDate like CONCAT('%',#{payDateEnd},'%'))]]>
+			</if>
+			<if test="taxAssessmentTime !=null and taxAssessmentTime!='' ">
+				<![CDATA[and ((DATE_FORMAT(mpr.TaxAssessmentTime,'%Y-%m')<=#{taxAssessmentTime}) or DATE_FORMAT(mpr.TaxAssessmentTime,'%Y-%m') like CONCAT('%',#{taxAssessmentTime},'%'))]]>
+			</if>
+			<if test="mark !=null and mark==5 ">
+				<![CDATA[and DATE_FORMAT(mpr.TaxAssessmentTime,'%Y-%m')<DATE_FORMAT(now(),'%Y-%m')]]>
+			</if>
+		</where>
+		GROUP BY mpr.MemberID, mpr.ShoudPayStatrDate, mpr.ShouldPayEndDate
+	</select>
+	
+	<!-- 子表格列表查询  -->
+	<select id="select_subgrid" resultMap="memberPayRecordResult"  parameterMap="memberPayRecord">
+		select oh.OrderNumber orderNumber, oh.ClientName clientName, concat(CAST(c.CommissionProportion*100 as decimal(38, 4)),'%') commissionProportionStr, 
+			c.PayAmount/1000000 payAmount, c.Commission commission, c.AuditingTime auditingTime, c.ID commissionID
+		from TC_MemberPayDetail mpd left join TC_MemberPayRecord mpr on mpd.MemberPayID=mpr.ID
+			left join TC_Commission c on mpd.CommissionID=c.ID
+			left join TC_OrderHistory oh on c.OrderID=oh.ID
+			left join PM_Product p on p.ID=c.ProductID
+			left join MC_Member m on m.ID=c.MemberID
+		<where>
+			oh.TradeStatus = 7 and oh.PayProgress=2
+			<if test="orgID != null">and p.OrgId=${orgID}</if>
+			<if test="id != null">and mpd.MemberPayID=${id}</if>
+		</where>
+	</select>
+	
+	<!-- 修改居间费记录表 -->
+	<update id="update" parameterMap="memberPayRecord">
+		update TC_MemberPayRecord 
+		<set>
+			<trim prefixOverrides=",">
+		 		<if test="payTime!=null">, payTime=#{payTime}</if>
+		 		<if test="status!=null">, status=${status}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null">
+				id = ${id}
+			</if>
+		</where>
+	</update>
+	<!-- 查询理财师居间费支付记录是否存在  -->
+	<select id="select_one" resultMap="memberPayRecordResult"  parameterMap="memberPayRecord">
+		select * from TC_MemberPayRecord
+		<where>
+			<if test="memberID!=null">
+				and memberID = ${memberID}
+			</if>
+			<if test="shoudPayStatrDate!=null">
+				<![CDATA[ 
+		  			and  shoudPayStatrDate>=#{shoudPayStatrDate}
+		  		]]>
+			</if>
+			<if test="shouldPayEndDate!=null">
+				<![CDATA[ 
+		  			and  shouldPayEndDate<=#{shouldPayEndDate}
+		  		]]>
+			</if>
+		</where>
+	</select>
+	<!-- 修改居间费记录表税值 -->
+	<update id="updateTax" parameterMap="memberPayRecord">
+		update TC_MemberPayRecord
+		<set>
+			<trim prefixOverrides=",">
+		 		<if test="amount!=null">, amount=${amount}</if>
+		 		<if test="salesTax!=null">, salesTax=${salesTax}</if>
+		 		<if test="constructionTax!=null">, constructionTax=${constructionTax}</if>
+		 		<if test="educationalSurtax!=null">, educationalSurtax=${educationalSurtax}</if>
+		 		<if test="localEducationalCost!=null">, localEducationalCost=${localEducationalCost}</if>
+		 		<if test="personalIncomeTax!=null">, personalIncomeTax=${personalIncomeTax}</if>
+		 		<if test="payAmount!=null">, payAmount=${payAmount}</if>
+		 		<if test="actualPayAmount!=null">, actualPayAmount=${actualPayAmount}</if>
+		 		,paydate=now()
+			</trim>
+		</set>
+		<where>
+			<if test="memberID!=null">
+				memberID=${memberID}
+			</if>
+			<if test="shoudPayStatrDate!=null">
+				<![CDATA[ 
+		  			and  shoudPayStatrDate>=#{shoudPayStatrDate}
+		  		]]>
+			</if>
+			<if test="shouldPayEndDate!=null">
+				<![CDATA[ 
+		  			and  shouldPayEndDate<=#{shouldPayEndDate}
+		  		]]>
+			</if>
+		</where>
+	</update>
+	
+	<!-- 导出列表查询  -->
+	<select id="export_excel" resultType="java.util.Map"  parameterMap="memberPayRecord">
+		select CONCAT(m.Name,'(', m.NickName, ')') memberName, mpr.BankName bankName, mpr.AccountName accountName, 
+			mpr.AccountID accountID, m.IDCard iDCard, mpr.PayDate, mpr.ActualPayAmount/1000000 payAmount, 
+			mpr.Amount amount, mpr.SalesTax salesTax, mpr.ConstructionTax constructionTax,
+			mpr.EducationalSurtax educationalSurtax, mpr.LocalEducationalCost localEducationalCost, 
+			mpr.PersonalIncomeTax personalIncomeTax, mpr.ID, mpr.Status, mpr.PayTime, c.ID commissionID, 
+			c.AgreementTemplateID agreementTemplateID, c.MemberID memberID
+		from TC_MemberPayRecord mpr left join TC_MemberPayDetail mpd on mpd.MemberPayID=mpr.ID
+			left join TC_Commission c on mpd.CommissionID=c.ID
+			left join TC_OrderHistory oh on c.OrderID=oh.ID
+			left join PM_Product p on p.ID=c.ProductID
+			left join MC_Member m on m.ID=c.MemberID
+		<where>
+			oh.TradeStatus = 7 and oh.PayProgress=2
+			<if test="status!=null">and mpr.Status=${status}</if>
+			<if test="orgID != null">and p.OrgId=${orgID}</if>
+			<if test="productName!=null and productName!=''">and p.ShortName like '%${productName}%'</if>					
+			<if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>		
+			<if test="payTimeStart !=null and payTimeStart!='' ">
+ 	 			<![CDATA[and (mpr.PayTime>=#{payTimeStart})]]>
+ 	 		</if>
+			<if test="payTimeEnd !=null and payTimeEnd!='' ">
+				<![CDATA[and ((mpr.PayTime<=#{payTimeEnd}) or mpr.PayTime like CONCAT('%',#{payTimeEnd},'%'))]]>
+			</if>
+			<if test="payDateStart !=null and payDateStart!='' ">
+ 	 			<![CDATA[and (mpr.PayDate>=#{payDateStart})]]>
+ 	 		</if>
+			<if test="payDateEnd !=null and payDateEnd!='' ">
+				<![CDATA[and ((mpr.PayDate<=#{payDateEnd}) or mpr.PayDate like CONCAT('%',#{payDateEnd},'%'))]]>
+			</if>
+			<if test="taxAssessmentTime !=null and taxAssessmentTime!='' ">
+				<![CDATA[and ((DATE_FORMAT(mpr.TaxAssessmentTime,'%Y-%m')<=#{taxAssessmentTime}) or DATE_FORMAT(mpr.TaxAssessmentTime,'%Y-%m') like CONCAT('%',#{taxAssessmentTime},'%'))]]>
+			</if>
+		</where>
+		GROUP BY mpr.MemberID, mpr.ShoudPayStatrDate, mpr.ShouldPayEndDate
+	</select>
+	
+	<select id="select_between_curr_month" resultMap="memberPayRecordResult"  parameterMap="memberPayRecord">
+		select 
+			ID,Amount,PersonalIncomeTax from TC_MemberPayRecord 
+		where 
+			YEAR(PayDate) = YEAR('${payDate}') 
+			and MONTH(PayDate) = MONTH('${payDate}')
+			and DATEDIFF('${payDate}',PayDate)>0
+			and memberID=${memberID}
+			<if test="id != null">
+			and ID != ${id}
+			</if>
+			
+	</select>
+	
+</mapper>

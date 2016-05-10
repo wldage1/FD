@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<commission name="居间费管理" icon="images/menu/intermediary-fee-management.png">
+		<paygrantparameter isNav="true" isSetAuth="sub" isStatus="true" name="居间费发放参数设置" icon="images/menu/intermediary-fee-management-distributed parameter.png">
+			<language>
+				<value>/language/paygrantparameterMessages_zh_CN.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建"/>
+			<modify isNav="true" isLog="true" name="修改"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+			<reset isNav="true" isLog="true" name="取消" />
+			<save isNav="true" isLog="true" name="保存" />
+		</paygrantparameter>
+	</commission>
+</plugins>

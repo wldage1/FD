@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="teamororgpaydetail">
+
+	<parameterMap id="teamororgpaydetail" type="com.sw.plugins.commission.organizationgrant.entity.TeamOrOrgPayDetail" />
+
+	<resultMap id="teamOrOrgPayDetailResult" type="com.sw.plugins.commission.organizationgrant.entity.TeamOrOrgPayDetail">
+		<result property="teamPayID" column="TeamPayID" />
+		<result property="commissionID" column="CommissionID" />
+		<result property="payAmount" column="PayAmount" />
+
+	</resultMap>
+	
+	<insert id="insert" parameterMap="teamororgpaydetail">
+		insert into TC_TeamOrOrgPayDetail
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="teamPayID!=null">,TeamPayID</if>
+			<if test="commissionID!=null">,CommissionID</if>
+			<if test="payAmount!=null and payAmount!=''">,PayAmount</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="teamPayID!=null">,${teamPayID}</if>
+			<if test="commissionID!=null">,${commissionID}</if>
+			<if test="payAmount!=null and payAmount!=''">,#{payAmount}</if>
+		</trim>
+	</insert>
+	
+	<!-- 查询支付机构居间费列表集合 -->
+	<select id="select_org_paginated" resultMap="teamOrOrgPayDetailResult" parameterMap="teamororgpaydetail">
+	    select m.ShortName title1, t.SourceID OrgId, t.Status, t.BankName title2, t.AccountName title3, t.AccountID title4, 
+	   	    t.id id, ci.TeamID teamOrOrgId,t.PayAmount
+	    	from TC_TeamOrOrgPayRecord t  left join TC_TeamOrOrgPayDetail td on td.TeamPayID = t.Id 
+	    		join MC_Organization m on m.ID = t.SourceID 
+				join TC_Commission ci on ci.ID = td.CommissionID
+				where t.Status in ${statusStr}
+				<if test="orgId!=null and orgId!=''">and ci.orgID=${orgId}</if>
+				<if test="payTimeStart!=null and payTimeStart!=''">
+					<![CDATA[ 
+			  			and  t.PayTime>=#{payTimeStart}
+			  		]]>
+			  	</if>
+			  	<if test="payTimeEnd!=null and payTimeEnd!=''">
+					<![CDATA[ 
+			  			and  t.PayTime<=#{payTimeEnd}
+			  		]]>
+			  	</if>
+				<if test="payDataStart!=null and payDataStart!=''">
+					<![CDATA[ 
+			  			and  t.PayDate>=#{payDataStart}
+			  		]]>
+			  	</if>
+			  	<if test="payDataEnd!=null and payDataEnd!=''">
+					<![CDATA[ 
+			  			and  t.PayDate<=#{payDataEnd}
+			  		]]>
+			  	</if>
+			  	<if test="orgShortName!=null and orgShortName!=''">and m.ShortName=#{orgShortName}</if>
+			  	GROUP BY t.SourceID, t.PayDate
+	</select>
+	
+	<select id="select_paginated" resultMap="teamOrOrgPayDetailResult" parameterMap="teamororgpaydetail">
+		select concat(CAST(ci.CommissionProportion*100 as decimal(38, 4)),'%') commissionProportionStr, ci.Commission commission,
+			  ci.PayAmount/1000000 payAmount,ci.ID commissionID,oh.OrderNumber orderNumber
+			, oh.ClientName clientName, DATE_FORMAT(ci.auditingTime,'%Y-%m-%d %T') as AuditingTime
+		from 
+			TC_TeamOrOrgPayDetail  t join TC_Commission ci on t.commissionID=ci.id join TC_OrderHistory oh on oh.ID = ci.OrderID
+		where 
+			oh.TradeStatus = 7 and oh.PayProgress = 2 and t.teamPayId = ${id} 
+	</select>
+	
+	<!-- 导出集合 -->
+	<select id="export_excel" resultType="java.util.Map" parameterMap="teamororgpaydetail">
+	    select m.ShortName title1, t.SourceID OrgId, t.Status, t.BankName title2, t.AccountName title3, t.AccountID title4, 
+	   	    t.id id, ci.TeamID teamOrOrgId,t.PayAmount
+	    	from TC_TeamOrOrgPayRecord t  left join TC_TeamOrOrgPayDetail td on td.TeamPayID = t.Id 
+	    		join MC_Organization m on m.ID = t.SourceID 
+				join TC_Commission ci on ci.ID = td.CommissionID
+				where t.Status = ${status}
+				<if test="orgID!=null and orgID!=''">and ci.orgID=${orgID}</if>
+				<if test="payTimeStart!=null and payTimeStart!=''">
+					<![CDATA[ 
+			  			and  t.PayTime>=#{payTimeStart}
+			  		]]>
+			  	</if>
+			  	<if test="payTimeEnd!=null and payTimeEnd!=''">
+					<![CDATA[ 
+			  			and  t.PayTime<=#{payTimeEnd}
+			  		]]>
+			  	</if>
+				<if test="payDataStart!=null and payDataStart!=''">
+					<![CDATA[ 
+			  			and  t.PayDate>=#{payDataStart}
+			  		]]>
+			  	</if>
+			  	<if test="payDataEnd!=null and payDataEnd!=''">
+					<![CDATA[ 
+			  			and  t.PayDate<=#{payDataEnd}
+			  		]]>
+			  	</if>
+			  	<if test="orgShortName!=null and orgShortName!=''">and m.ShortName=#{orgShortName}</if>
+			  	GROUP BY t.SourceID, t.PayDate
+	</select>
+</mapper>

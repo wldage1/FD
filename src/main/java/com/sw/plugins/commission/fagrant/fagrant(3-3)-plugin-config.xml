@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<commission name="居间费管理" icon="images/menu/intermediary-fee-management.png">
+		<fagrant name="个人居间费发放" isNav="true" isSetAuth="sub" isStatus="true" icon="images/menu/intermediary-fee-management-financial advisers.png">
+			<language>
+				<value>/language/rmgrantMessages_zh_CN.properties</value>
+				<value>/language/rmgrantMessages_zh_CN.properties</value>
+			</language>
+			<preparePay isNav="true" isLog="true" name="准备发放" icon="images/icon/prepare- issue.png"/>
+			<paySuccess isNav="true" isLog="true" name="发放成功" icon="images/icon/distribution- success.png"/>
+			<payFail isNav="true" isLog="true" name="发放失败" icon="images/icon/distribution- failure.png"/>
+			<certificate isNav="true" isLog="true" name="查看证件" icon="images/icon/naturel certificate.png"/>
+			<agreement isNav="true" isLog="true" name="网签协议" icon="images/icon/agreement.png"/>
+			<export isNav="true" isLog="true" name="导出" icon="images/icon/EXPort.png"/>
+			<detail isNav="true" isLog="true" name="详细" icon="images/icon/detail.png"/>
+		</fagrant>
+	</commission>
+</plugins>

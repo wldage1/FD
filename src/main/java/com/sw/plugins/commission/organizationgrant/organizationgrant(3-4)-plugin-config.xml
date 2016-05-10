@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<commission name="居间费管理" icon="images/menu/intermediary-fee-management.png">
+		<organizationgrant isNav="true" isSetAuth="sub" isStatus="true" name="机构居间费发放" icon="images/menu/intermediary-fee-management-organization.png">
+			<language>
+				<value>/language/organizationgrantMessages_zh_CN.properties</value>
+			</language>
+			<detail isNav="true"  name="详细" icon="images/icon/detail.png"/>
+			<recover isNav="true" isLog="true" name="恢复" icon="images/icon/modify.png"/>
+			<paySuccess isNav="true" isLog="true" name="发放成功" icon="images/icon/distribution- success.png" />
+			<payFail isNav="true" isLog="true" name="发放失败" icon="images/icon/distribution- failure.png" />
+			<print isNav="true" isLog="true" name="打印" icon="images/icon/uc_system.png" />
+			<download isNav="true" isLog="true" name="下载合同" icon="images/icon/contract.png" />
+			<invoice isNav="true" isLog="true" name="发票通知" icon="images/icon/invoice notification.png" />
+			<export isNav="true" isLog="true" name="导出" icon="images/icon/EXPort.png"/>
+		</organizationgrant>
+	</commission>
+</plugins>

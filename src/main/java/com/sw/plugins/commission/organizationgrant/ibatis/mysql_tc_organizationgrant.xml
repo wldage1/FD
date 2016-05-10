@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="commissionfee">
+
+	<parameterMap id="commissionfee" type="com.sw.plugins.commission.adjust.entity.Commission" />
+
+	<resultMap id="commissionFeeResult" type="com.sw.plugins.commission.adjust.entity.Commission">
+		<result property="id" column="ID" />
+		<result property="orderID" column="OrderID" />
+		<result property="orgID" column="OrgID" />
+		<result property="memberID" column="MemberID" />
+		<result property="teamID" column="TeamID" />
+		<result property="productID" column="ProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="holdingPhase" column="HoldingPhase" />
+		<result property="issuanceCostRate" column="IssuanceCostRate" />
+		<result property="timeCoefficient" column="TimeCoefficient" />
+		<result property="serviceChargeCoefficient" column="ServiceChargeCoefficient" />
+		<result property="incentiveFeeRate" column="IncentiveFeeRate" />
+		<result property="commissionProportion" column="CommissionProportion" />
+		<result property="commission" column="Commission" />
+		<result property="payCommission" column="PayCommission" />
+		<result property="agreementTemplateID" column="AgreementTemplateID" />
+		<result property="orgContractID" column="OrgContractID" />
+		<result property="payStatus" column="PayStatus" />
+		<result property="productShortName" column="ProductShortName" />
+		<result property="memberName" column="MemberName" />
+		<result property="memberNickName" column="MemberNickName" />
+		<result property="clientName" column="ClientName" />
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="teamShortName" column="TeamShortName" />
+		<result property="tradeType" column="TradeType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="teamOrOrgRemark" column="TeamOrOrgRemark" />
+		<result property="teamName" column="TeamName" />
+		<result property="netValue" column="NetValue" />
+		<result property="productName" column="ProductName" />
+		<result property="fileUrl" column="FileUrl" />
+	</resultMap>
+	
+</mapper>
