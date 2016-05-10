@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<customer name="客户中心" icon="images/menu/customer-center.png">
+		<pointsconfig isNav="true" isSetAuth="all" isStatus="true" name="积分配置" icon="images/menu/customer-center-integral configuration.png">
+			<language>
+				<value>/language/pointsConfigMessages_zh_CN.properties</value>
+				<value>/language/pointsConfigMessages_en_US.properties</value>
+			</language>
+			<create isDynamic="false" isNav="true" isLog="true" name="创建"/>
+			<modify isNav="true" isLog="true" name="修改"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+		</pointsconfig>
+	</customer>
+</plugins>

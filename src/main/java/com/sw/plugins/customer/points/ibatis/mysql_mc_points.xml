@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="points">
+	<parameterMap id="points" type="com.sw.plugins.customer.points.entity.Points"/>
+	
+	<!-- 积分管理结果集 -->
+	<resultMap id="pointsResult" type="com.sw.plugins.customer.points.entity.Points">
+        <result property="id" column="ID"/>
+		<result property="code" column="code" />
+		<result property="points" column="points" />
+		<result property="name" column="name" />
+		<result property="discription" column="discription" />
+	</resultMap>
+	
+	<!-- 积分管理分页查询 -->
+	<select id="select_paginated" resultMap="pointsResult" parameterMap="points">
+		select   m.name,p.Points,p.Discription,r.code,m.NickName
+		from MC_Points p left join mc_member m on p.MemberID=m.ID
+		left join MC_PointsRule r on p.PointsRuleID=r.id
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+				and name like '%${name}%'  
+				</if>
+			</trim>
+			<trim prefixOverrides="and">
+				<if test="code!=null and code!=''">
+				and r.code=#{code} 
+				</if>
+			</trim>
+		</where>
+		order by p.GenerateTime desc
+		limit ${start},${offset}
+	</select>
+	<!-- 积分管理分页查询 -->
+	<select id="count" resultType="Long" parameterMap="points">
+		select count(*) count 
+		from MC_Points p left join mc_member m on p.MemberID=m.ID
+		left join MC_PointsRule r on p.PointsRuleID=r.id
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">
+				and name like '%${name}%'  
+				</if>
+			</trim>
+			<trim prefixOverrides="and">
+				<if test="code!=null and code!=''">
+				and r.code=#{code} 
+				</if>
+			</trim>
+		</where>
+	</select>
+</mapper>

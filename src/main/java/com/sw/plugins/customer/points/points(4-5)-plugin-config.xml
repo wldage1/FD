@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<customer name="客户中心" icon="images/menu/customer-center.png">
+		<points isNav="true" isSetAuth="all" isStatus="true" name="积分管理" icon="images/menu/customer-center-point management.png">
+			<language>
+				<value>/language/pointsMessages_zh_CN.properties</value>
+				<value>/language/pointsMessages_en_US.properties</value>
+			</language>
+		</points>
+	</customer>
+</plugins>

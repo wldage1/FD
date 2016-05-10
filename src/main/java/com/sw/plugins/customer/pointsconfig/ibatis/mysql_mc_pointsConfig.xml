@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="config">
+	<parameterMap id="config" type="com.sw.plugins.customer.pointsconfig.entity.PointsConfig"/>
+	
+	<!-- 积分配置结果集 -->
+	<resultMap id="configResult" type="com.sw.plugins.customer.pointsconfig.entity.PointsConfig">
+        <result property="id" column="ID"/>
+		<result property="code" column="code" />
+		<result property="points" column="points" />
+		<result property="description" column="description" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserID" column="creatorUserID" />
+	</resultMap>
+	
+	<!-- 积分配置分页查询 -->
+	<select id="select_paginated" resultMap="configResult" parameterMap="config">
+		select id,code,points,description,date_format(createTime,'%Y-%c-%d %H:%i:%S') as createTime from MC_PointsRule
+		<where>
+			<trim prefixOverrides="and">
+				<if test="code!=null and code!=''">
+				and code=#{code} 
+				</if>
+			</trim>
+			<trim prefixOverrides="and">
+				<if test="points!=null and points!=''">
+				and points=${points} 
+				</if>
+			</trim>
+		</where>
+		order by createTime desc
+		limit ${start},${offset}
+	</select>
+	<!-- 积分配置分页查询 -->
+	<select id="count" resultType="Long" parameterMap="config">
+		select count(*) count from MC_PointsRule
+		<where>
+			<trim prefixOverrides="and">
+				<if test="code!=null and code!=''">
+				and code=#{code} 
+				</if>
+			</trim>
+			<trim prefixOverrides="and">
+				<if test="points!=null and points!=''">
+				and points=${points} 
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 更新积分配置 -->
+	<update id="update" parameterMap="config">
+		update MC_PointsRule  a
+		<set>
+			<trim prefixOverrides=",">
+				<if test="code!=null">
+            		<if test="code==''">,code=NULL</if>
+            		<if test="code!=''">,code=#{code}</if>
+	            </if>
+	            <if test="points!=null">
+	            	<if test="points==''">,points=NULL</if>
+	            	<if test="points!=''">,points=${points}</if>
+	            </if>
+	            <if test="description!=null">
+	            	<if test="description==''">,description=NULL</if>
+	            	<if test="description!=''">,description=#{description}</if>
+	            </if>
+				<if test="creatorUserId!=null">,CreatorUserID=${creatorUserId}</if>
+				,ModifyTime=now()
+			</trim>
+		</set>
+		where ID=${id}
+	</update>	
+
+	<!-- 删除积分配置 -->
+	<delete id="delete" parameterMap="config">
+		delete from MC_PointsRule where ID = ${id} 
+	</delete>
+	
+	<!-- 积分配置新增 -->
+	<insert id="insert" parameterMap="config">
+		insert into MC_PointsRule
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code !=null and code!=''">,code</if>
+			<if test="points!=null and points!=''">,points</if>
+			<if test="description!=null and description!=''">,Description</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="code !=null and code!=''">,#{code}</if>
+			<if test="points!=null and points!=''">,${points}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			,now()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+	</insert>
+	
+	<!-- 积分配置查询 -->
+	<select id="select" resultMap="configResult" parameterMap="config">
+		select id,code,points,description  from MC_PointsRule where id=${id}
+	</select>
+	
+	<!-- 积分配置统计查询 -->
+	<select id="count_for_config_duplication" resultType="long" parameterMap="config">
+		select count(id) from MC_PointsRule  where 1=1
+		<if test="code!=null and code!=''">
+			and code = #{code}
+		</if>
+		<if test="id!=null and id!=''">
+			and ID != ${id}
+		</if>
+	</select>	
+</mapper>

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="memberOrganization">
+	<parameterMap id="memberOrganization" type="com.sw.plugins.customer.organization.entity.MemberOrganization"/>
+	
+	<!-- 理财师机构结果集 -->
+	<resultMap id="memberOrganizationResult" type="com.sw.plugins.customer.organization.entity.MemberOrganization">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="name" column="Name" />
+		<result property="shortName" column="ShortName" />
+		<result property="licenceCode" column="LicenceCode" />
+		<result property="licenceExpireTime" column="LicenceExpireTime" />
+		<result property="licenceImage" column="LicenceImage" />
+		<result property="representative" column="Representative" />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCardNumber" column="IDCardNumber" />
+		<result property="iDCardExpireTime" column="IDCardExpireTime" />
+		<result property="representativePhone" column="RepresentativePhone" />
+		<result property="companyAddress" column="CompanyAddress" />
+		<result property="postCode" column="PostCode " />
+		<result property="bankName" column="BankName " />
+		<result property="account" column="Account " />
+		<result property="accountHolder" column="AccountHolder " />
+		<result property="status" column="Status" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorMemberID" column="CreatorMemberID" />
+		<result property="identity" column="Identity" />
+	</resultMap>
+	
+	<!-- 查询所有机构 -->
+	<select id="select_organization" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+		select mo.ID, mo.Name ,mo.Identity
+		from MC_Organization mo join MC_TeamOrOrg mt on mo.id=mt.orgid and mt.OrgType=0 and (mt.Status=1 or mt.status=2) and mt.DelStatus=1
+	</select>
+	<!-- 查询所有机构合同管理用的的 -->
+	<select id="select_organization_contract" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+		select mt.ID, mo.Name 
+		from MC_Organization mo join MC_TeamOrOrg mt on mo.id=mt.orgid and mt.OrgType=0 and (mt.Status=1 or mt.status=2) and mt.DelStatus=1
+	</select>
+	
+	<!-- 理财师机构分页查询 -->
+	<select id="select_paginated" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+		select a.id ,a.name,a.shortName,
+			a.licenceCode,a.licenceExpireTime,a.representative,a.companyAddress,a.status,
+			a.checkCount ,
+			a.memberName,
+			a.memberNickName,
+			a.memberPhone,
+			a.memberEmail,
+			a.channelManager,
+			count(mm.id) as memberCount 
+			from 
+				(select mto.id ,mo.name,mo.shortName,
+				mo.licenceCode,
+				mo.licenceExpireTime,
+				mo.representative,
+				mo.companyAddress,
+				mo.channelManager,
+				mto.status,
+				mb.Name as memberName,
+				mb.NickName as memberNickName,
+				mb.MobilePhone as memberPhone,
+				mb.Email as memberEmail,
+				count(mta.id) as checkCount
+				from MC_TeamOrOrg mto  
+				join MC_Organization mo on mto.orgid=mo.id and mto.orgtype=0 
+				LEFT JOIN MC_Member mb ON mb.TeamID=mto.ID AND mb.Type=2
+				left join MC_TeamOrOrgApplication mta on mto.id=mta.TeamID and mta.Status=0
+				where ifnull(mto.DelStatus,0)<![CDATA[<>2]]> and (mo.HistoryTeamID is null or mo.PromotionTtime is not null)
+				GROUP BY  mto.id ,mo.name,mo.shortName,
+				mo.licenceCode,mo.licenceExpireTime,mo.representative,mo.companyAddress,mto.status) a 
+			left join MC_Member mm on a.id=mm.TeamID and mm.status not in (4)
+			<where>
+				<trim prefixOverrides="and">
+					<if test="name!=null and name!=''">
+					and a.Name like '%${name}%' 
+					</if>
+				</trim>
+			</where>
+			GROUP BY 
+			a.id ,a.name,a.shortName,
+			a.licenceCode,a.licenceExpireTime,a.representative,a.companyAddress,a.status,
+			a.checkCount order by a.checkCount desc,a.status asc
+		limit ${start},${offset}
+	</select>
+	
+	<select id="select_for_export" resultType="java.util.Map"  parameterMap="memberOrganization">
+		select a.id ,a.name,a.shortName,
+			a.licenceCode,a.licenceExpireTime,a.representative,a.companyAddress,a.status,
+			a.checkCount ,
+			a.memberName,
+			a.memberNickName,
+			a.memberPhone,
+			a.memberEmail,
+			count(mm.id) as memberCount 
+			from 
+				(select mto.id ,mo.name,mo.shortName,
+				mo.licenceCode,
+				mo.licenceExpireTime,
+				mo.representative,
+				mo.companyAddress,
+				mto.status,
+				mb.Name as memberName,
+				mb.NickName as memberNickName,
+				mb.MobilePhone as memberPhone,
+				mb.Email as memberEmail,
+				count(mta.id) as checkCount
+				from MC_TeamOrOrg mto  
+				join MC_Organization mo on mto.orgid=mo.id and mto.orgtype=0 
+				LEFT JOIN MC_Member mb ON mb.TeamID=mto.ID AND mb.Type=2
+				left join MC_TeamOrOrgApplication mta on mto.id=mta.TeamID and mta.Status=0
+				where ifnull(mto.DelStatus,0)<![CDATA[<>2]]> and (mo.HistoryTeamID is null or mo.PromotionTtime is not null)
+				GROUP BY  mto.id ,mo.name,mo.shortName,
+				mo.licenceCode,mo.licenceExpireTime,mo.representative,mo.companyAddress,mto.status) a 
+			left join MC_Member mm on a.id=mm.TeamID and mm.status not in (4)
+			<where>
+				<trim prefixOverrides="and">
+					<if test="name!=null and name!=''">
+					and a.Name like '%${name}%' 
+					</if>
+				</trim>
+			</where>
+			GROUP BY 
+			a.id ,a.name,a.shortName,
+			a.licenceCode,a.licenceExpireTime,a.representative,a.companyAddress,a.status,
+			a.checkCount order by a.checkCount desc,a.status asc
+	</select>
+	
+	<!-- 理财师升级机构查询 -->
+	<select id="select_for_promote" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+			select mo.*,mto.id as checkId
+			from MC_Organization  mo join MC_TeamOrOrg mto  on mto.orgid=mo.id and mto.orgtype=0
+			<where>
+				<trim prefixOverrides="and">
+					<if test="historyTeamID!=null and historyTeamID!=''">
+					and mo.historyTeamID = ${historyTeamID}
+					</if>
+				</trim>
+			</where>
+	</select>
+	<!-- 理财师机构审核查询 -->
+	<select id="select_for_check" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+			select mto.id, mo.name,mo.shortName,mto.orgid tempOrgID,
+			mo.licenceCode,mo.licenceExpireTime,mo.LicenceImage,mo.representative,mo.companyAddress,mto.status,mta.id as checkId,ApplicationMember,
+			mm.name as ApplicationMemberName,date_format(ApplicationTime,'%Y-%c-%d %H:%i:%S') as ApplicationTime,ApplicantFeedback,mta.Memberid,mme.name as memberName,mta.type as checktype,
+			mta.LicenceCode as checkLicenceCode,mta.LicenceImage as checkLicenceImage,mta.LicenceExpireTime as checkLicenceExpireTime
+			from MC_Organization  mo join MC_TeamOrOrg mto  on mto.orgid=mo.id join MC_TeamOrOrgApplication mta on mto.id=mta.TeamID  join MC_Member mm on mta.ApplicationMember=mm.id
+			left join MC_Member mme on mta.Memberid=mme.id
+			<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and mta.ID = ${id}
+					</if>
+					<if test="id!=null and id!=''">
+					and mta.type = ${checkType}
+					</if>
+				</trim>
+			</where>
+	</select>
+	<!-- 理财师机构修改信息查询 -->
+	<select id="select_for_update" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+			select mto.ID,name,ShortName,LicenceCode,LicenceImage,LicenceExpireTime,Representative,IDCardNumber,
+			IDCardExpireTime,RepresentativePhone,CompanyAddress,PostCode,BankName,Account,AccountHolder
+			from MC_Organization  mo join MC_TeamOrOrg mto  on mto.orgid=mo.id 
+			<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and mto.ID = ${id}
+					</if>
+				</trim>
+			</where>
+	</select>
+	<!-- 理财师机构统计 -->
+	<select id="count" resultType="long" parameterMap="memberOrganization">	
+		select count(mto.ID) from  MC_Organization mo join MC_TeamOrOrg mto on mto.orgid=mo.id where mto.OrgType=0 and ifnull(mto.DelStatus,0)<![CDATA[<>2]]>
+		 and (mo.HistoryTeamID is null or mo.PromotionTtime is not null)
+			<if test="name!=null and name!=''">
+			and mo.Name like '%${name}%'   
+			</if>
+	</select>
+	<!-- 理财师机构信息是否重复 -->
+	<select id="memberOrganizationCount" resultType="long" parameterMap="memberOrganization">	
+		select count(mto.ID) from  MC_Organization mo join MC_TeamOrOrg mto on mto.orgid=mo.id where mto.OrgType=0 and ifnull(mto.DelStatus,0)<![CDATA[<>2]]>
+			<if test="name!=null and name!=''">
+			 and mo.Name = #{name} 
+			</if>
+			<if test="shortName!=null and shortName!=''">
+			 and mo.shortName = #{shortName} 
+			</if>
+			<if test="licenceCode!=null and licenceCode!=''">
+			 and mo.licenceCode = #{licenceCode} 
+			</if>
+			<if test="iDCardNumber!=null and iDCardNumber!=''">
+			 and mo.iDCardNumber = #{iDCardNumber} 
+			</if>
+			<if test="id!=null and id!=''">
+			 and mto.id != #{id} 
+			</if>
+	</select>
+	<!-- 更新理财师机构 -->
+	<update id="update" parameterMap="memberOrganization">
+		update MC_Organization a
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name=#{name}</if>
+				<if test="shortName!=null and shortName!=''">,ShortName=#{shortName}</if>
+				<if test="identity!=null">,Identity=#{identity}</if>
+				<if test="licenceCode!=null">,LicenceCode=#{licenceCode}</if>
+				<if test="licenceExpireTime!=null">,LicenceExpireTime=#{licenceExpireTime}</if>
+				<if test="representative!=null">,Representative=#{representative}</if>
+				<if test="iDCardType!=null">,IDCardType=#{iDCardType}</if>
+				<if test="iDCardNumber!=null">,IDCardNumber=#{iDCardNumber}</if>
+				<if test="iDCardExpireTime!=null">,IDCardExpireTime=#{iDCardExpireTime}</if>
+				<if test="licenceImage!=null and licenceImage!=''">,LicenceImage=#{licenceImage}</if>
+				<if test="representativePhone!=null and representativePhone!=''">,RepresentativePhone=#{representativePhone}</if>
+				<if test="companyAddress!=null">,CompanyAddress=#{companyAddress}</if>
+				<if test="bankName!=null">,BankName=#{bankName}</if>
+				<if test="account!=null">,Account=#{account}</if>
+				<if test="accountHolder!=null">,AccountHolder=#{accountHolder}</if>
+				<if test="postCode!=null">,PostCode=#{postCode}</if>
+				<if test="channelManager!=null and channelManager!=''">,ChannelManager=#{channelManager}</if>
+			</trim>
+		</set>
+		Where  exists (select 1
+		from MC_TeamOrOrg b
+		where a.id=b.orgid and b.ID=${id})
+	</update>
+	<!-- 更新理财师机构状态 -->
+	<update id="update_for_status" parameterMap="memberOrganization">
+		update MC_TeamOrOrg
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null">,Status=#{status}</if>
+				,ModifyTime=now() 
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	<!-- 更新理财师机构晋升时间 -->
+	<update id="update_for_promotionTtime" parameterMap="memberOrganization">
+		update MC_Organization
+		<set>
+			PromotionTtime=now() 
+		</set>
+		Where historyTeamID=${historyTeamID}
+	</update>
+	<delete id="delete_for_organization" parameterMap="memberOrganization">
+		delete from MC_Organization
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>		
+			</trim>
+		</where>		
+	</delete>
+	<delete id="delete_for_teamToOrg" parameterMap="memberOrganization">
+		delete from MC_TeamOrOrg
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">
+					and ID=${id}
+				</if>		
+			</trim>
+		</where>		
+	</delete>
+
+	<!-- 理财师机构信息查询 -->
+	<select id="select_one" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+			select id, BankName, Account, AccountHolder
+			from MC_Organization
+			<where>
+				and ID = #{id}
+			</where>
+	</select>
+	
+	<!-- 激励费用发放详细查询 -->
+	<select id="select_incentive" resultMap="memberOrganizationResult" parameterMap="memberOrganization">
+	    select mo.ID,mo.ShortName,td.ID IncentiveFeeId,(td.SumInvestAmount / 1000000) as SumInvestAmount,td.SuccessRate,td.RewardScore,td.RebateScore,td.SumCommissionFee,td.RebateRate,td.RebateAmount
+			from 
+			<if test="type == 0">
+			MC_Organization mo 
+			</if>
+			<if test="type == 1">
+			MC_Team mo
+			</if>
+			left join
+				(select * from TC_IncentiveFeeDetail where IsPay = ${isPay} and Type = ${type} and CompanyID = ${companyID} and PayStageTime = #{payStageTime}) td <!-- type(0:机构 1：团队 )  isPay(0:未发放  1:已发放) -->
+					on mo.ID = td.OrgID where td.SumInvestAmount > 0
+	</select>
+	
+	<select id="select_orgId" resultType="long" parameterMap="memberOrganization">
+		select ID from MC_Organization
+	</select>
+	
+</mapper>

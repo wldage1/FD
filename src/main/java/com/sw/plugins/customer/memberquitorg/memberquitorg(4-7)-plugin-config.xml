@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<customer name="客户中心" icon="images/menu/customer-center.png">
+		<memberquitorg isNav="true" isSetAuth="all" isStatus="true" name="退组受理" icon="images/menu/customer-center-lcs manage.png">
+			<quit isNav="true" isLog="true" isSetAuth="true" name="确认退组"/>
+		</memberquitorg>
+	</customer>
+</plugins>

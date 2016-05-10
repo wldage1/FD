@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<customer name="客户中心" icon="images/menu/customer-center.png">
+		<team isNav="true" isSetAuth="all" isStatus="true" name="团队管理" icon="images/menu/customer-center-lcs team management.png">
+			<language>
+				<value>/language/teamMessages_zh_CN.properties</value>
+				<value>/language/teamMessages_en_US.properties</value>
+			</language>
+			<checklist isNav="true" isLog="true"  isSetAuth="true" name="审核列表">
+				<createcheck isNav="true" isLog="true"  isSetAuth="true" name="注册审核"/>
+				<changecheck isNav="true" isLog="true"  isSetAuth="true" name="变更审核"/>
+				<!-- <annualcheck isNav="true" isLog="true"  isSetAuth="true" name="年检审核"/> -->
+				<cancelcheck isNav="true" isLog="true"  isSetAuth="true" name="注销审核"/>
+				<createdetail isNav="true" isLog="true"  isSetAuth="true" name="注册详细"/>
+				<changedetail isNav="true" isLog="true"  isSetAuth="true" name="变更详细"/>
+				<!--  <annualdetail isNav="true" isLog="true"  isSetAuth="true" name="年检详细"/> -->
+				<canceldetail isNav="true" isLog="true"  isSetAuth="true" name="注销详细"/>
+				<promotecheck isNav="true" isLog="true"  isSetAuth="true" name="升级审核"/>
+				<promotedetail isNav="true" isLog="true"  isSetAuth="true" name="升级详细"/>
+			</checklist>
+			<teammember isNav="true" isLog="true" isSetAuth="true" name="团队人员">
+			   <memberdetail isAuthority="false" isNav="true" isStatus="true" name="详细" />
+			</teammember>
+			
+			
+			<mobilephone isNav="true" isLog="true" isSetAuth="true" name="移动电话"/>
+			<homephone isNav="true" isLog="true" isSetAuth="true" name="座机电话"/>
+			<account isNav="true" isLog="true" isSetAuth="true" name="登陆帐号"/>
+			<idcard isNav="true" isLog="true" isSetAuth="true" name="身份证号"/>
+			
+			<suspendtask isNav="true" isLog="true" isSetAuth="true" name="暂停业务"/>
+			<cancel isNav="true" isLog="true" isSetAuth="true" name="注销"/>
+		</team>
+	</customer>
+</plugins>

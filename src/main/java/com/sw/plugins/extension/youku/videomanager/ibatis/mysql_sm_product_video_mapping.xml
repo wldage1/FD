@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapping 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productVideoMapping">
+	<parameterMap id="productVideoMapping" type="com.sw.plugins.extension.youku.videomanager.entity.ProductVideoMapping" />
+	
+	<resultMap id="productVideoMapping" type="com.sw.plugins.extension.youku.videomanager.entity.ProductVideoMapping" >	
+		<result property="productId" column="ProductID" />
+		<result property="videoBasicId" column="VideoBasicID" />
+    </resultMap>
+	
+  	<insert id="insert" parameterMap="productVideoMapping">
+		insert into SM_ProductVideoMapping
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productId!=null">,ProductID</if>
+			<if test="videoBasicId!=null">,VideoBasicID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productId!=null">,${productId}</if>
+			<if test="videoBasicId!=null">,${videoBasicId}</if>
+		</trim>
+	</insert>
+
+	<delete id="delete" parameterMap="productVideoMapping">
+		delete from SM_ProductVideoMapping
+		<where>
+			<trim prefixOverrides="and">
+				<if test="productId != null"> and ProductID = ${productId}</if>
+				<if test="videoBasicId != null"> and VideoBasicID = ${videoBasicId}</if>
+			</trim>
+		</where>
+	</delete>
+
+</mapper>
