@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productInformation">
+
+	<parameterMap id="productInformation" type="com.sw.plugins.product.manage.entity.ProductInformation" />
+
+	<resultMap id="productInformationResult" type="com.sw.plugins.product.manage.entity.ProductInformation">
+		<result property="productID" column="ProductID" />
+		<result property="informationID" column="InformationID" />
+	</resultMap>
+	
+	
+	<select id="select_unbind" resultMap="productInformationResult"  parameterMap="productInformation">
+		select * from PM_ProductInformationMapping where ProductID=#{productID} and InformationID = #{informationID}
+	</select>
+	
+	<insert id="insert" parameterMap="productInformation">
+		insert into PM_ProductInformationMapping 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productID != null">,ProductID</if>
+			<if test="informationID != null">,InformationID</if>
+		</trim>	
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productID != null">,#{productID}</if>
+			<if test="informationID != null">,#{informationID}</if>
+		</trim>	
+	</insert>
+	
+	<delete id="delete" parameterMap="productInformation">
+		delete from PM_ProductInformationMapping where ProductID=#{productID} and InformationID=#{informationID}
+	</delete>
+	
+	<!-- 通过资讯ID删除映射 -->
+	<delete id="deleteByInformationId" parameterMap="productInformation">
+		delete from PM_ProductInformationMapping where InformationID=${informationID}
+	</delete>
+	
+	<!-- 通过资讯ID获取单个映射 -->
+	<select id="selectOne" resultMap="productInformationResult" parameterMap="productInformation">
+	    select * from PM_ProductInformationMapping where InformationID = ${informationID}
+	</select>
+	
+	<!-- 按资讯ID修改映射 -->
+	<update id="update" parameterMap="productInformation">
+	    update PM_ProductInformationMapping
+	    	<set>
+	    	    <trim prefixOverrides=",">
+		            <if test="informationID!=null">,InformationID=${informationID}</if>
+		            <if test="productID!=null">,ProductID=${productID}</if>
+	            </trim>
+	    	</set>
+	    		where InformationID=${informationID}
+	</update>
+</mapper>

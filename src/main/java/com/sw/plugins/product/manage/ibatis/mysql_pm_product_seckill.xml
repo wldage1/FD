@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productSeckill">
+
+	<parameterMap id="productSeckill" type="com.sw.plugins.product.manage.entity.ProductSeckill" />
+
+	<resultMap id="productSeckillResult" type="com.sw.plugins.product.manage.entity.ProductSeckill">
+		<result property="id" column="ID" />
+		<result property="productId" column="ProductID" />
+		<result property="sortNumber" column="SortNumber" />
+		<result property="startTime" column="StartTime" />
+		<result property="finishTime" column="FinishTime" />
+		<result property="status" column="Status" />
+	</resultMap>
+	
+	
+	<select id="select_list" resultMap="productSeckillResult" parameterMap="productSeckill">
+		select * from PM_ProductSeckill	 
+		<where>
+			<if test="productId!=null">ProductID=${productId}</if>
+		</where>
+	</select>
+	
+	
+	<!-- 新增秒杀产品 -->
+	<insert id="insert" parameterMap="productSeckill">
+		insert into PM_ProductSeckill
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" id !=null ">,ID</if>
+			<if test=" productId !=null ">,ProductID</if>
+			<if test=" sortNumber !=null ">,SortNumber</if>
+			<if test=" startTime !=null and startTime!=''">,StartTime</if>
+			<if test=" finishTime !=null and sinishTime!=''">,FinishTime</if>
+			<if test=" status !=null">,Status</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" id !=null ">,#{id}</if>
+			<if test=" productId !=null ">,#{productId}</if>
+			<if test=" sortNumber !=null ">,${sortNumber}</if>
+			<if test=" startTime !=null and startTime!=''">,'${startTime}'</if>
+			<if test=" finishTime !=null and finishTime!=''">,'${finishTime}'</if>
+			<if test=" status !=null">,#{status}</if>
+		</trim>
+	</insert>
+	
+	<!-- 修改秒杀产品 -->
+	<update id="update" parameterMap="productSeckill">
+		update PM_ProductSeckill 
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" sortNumber !=null ">,SortNumber=${sortNumber}</if>
+				<if test=" startTime !=null and startTime!=''">,StartTime='${startTime}'</if>
+				<if test=" finishTime !=null and finishTime!=''">,FinishTime='${finishTime}'</if>
+				<if test=" status !=null">,Status=#{status}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null">ID=#{id}</if>
+		</where>
+	</update>
+</mapper>

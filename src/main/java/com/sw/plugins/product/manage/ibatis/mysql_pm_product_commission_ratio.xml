@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="commissionRatio">
+
+	<parameterMap id="commissionRatio" type="com.sw.plugins.product.manage.entity.ProductCommissionRatio" />
+
+	<resultMap id="commissionRatioResult" type="com.sw.plugins.product.manage.entity.ProductCommissionRatio">
+		<result property="id" column="ID" />
+		<result property="subProductId" column="SubProductId" />
+		<result property="effectiveDate" column="EffectiveDate" />
+		<result property="sort" column="Sort" />
+		<result property="holdlingPhase" column="HoldlingPhase" />
+		<result property="holdingPhaseDays" column="HoldingPhaseDays" />
+		<result property="maxShareThreshold" column="MaxShareThreshold" javaType="java.math.BigDecimal"/>
+		<result property="minShareThreshold" column="MinShareThreshold" javaType="java.math.BigDecimal"/>
+		<result property="issuanceCostRate" column="IssuanceCostRate" javaType="java.math.BigDecimal"/>
+		<result property="timeCoefficient" column="TimeCoefficient" javaType="java.math.BigDecimal"/>
+		<result property="serviceChargeCoefficient" column="ServiceChargeCoefficient" javaType="java.math.BigDecimal"/>
+		<result property="orgServiceChargeCoefficient" column="OrgServiceChargeCoefficient" javaType="java.math.BigDecimal"/>
+		<result property="incentiveFeeRate" column="IncentiveFeeRate" javaType="java.math.BigDecimal"/>
+		<result property="isAvailable" column="IsAvailable"/>
+	</resultMap>
+	
+	<select id="select" resultMap="commissionRatioResult" parameterMap="commissionRatio">
+		select 
+			ID,SubProductId,EffectiveDate,Sort,HoldlingPhase,HoldingPhaseDays
+			,MaxShareThreshold/1000000 MaxShareThreshold,MinShareThreshold/1000000 MinShareThreshold
+			,IssuanceCostRate*100 IssuanceCostRate
+			,TimeCoefficient*100 TimeCoefficient
+			,ServiceChargeCoefficient*100 ServiceChargeCoefficient,OrgServiceChargeCoefficient*100 OrgServiceChargeCoefficient
+			,IncentiveFeeRate*100 IncentiveFeeRate
+			,IsAvailable
+		from 
+			PM_ProductCommissionRatio
+		<where>
+			<if test="id != null">ID = ${id}</if>
+			<if test="subProductId != null">SubProductID = ${subProductId}</if>
+		</where>
+		order by MinShareThreshold
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="commissionRatio">
+		select count(ID) from PM_ProductCommissionRatio
+		where SubProductID = ${subProductId}
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insert" parameterMap="commissionRatio">
+		insert into PM_ProductCommissionRatio
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" subProductId !=null ">,SubProductID</if>
+			<if test=" effectiveDate !=null and effectiveDate != ''">,EffectiveDate</if>
+			<if test=" effectiveDate ==null or effectiveDate == ''">,EffectiveDate</if>
+			<if test=" sort !=null ">,Sort</if>
+			<if test=" holdlingPhase !=null and holdlingPhase != ''">,HoldlingPhase</if>
+			<if test=" holdingPhaseDays !=null ">,HoldingPhaseDays</if>
+			<if test=" maxShareThreshold !=null ">,MaxShareThreshold</if>
+			<if test=" minShareThreshold !=null ">,MinShareThreshold</if>
+			<if test=" issuanceCostRate !=null ">,IssuanceCostRate</if>
+			<if test=" timeCoefficient !=null ">,TimeCoefficient</if>
+			<if test=" serviceChargeCoefficient !=null ">,ServiceChargeCoefficient</if>
+			<if test=" orgServiceChargeCoefficient !=null ">,OrgServiceChargeCoefficient</if>
+			<if test=" incentiveFeeRate !=null ">,IncentiveFeeRate</if>
+			<if test=" isAvailable !=null ">,IsAvailable</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" subProductId !=null ">,${subProductId}</if>
+			<if test=" effectiveDate !=null and effectiveDate != ''">,#{effectiveDate}</if>
+			<if test=" effectiveDate ==null or effectiveDate == ''">,now()</if>
+			<if test=" sort !=null ">,${sort}</if>
+			<if test=" holdlingPhase !=null and holdlingPhase != ''">,#{holdlingPhase}</if>
+			<if test=" holdingPhaseDays !=null ">,${holdingPhaseDays}</if>
+			<if test=" maxShareThreshold !=null ">,${maxShareThreshold}*1000000</if>
+			<if test=" minShareThreshold !=null ">,${minShareThreshold}*1000000</if>
+			<if test=" issuanceCostRate !=null ">,${issuanceCostRate}/100</if>
+			<if test=" timeCoefficient !=null ">,${timeCoefficient}/100</if>
+			<if test=" serviceChargeCoefficient !=null ">,${serviceChargeCoefficient}/100</if>
+			<if test=" orgServiceChargeCoefficient !=null ">,${orgServiceChargeCoefficient}/100 </if>
+			<if test=" incentiveFeeRate !=null ">,${incentiveFeeRate}/100</if>
+			<if test=" isAvailable !=null ">,${isAvailable}</if>
+		</trim>
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterMap="commissionRatio">
+		update PM_ProductCommissionRatio
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" effectiveDate !=null and effectiveDate != ''">,EffectiveDate = #{effectiveDate}</if>
+				<if test=" effectiveDate ==null or effectiveDate == ''">,EffectiveDate = null</if>
+				,Sort = ${sort}
+				,HoldlingPhase = #{holdlingPhase}
+				,HoldingPhaseDays = ${holdingPhaseDays}
+				,MaxShareThreshold = ${maxShareThreshold}*1000000
+				,MinShareThreshold = ${minShareThreshold}*1000000
+				,IssuanceCostRate = ${issuanceCostRate}/100
+				,TimeCoefficient = ${timeCoefficient}/100
+				,ServiceChargeCoefficient = ${serviceChargeCoefficient}/100
+				,OrgServiceChargeCoefficient = ${orgServiceChargeCoefficient}/100
+				,IncentiveFeeRate = ${incentiveFeeRate}/100
+				,IsAvailable = ${isAvailable}
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterMap="commissionRatio">
+		delete from PM_ProductCommissionRatio Where ID=${id}
+	</delete>
+	
+	<!-- 删除 -->
+	<delete id="delete_by_subproductid" parameterMap="commissionRatio">
+		delete from PM_ProductCommissionRatio Where ID=${id}
+	</delete>
+	
+	<select id="select_by_id" resultMap="commissionRatioResult" parameterMap="commissionRatio">
+		select 
+			IssuanceCostRate, TimeCoefficient, ServiceChargeCoefficient, OrgServiceChargeCoefficient, IncentiveFeeRate, holdlingPhase
+		from 
+			PM_ProductCommissionRatio
+		<where>
+			<if test="id != null">ID = ${id}</if>
+		</where>
+	</select>
+	
+	<!-- 查询认购订单佣金比例计算数据 -->
+	<select id="select_by_subproductid" resultMap="commissionRatioResult" parameterMap="commissionRatio">
+		select 
+			IssuanceCostRate, TimeCoefficient, ServiceChargeCoefficient, OrgServiceChargeCoefficient, IncentiveFeeRate, holdlingPhase
+		from 
+			PM_ProductCommissionRatio
+		<where>
+			<trim prefixOverrides="and">
+				<if test="subProductId != null"> and SubproductId = ${subProductId}</if>
+				<if test="isAvailable != null"> and IsAvailable = ${isAvailable}</if>
+				<if test="maxShareThreshold != null">
+					and ${maxShareThreshold} BETWEEN MinShareThreshold AND IFNULL(MaxShareThreshold,'1000000000000000')  
+				</if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 查询申购订单佣金比例计算数据 -->
+	<select id="select_subscribe" resultMap="commissionRatioResult" parameterMap="commissionRatio">
+		select 
+			IssuanceCostRate, TimeCoefficient, ServiceChargeCoefficient, OrgServiceChargeCoefficient, IncentiveFeeRate, holdlingPhase
+		from 
+			PM_ProductCommissionRatio
+		<where>
+			<![CDATA[ #{effectiveDate}>=EffectiveDate ]]>
+			<if test="subProductId != null"> and SubproductId = ${subProductId}</if>
+			<if test="maxShareThreshold != null">
+					and ${maxShareThreshold} BETWEEN MinShareThreshold AND IFNULL(MaxShareThreshold,'1000000000000000')  
+				</if>
+		</where>
+		ORDER BY EffectiveDate DESC LIMIT 1
+	</select>
+	
+</mapper>

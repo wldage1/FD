@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productProfit">
+
+	<parameterMap id="productProfit" type="com.sw.plugins.product.manage.entity.ProductProfit" />
+
+	
+	<resultMap id="productProfitResult" type="com.sw.plugins.product.manage.entity.ProductProfit">
+		<result property="id" column="ID" />
+		<result property="subProductId" column="SubProductID" />
+		<result property="maxShareThreshold" column="MaxShareThreshold" />
+		<result property="minShareThreshold" column="MinShareThreshold" />
+		<result property="profitRatio" column="ProfitRatio" />
+		<result property="effectiveDate" column="EffectiveDate" />
+	</resultMap>
+	
+	
+	<select id="select_product_profit" resultMap="productProfitResult" parameterMap="productProfit">
+		select 
+			ID,SubProductID,MaxShareThreshold/1000000 MaxShareThreshold,MinShareThreshold/1000000 MinShareThreshold,
+			ProfitRatio ,EffectiveDate
+		from 
+			PM_ProductProfit
+		<where>
+			<if test="subProductId != null">SubProductID = ${subProductId}</if>
+		</where>
+		order by EffectiveDate DESC
+	</select>
+	
+
+	
+	<!-- 新增 -->
+	<insert id="insert_product_profit" parameterMap="productProfit">
+		insert into PM_ProductProfit
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" subProductId !=null ">,SubProductId</if>
+			<if test=" maxShareThreshold !=null ">,MaxShareThreshold</if>
+			<if test=" minShareThreshold !=null ">,MinShareThreshold</if>
+			<if test=" profitRatio !=null ">,ProfitRatio</if>
+			<if test=" effectiveDate !=null and effectiveDate != ''">,EffectiveDate</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" subProductId !=null ">,${subProductId}</if>
+			<if test=" maxShareThreshold !=null ">,${maxShareThreshold}*1000000</if>
+			<if test=" minShareThreshold !=null ">,${minShareThreshold}*1000000</if>
+			<if test=" profitRatio !=null and profitRatio != ''">,#{profitRatio}</if>
+			<if test=" effectiveDate !=null and effectiveDate != ''">,#{effectiveDate}</if>
+		</trim>
+	</insert>
+	
+	
+	<!-- 更新产品 -->
+	<update id="update_product_profit" parameterMap="productProfit">
+		update PM_ProductProfit
+		<set>
+			<trim prefixOverrides=",">
+				,MaxShareThreshold = ${maxShareThreshold}*1000000
+				,MinShareThreshold = ${minShareThreshold}*1000000
+				<if test=" profitRatio !=null and profitRatio != ''">,ProfitRatio = #{profitRatio}</if>
+				<if test=" effectiveDate !=null and effectiveDate != ''">,EffectiveDate = #{effectiveDate}</if>
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	
+	<!-- 删除 -->
+	<delete id="delete_product_profit" parameterMap="productProfit">
+		delete from PM_ProductProfit Where ID=${id}
+	</delete>
+	
+	<!-- 删除 -->
+	<delete id="delete_product_profit_by_subproductid" parameterMap="productProfit">
+		delete from PM_ProductProfit Where SubProductID=${subProductId}
+	</delete>
+	
+	<!-- 计算预期收益率 -->
+	<select id="countExpectProfitRatio" resultMap="productProfitResult" parameterMap="productProfit">
+	    select 
+			ProfitRatio 
+		from 
+			PM_ProductProfit 
+		where 
+			SubProductID = ${subProductId} 
+			<if test="investAmount!=null and investAmount!=''">
+			<![CDATA[
+			AND
+			CASE 
+			WHEN MaxShareThreshold IS NULL THEN (MinShareThreshold <= ${investAmount}*1000000) 
+			ELSE ${investAmount}*1000000 BETWEEN MinShareThreshold AND MaxShareThreshold
+			END
+			AND EffectiveDate <= NOW()
+			ORDER BY
+				EffectiveDate DESC
+			LIMIT 1
+			]]>
+			</if>
+	</select>
+	
+	<!-- 根据子产品ID查询产品类型 -->
+	<select id="select_ProductType_bysubid" resultMap="productProfitResult" parameterMap="productProfit">
+		select p.Type as productType from PM_SubProduct sp left join PM_Product p on sp.ProductID=p.ID where sp.ID=${subProductId}
+	</select>
+</mapper>

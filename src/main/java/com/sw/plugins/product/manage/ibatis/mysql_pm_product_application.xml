@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productApplication">
+
+	<parameterMap id="productApplication" type="com.sw.plugins.product.manage.entity.ProductApplication" />
+
+	<resultMap id="productApplicationResult" type="com.sw.plugins.product.manage.entity.ProductApplication">
+		<result property="id" column="ID" />
+		<result property="productID" column="ProductID" />
+		<result property="providerUserID" column="ProviderUserID" />
+		<result property="userID" column="UserID" />
+		<result property="status" column="Status" />
+		<result property="feedback" column="Feedback" />
+		<result property="auditTime" column="AuditTime" />
+	</resultMap>
+	
+	
+	<select id="select_paginated" resultMap="productApplicationResult" parameterMap="productApplication">
+		select * from PM_Product p join PM_ProductApplication pp on p.ID=pp.ProductID
+		<where>
+			<trim>
+				<if test="id!=null">and p.ID=${id}</if>
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="status!=null">and p.Status=${status} </if>
+			</trim>
+		</where> 
+		limit ${start},${offset}
+	</select>
+	
+	<!-- 产品统计查询 -->
+	<select id="count" resultType="long"  parameterMap="productApplication">
+		select count(p.id) from PM_Product p  join PM_ProductApplication pp on p.ID=pp.ProductID
+		<where>
+			<trim>
+				<if test="id!=null">and p.ID=${id}</if>
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="status!=null">and p.Status=${status} </if>
+			</trim>
+		</where> 
+	</select>
+	<!-- 产品审核查询一条 -->
+	<select id="select_one" resultMap="productApplicationResult" parameterMap="productApplication">
+		select * from PM_Product p join PM_ProductApplication pp on p.ID=pp.ProductID where pp.ID=#{id}
+	</select>
+	
+	<!-- 产品审核修改 -->
+	<update id="update" parameterMap="productApplication">
+		update PM_ProductApplication set Status=#{status} where ID=#{id}		
+	</update>
+	
+	<!-- 保存审核记录 -->
+	<insert id="save" parameterMap="productApplication">
+		insert into PM_ProductApplication 
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productID!=null">,ProductID</if>
+			<if test="providerUserID!=null">,ProviderUserID</if>
+			<if test="userID!=null">,UserID</if>
+			<if test="status!=null">,Status</if>
+			<if test="feedback!=null and feedback!=''">,Feedback</if>
+			,AuditTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productID!=null">,#{productID}</if>
+			<if test="providerUserID!=null">,#{providerUserID}</if>
+			<if test="userID!=null">,#{userID}</if>
+			<if test="status!=null">,#{status}</if>
+			<if test="feedback!=null and feedback!=''">,#{feedback}</if>
+			,current_timestamp()
+		</trim>
+	</insert>
+	
+</mapper>

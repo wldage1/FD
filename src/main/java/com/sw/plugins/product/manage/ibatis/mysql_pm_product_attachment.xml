@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productAttachment">
+
+	<parameterMap id="productAttachment" type="com.sw.plugins.product.manage.entity.ProductAttachment" />
+
+	<resultMap id="productAttachmentResult" type="com.sw.plugins.product.manage.entity.ProductAttachment">
+		<result property="id" column="ID" />
+		<result property="productId" column="ProductID" />
+		<result property="attachTitle" column="Title" />
+		<result property="fileName" column="FileName" />
+		<result property="size" column="Size" />
+		<result property="fileUrl" column="FileURL" />
+		<result property="downloadPermission" column="DownloadPermission" />
+		<result property="audited" column="Audited" />
+		<result property="status" column="status" />
+		<result property="isConvert" column="IsConvert" />
+	</resultMap>
+	
+	<!-- 产品附件查询 -->
+	<select id="select" resultMap="productAttachmentResult" parameterMap="productAttachment">
+		select  *  
+		from PM_ProductAttachment
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="productId!=null">and ProductId=#{productId} </if>
+			</trim>
+		</where>
+	</select>
+	
+	<select id="select_paginated" resultMap="productAttachmentResult" parameterMap="productAttachment">
+		select  *  
+		from PM_ProductAttachment where ProductID = ${productId}
+		<if test="attachTitle != null and attachTitle != ''">
+		and Title like '%${attachTitle}%'
+		</if>
+		order by UploadTime DESC
+		limit ${start} , ${offset}
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="productAttachment">
+		select  count(ID)  
+		from PM_ProductAttachment where ProductID = ${productId}
+		<if test="attachTitle != null and attachTitle != ''">
+		and Title like '%${attachTitle}%'
+		</if>
+	</select>
+	
+	
+	<!-- 新增产品附件 -->
+	<insert id="insert"  useGeneratedKeys="true" parameterMap="productAttachment">
+		insert into PM_ProductAttachment
+		<trim prefix="(" prefixOverrides="," suffix=")"> 
+			<if test="productId!=null">,ProductId</if>
+			<if test="attachTitle !=null and attachTitle !='' ">,Title</if>
+			<if test="fileName !=null and fileName!=''">,FileName</if>
+			<if test="size !=null">,Size</if>
+			<if test="fileUrl !=null">,FileUrl</if>
+			<if test="downloadPermission !=null">,DownloadPermission</if>
+			,Audited
+			,Status
+			,UploadTime
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productId!=null">,${productId}</if>
+			<if test="attachTitle !=null and attachTitle !='' ">,#{attachTitle}</if>
+			<if test="fileName !=null and fileName!=''">,#{fileName}</if>
+			<if test="size !=null">,${size}</if>
+			<if test="fileUrl !=null">,#{fileUrl}</if>
+			<if test="downloadPermission !=null">,${downloadPermission}</if>
+			,1
+			,0
+			,now()
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey  
+		</selectKey>
+	</insert>
+
+	<!-- 更新产品附件信息 -->
+	<update id="update" parameterMap="productAttachment">
+		update PM_ProductAttachment
+		<set>
+			<trim prefixOverrides=",">
+				<if test="attachTitle !=null and attachTitle !='' ">,Title = #{attachTitle}</if>
+				<if test="fileName !=null and fileName!=''">,FileName = #{fileName}</if>
+				<if test="size !=null">,Size = ${size}</if>
+				<if test="fileUrl !=null">,FileUrl = #{fileUrl}</if>
+				<if test="downloadPermission !=null">,DownloadPermission = ${downloadPermission}</if>
+				<if test="isConvert !=null">,IsConvert = ${isConvert}</if>
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="fileUrl!=null">and FileUrl=#{fileUrl} </if>
+			</trim>
+		</where>
+	</update>
+	
+	<!-- 更新产品附件转换状态 -->
+	<update id="update_isConvert" parameterMap="productAttachment">
+		update PM_ProductAttachment
+		<set>
+			<trim prefixOverrides=",">
+				<if test="isConvert !=null">,IsConvert = ${isConvert}</if>
+			</trim>
+		</set>
+		Where FileUrl = #{fileUrl}
+	</update>
+	<!-- 更新产品上架下架状态 -->
+	<update id="updateAttachment" parameterMap="productAttachment">
+		update PM_ProductAttachment set status=${status} where id=${id}
+	</update>
+	<!-- 删除产品关联的附件信息 -->
+	<delete id="delete_byProductId" parameterMap="productAttachment">
+		delete from PM_ProductAttachment Where ProductId=#{productId}
+	</delete>
+	
+	
+	<!-- 删除产品附件信息 -->
+	<delete id="delete" parameterMap="productAttachment">
+		delete from PM_ProductAttachment Where ID=${id}
+	</delete>
+	
+	<!-- 查询产品的居间公司水印 -->
+	<select id="select_org_watermark" resultType="string" parameterMap="productAttachment">
+	    select o.Watermark from PM_Product p left join SM_Organization o on p.OrgID = o.ID where p.ID = ${productId}
+	</select>
+	
+</mapper>
+

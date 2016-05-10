@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="product">
+
+	<parameterMap id="product" type="com.sw.plugins.product.manage.entity.Product" />
+
+	<resultMap id="productResult" type="com.sw.plugins.product.manage.entity.Product">
+		<result property="id" column="ID" />
+		<result property="orgId" column="OrgID" />
+		<result property="orgTypeId" column="OrgTypeID" />
+		<result property="code" column="Code" />
+		<result property="name" column="Name" />
+		<result property="shortName" column="ShortName" />
+		<result property="productImage" column="ProductImage" />
+		<result property="type" column="Type" />
+		<result property="investCategoryId" column="InvestCategoryId" />
+		<result property="providerId" column="ProviderID" />
+		<result property="raiseStartTime" column="RaiseStartTime" />
+		<result property="raiseFinishTime" column="RaiseFinishTime" />
+		<result property="profitType" column="ProfitType" />
+		<result property="minProfitRatio" column="MinProfitRatio"
+			javaType="java.math.BigDecimal" />
+		<result property="maxProfitRatio" column="MaxProfitRatio"
+			javaType="java.math.BigDecimal" />
+		<result property="beginningShare" column="BeginningShare" />
+		<result property="incrementalShare" column="IncrementalShare"
+			javaType="java.math.BigDecimal" />
+		<result property="minTotalShare" column="MinTotalShare"
+			javaType="java.math.BigDecimal" />
+		<result property="maxTotalShare" column="MaxTotalShare"
+			javaType="java.math.BigDecimal" />
+		<result property="isTotalShare" column="IsTotalShare" />
+		<result property="foundDate" column="FoundDate" />
+		<result property="stopDate" column="StopDate" />
+		<result property="deadlineType" column="DeadlineType" />
+		<result property="deadlineDataType" column="DeadlineDataType" />
+		<result property="minDeadline" column="MinDeadline" />
+		<result property="maxDeadline" column="MaxDeadline" />
+		<result property="sortNumber" column="SortNumber" />
+		<result property="sellType" column="SellType" />
+		<result property="status" column="Status" />
+		<result property="sellStatus" column="SellStatus" />
+		<result property="released" column="Released" />
+		<result property="profile" column="Profile" />
+		<result property="description" column="Description" />
+		<result property="isRedeem" column="IsRedeem" />
+		<result property="isAdd" column="IsAdd" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<result property="commissionStatus" column="CommissionStatus" />
+		<result property="accountInfo" column="AccountInfo" />
+		<result property="orgName" column="orgName" />
+		<result property="goodCommentRatio" column="goodCommentRatio" />
+		<result property="badCommentRatio" column="badCommentRatio" />
+		<result property="providerShortName" column="ProviderShortName" />
+		<result property="isTotalLowAmountClientCount" column="IsTotalLowAmountClientCount" />
+		<result property="maxClientCount" column="MaxClientCount" />
+		<result property="maxLowAmountClientCount" column="MaxLowAmountClientCount" />
+		<result property="warningLowAmountClientCount" column="WarningLowAmountClientCount" />
+		<result property="lowAmountThreshold" column="LowAmountThreshold"
+			javaType="java.math.BigDecimal" />
+		<result property="closeType" column="CloseType" />
+		<result property="isNoTice" column="IsNoTice" />
+		<result property="pushStatus" column="PushStatus" />
+		<result property="contractPrefix" column="ContractPrefix" />
+		<result property="raiseArea" column="RaiseArea" />
+		<result property="isSpecialProvisionProduct" column="IsSpecialProvisionProduct" />
+
+		<!-- 供应商机构表 -->
+		<association property="provider" column="providerID"
+			javaType="com.sw.plugins.cooperate.provider.entity.Provider"
+			resultMap="providerResult" />
+	</resultMap>
+
+	<resultMap id="productWithoutProviderResult" type="com.sw.plugins.product.manage.entity.Product">
+		<result property="id" column="ID" />
+		<result property="orgId" column="OrgID" />
+		<result property="orgTypeId" column="OrgTypeID" />
+		<result property="code" column="Code" />
+		<result property="name" column="Name" />
+		<result property="shortName" column="ShortName" />
+		<result property="productImage" column="ProductImage" />
+		<result property="type" column="Type" />
+		<result property="investCategoryId" column="InvestCategoryId" />
+		<result property="providerId" column="ProviderID" />
+		<result property="raiseStartTime" column="RaiseStartTime" />
+		<result property="raiseFinishTime" column="RaiseFinishTime" />
+		<result property="profitType" column="ProfitType" />
+		<result property="minProfitRatio" column="MinProfitRatio" />
+		<result property="maxProfitRatio" column="MaxProfitRatio" />
+		<result property="beginningShare" column="BeginningShare" />
+		<result property="incrementalShare" column="IncrementalShare" />
+		<result property="minTotalShare" column="MinTotalShare" />
+		<result property="maxTotalShare" column="MaxTotalShare" />
+		<result property="isTotalShare" column="IsTotalShare" />
+		<result property="foundDate" column="FoundDate" />
+		<result property="stopDate" column="StopDate" />
+		<result property="deadlineType" column="DeadlineType" />
+		<result property="minDeadline" column="MinDeadline" />
+		<result property="maxDeadline" column="MaxDeadline" />
+		<result property="sortNumber" column="SortNumber" />
+		<result property="sellType" column="SellType" />
+		<result property="status" column="Status" />
+		<result property="sellStatus" column="SellStatus" />
+		<result property="released" column="Released" />
+		<result property="profile" column="Profile" />
+		<result property="description" column="Description" />
+		<result property="isRedeem" column="IsRedeem" />
+		<result property="isAdd" column="IsAdd" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<result property="commissionStatus" column="CommissionStatus" />
+		<result property="accountInfo" column="AccountInfo" />
+		<result property="orgName" column="orgName" />
+		<result property="goodCommentRatio" column="goodCommentRatio" />
+		<result property="badCommentRatio" column="badCommentRatio" />
+		<result property="isRemittance" column="IsRemittance" />
+		<result property="isTotalLowAmountClientCount" column="IsTotalLowAmountClientCount" />
+		<result property="maxClientCount" column="MaxClientCount" />
+		<result property="maxLowAmountClientCount" column="MaxLowAmountClientCount" />
+		<result property="warningLowAmountClientCount" column="WarningLowAmountClientCount" />
+		<result property="lowAmountThreshold" column="LowAmountThreshold" />
+		<result property="closeType" column="CloseType" />
+		<result property="isNoTice" column="IsNoTice" />
+		<result property="contractPrefix" column="ContractPrefix" />
+		<result property="raiseArea" column="RaiseArea" />
+		<result property="newOrderCount" column="NewOrderCount" />
+	</resultMap>
+
+	<resultMap id="providerResult"
+		type="com.sw.plugins.cooperate.provider.entity.Provider">
+		<result property="shortName" column="ShortNameTwo" />
+	</resultMap>
+
+	<!-- 产品通用查询 -->
+	<select id="select" resultMap="productResult" parameterMap="product">
+		select *
+		from PM_Product
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="orgID!=null">and OrgID=${orgId}</if>
+				<if test="name!=null and name!=''">and Name like '%${name}%' </if>
+				<if test="code!=null and code!=''">and Code like '%${code}%' </if>
+				<if test="status!=null">and Status=${status} </if>
+				<if test="type!=null">and Type=${type} </if>
+				<if test="sellStatus!=null">and SellStatus=${sellStatus} </if>
+				<if test="released!=null">and Released=${released} </if>
+				<if test="commissionStatus !=null ">and CommissionStatus=${commissionStatus} </if>
+			</trim>
+		</where>
+	</select>
+
+	<select id="selectUpload" resultMap="productResult"
+		parameterMap="product">
+		select ID,Name
+		from PM_Product where sellStatus in (1,2,6)
+		and Released = 1
+	</select>
+
+	<!-- 分页查询产品数据 -->
+	<select id="select_paginated" resultMap="productResult"
+		parameterMap="product">
+		select p.*,pp.ShortName as ProviderShortName,org.ShortName as orgName,pp.ID ProviderID,su.Name as createUserName
+		from PM_Product p left join PC_Provider pp on p.ProviderID=pp.ID
+		left
+		join SM_Organization org on org.id=p.OrgID
+		left join SM_User su on su.ID=p.CreatorUserID
+		<where>
+			<trim prefixOverrides="and">
+				p.Status!=0
+				<if test="id!=null">and p.ID=${id}</if>
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="shortName!=null and shortName!=''">and p.ShortName like '%${shortName}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="status!=null">and p.Status=${status} </if>
+				<if test="sellStatus!=null">and p.SellStatus=${sellStatus} </if>
+				<if test="released!=null">and p.Released=${released} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+				<if test="startTime!=null and startTime!=''">and p.CreateTime>#{startTime} </if>
+				<if test="endTime!=null and endTime!=''">and #{endTime}>p.CreateTime </if>
+				<if test="isPoManager != 1">and p.Pomanager like concat('%,',#{creatorUserId},',%')</if>
+			</trim>
+		</where>
+		ORDER BY <!-- p.SellStatus=2 desc,p.SellStatus,p.RaiseStartTime desc -->
+		p.CreateTime desc
+		limit ${start} , ${offset}
+	</select>
+	<!-- 统计产品数据 -->
+	<select id="count" resultType="long" parameterMap="product">
+		select count(ID) from PM_Product p
+		<where>
+			<trim prefixOverrides="and">
+				p.Status!=0
+				<if test="id!=null">and p.ID=${id}</if>
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="shortName!=null and shortName!=''">and p.ShortName like '%${shortName}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="status!=null">and p.Status=${status} </if>
+				<if test="sellStatus!=null">and p.SellStatus=${sellStatus} </if>
+				<if test="released!=null">and p.Released=${released} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+				<if test="startTime!=null and startTime!=''">and p.CreateTime>#{startTime} </if>
+				<if test="endTime!=null and endTime!=''">and #{endTime}>p.CreateTime</if>
+				<if test="isPoManager != 1">and p.Pomanager like concat('%,',#{creatorUserId},',%')</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 分页查询产品数据-补录订单 -->
+	<select id="select_paginated_byorder" resultMap="productResult"
+		parameterMap="product">
+		select
+		p.ID,p.Name,p.ShortName,p.Code,p.ProviderID,p.OrgID,p.Type,p.ContractPrefix,pp.ShortName
+		as ShortNameTwo,org.Name as orgName from PM_Product p left join
+		PC_Provider pp on p.ProviderID=pp.ID
+		left join SM_Organization org on
+		org.id=p.OrgID
+		<where>
+			<trim prefixOverrides="and">
+				p.Status!=0
+				<if test="id!=null">and p.ID=${id}</if>
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="shortName!=null and shortName!=''">and p.ShortName like '%${shortName}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null and type==2">and p.Type in(2,5,6) </if>
+				<if test="status!=null">and p.Status=${status} </if>
+				<if test="sellStatus!=null">and p.SellStatus=${sellStatus} </if>
+				<if test="released!=null">and p.Released=${released} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+				<if test="startTime!=null and startTime!=''">and p.CreateTime>#{startTime} </if>
+				<if test="endTime!=null and endTime!=''">and
+					#{endTime}>p.CreateTime
+				</if>
+			</trim>
+		</where>
+		order by RaiseStartTime desc
+		limit ${start} , ${offset}
+	</select>
+
+	<!-- 查询产品数据条数-补录订单 -->
+	<select id="select_count_byorder" resultMap="productResult"
+		parameterMap="product">
+		select count(*)
+		from PM_Product p
+		left join PC_Provider pp on
+		p.ProviderID=pp.ID
+		left join SM_Organization org on org.id=p.OrgID
+		<where>
+			<trim prefixOverrides="and">
+				p.Status!=0
+				<if test="id!=null">and p.ID=${id}</if>
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="shortName!=null and shortName!=''">and p.ShortName like '%${shortName}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null and type==2">and p.Type in(2,5) </if>
+				<if test="status!=null">and p.Status=${status} </if>
+				<if test="sellStatus!=null">and p.SellStatus=${sellStatus} </if>
+				<if test="released!=null">and p.Released=${released} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+				<if test="startTime!=null and startTime!=''">and p.CreateTime>#{startTime} </if>
+				<if test="endTime!=null and endTime!=''">and
+					#{endTime}>p.CreateTime
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 分页查询产品数据附带评价 -->
+	<select id="select_paginated_comment" resultMap="productResult"
+		parameterMap="product">
+		select p.ID, p.ShortName, p.Type, p.SellStatus, p.PushStatus,
+		pe.GoodCommentRatio, pe.badCommentRatio, pp.ShortName as ShortNameTwo
+		from PM_Product p
+		left join PC_Provider pp on p.ProviderID=pp.ID
+		left
+		join (select ProductId, concat(round(sum(case when Evaluate=1 then 1
+		else 0 end)*100/count(Evaluate),2),'%') GoodCommentRatio,
+		concat(round(sum(case when Evaluate=2 then 1 else 0
+		end)*100/count(Evaluate),2),'%') BadCommentRatio
+		from
+		PM_ProductEvaluate where type = 1 GROUP BY ProductID) pe on p.ID =
+		pe.ProductID
+		<where>
+			<trim prefixOverrides="and">
+				p.Status!=0
+				<if test="shortName!=null and shortName!=''">and p.ShortName like '%${shortName}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="orgId!=null"> and p.OrgID = ${orgId} </if>
+			</trim>
+		</where>
+		order by RaiseStartTime desc
+		limit ${start} , ${offset}
+	</select>
+
+	<!-- 统计产品数据附带评价 -->
+	<select id="count_comment" resultType="long" parameterMap="product">
+		select count(ID) from PM_Product p
+		<where>
+			<trim prefixOverrides="and">
+				p.Status!=0
+				<if test="shortName!=null and shortName!=''">and p.ShortName like '%${shortName}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="orgId!=null">and p.OrgID = ${orgId} </if>
+			</trim>
+		</where>
+	</select>
+
+	<select id="count_from_all_product" resultType="long"
+		parameterMap="product">
+		select count(ID) from PM_Product p
+		<where>
+			<trim prefixOverrides="and">
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="status!=null">and p.Status=${status} </if>
+				<if test=" investCategoryId !=null ">and p.InvestCategoryID =
+					${investCategoryId}
+				</if>
+			</trim>
+		</where>
+	</select>
+
+	<select id="checkCategoryId" parameterMap="product" resultType="long">
+		select
+		count(*)
+		from PM_Product
+		<where>
+			Code = '${code}'
+			<trim>
+				<if test="id!=null">and ID!=${id}</if>
+			</trim>
+		</where>
+	</select>
+
+
+	<!-- 修改，查看等查询 -->
+	<select id="getOne_byModify" resultMap="productResult"
+		parameterMap="product">
+		select
+		p.ID,p.OrgID,p.OrgTypeID,p.Code,p.Name,p.ShortName,p.ProductImage,p.Type
+		,p.InvestCategoryID,p.ProviderID
+		,p.ProfitType
+		,ROUND(p.MinProfitRatio,2) as MinProfitRatio
+		,ROUND(p.MaxProfitRatio,2) as MaxProfitRatio
+		,p.BeginningShare as BeginningShare
+		,ROUND(p.IncrementalShare/1000000) as IncrementalShare
+		,ROUND(p.MinTotalShare/1000000) as MinTotalShare
+		,ROUND(p.MaxTotalShare/1000000) as MaxTotalShare
+		,p.IsTotalShare,p.DeadlineType,p.DeadlineDataType,p.MinDeadline,p.MaxDeadline,p.SortNumber,p.Status
+		,p.SellStatus,p.SellType,p.Released,p.Profile,p.Description,p.IsRedeem,p.IsAdd
+		,date_format(p.CreateTime,'%Y-%m-%d %T') as CreateTime
+		,date_format(p.ModifyTime,'%Y-%m-%d %T') as ModifyTime
+		,p.CreatorUserID
+		,p.CommissionStatus,p.AccountInfo
+		,date_format(p.RaiseStartTime,'%Y-%m-%d') as RaiseStartTime
+		,date_format(p.RaiseFinishTime,'%Y-%m-%d') as RaiseFinishTime
+		,date_format(p.FoundDate,'%Y-%m-%d') as FoundDate
+		,date_format(p.StopDate,'%Y-%m-%d') as StopDate
+		,p.IsTotalLowAmountClientCount,p.maxClientCount,p.maxLowAmountClientCount,p.WarningLowAmountClientCount,ROUND(p.lowAmountThreshold/1000000)
+		as lowAmountThreshold
+		,p.CloseType,p.IsNoTice,p.ContractPrefix,p.RaiseArea
+		from
+		PM_Product p
+		where
+		p.ID=${id}
+	</select>
+
+	<!-- 通过产品分类查询产品 -->
+	<select id="select_product_by_attr" resultType="long"
+		parameterMap="product">
+		select count(id)
+		from PM_Product where InvestCategoryID =
+		${investCategoryId}
+	</select>
+
+	<select id="select_product_name" resultMap="productResult"
+		parameterMap="product">
+		select ID,Name
+		from PM_Product where ID = ${id}
+	</select>
+
+	<!-- 保存产品 -->
+	<insert id="insert" parameterMap="product">
+		insert into PM_Product 
+	    <trim prefix="(" prefixOverrides="," suffix=")">
+	        <if test="orgId!=null">,OrgID</if>
+	        <if test="orgTypeId!=null">,OrgTypeID</if>
+			<if test="code!=null and code!=''">,Code</if>
+			<if test="name!=null and name!=''">,Name</if>
+			<if test="shortName!=null and shortName!=''">,ShortName</if>
+			<if test="productImage!=null and productImage!=''">,ProductImage</if>
+			<if test="type!=null">,Type</if>
+			<if test="investCategoryId!=null">,InvestCategoryID</if>
+			<if test="providerId!=null">,ProviderID</if>
+			<if test="raiseStartTime!=null and raiseStartTime!=''">,RaiseStartTime</if>
+			<if test="raiseFinishTime!=null and raiseFinishTime!=''">,RaiseFinishTime</if>
+			<if test="profitType!=null">,ProfitType</if>
+			<if test="minProfitRatio!=null">,MinProfitRatio</if>
+			<if test="maxProfitRatio!=null">,MaxProfitRatio</if>
+			<if test="beginningShare!=null and beginningShare!=''">,BeginningShare</if>
+			<if test="incrementalShare!=null">,IncrementalShare</if>
+			<if test="minTotalShare!=null">,MinTotalShare</if>
+			<if test="maxTotalShare!=null">,MaxTotalShare</if>
+			<if test="isTotalShare!=null">,IsTotalShare</if>
+			<if test="foundDate!=null and foundDate!=''">,FoundDate</if>
+			<if test="stopDate!=null and stopDate!=''">,StopDate</if>
+			<if test="deadlineType!=null">,DeadlineType</if>
+			<if test="deadlineDataType!=null">,DeadlineDataType</if>
+			<if test="minDeadline!=null">,MinDeadline</if>
+			<if test="maxDeadline!=null">,MaxDeadline</if>
+			<if test="sortNumber!=null">,SortNumber</if>
+			<if test="sellType!=null">,SellType</if>
+			<if test="raiseArea!=null">,RaiseArea</if>
+			,Status
+			,SellStatus
+			,Released
+			<if test="profile!=null and profile!=''">,Profile</if>
+			<if test="description!=null and description!=''">,Description</if>
+			<if test="isRedeem!=null">,IsRedeem</if>
+			<if test="isAdd!=null">,IsAdd</if>
+			<if test="commissionStatus!=null">,CommissionStatus</if>
+			<if test="accountInfo!=null and accountInfo!=''">,AccountInfo</if>
+			<if test="maxLowAmountClientCount!=null">,MaxLowAmountClientCount</if>
+			<if test="lowAmountThreshold!=null">,LowAmountThreshold</if>
+			<if test="closeType!=null">,CloseType</if>
+			<if test="isNoTice !=null">,IsNoTice</if>
+			<if test="contractPrefix !=null and contractPrefix != ''">,ContractPrefix</if>
+			,Pomanager
+			,SalerType
+			<if test="maxClientCount!=null">,MaxClientCount</if>
+			,CreateTime
+			,ModifyTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="orgId!=null">,${orgId}</if>
+			<if test="orgTypeId!=null">,${orgTypeId}</if>
+			<if test="code!=null and code!=''">,#{code}</if>
+			<if test="name!=null and name!=''">,#{name}</if>
+			<if test="shortName!=null and shortName!=''">,#{shortName}</if>
+			<if test="productImage!=null and productImage!=''">,#{productImage}</if>
+			<if test="type!=null">,${type}</if>
+			<if test="investCategoryId!=null">,${investCategoryId}</if>
+			<if test="providerId!=null">,${providerId}</if>
+			<if test="raiseStartTime!=null and raiseStartTime!=''">,#{raiseStartTime}</if>
+			<if test="raiseFinishTime!=null and raiseFinishTime!=''">,#{raiseFinishTime}</if>
+			<if test="profitType!=null">,${profitType}</if>
+			<if test="minProfitRatio!=null">,${minProfitRatio}</if>
+			<if test="maxProfitRatio!=null">,${maxProfitRatio}</if>
+			<if test="beginningShare!=null and beginningShare != ''">,#{beginningShare}</if>
+			<if test="incrementalShare!=null">,${incrementalShare}*1000000</if>
+			<if test="minTotalShare!=null">,${minTotalShare}*1000000</if>
+			<if test="maxTotalShare!=null">,${maxTotalShare}*1000000</if>
+			<if test="isTotalShare!=null">,${isTotalShare}</if>
+			<if test="foundDate!=null and foundDate!=''">,#{foundDate}</if>
+			<if test="stopDate!=null and stopDate!=''">,#{stopDate}</if>
+			<if test="deadlineType!=null">,${deadlineType}</if>
+			<if test="deadlineDataType!=null">,${deadlineDataType}</if>
+			<if test="minDeadline!=null">,${minDeadline}</if>
+			<if test="maxDeadline!=null">,${maxDeadline}</if>
+			<if test="sortNumber!=null">,${sortNumber}</if>
+			<if test="sellType!=null">,${sellType}</if>
+			<if test="raiseArea!=null">,${raiseArea}</if>
+			,1
+			<if test="sellStatus!=null">,${sellStatus}</if>
+			<if test="sellStatus == null">,1</if>
+			,0
+			<if test="profile!=null and profile!=''">,#{profile}</if>
+			<if test="description!=null and description!=''">,#{description}</if>
+			<if test="isRedeem!=null">,${isRedeem}</if>
+			<if test="isAdd!=null">,${isAdd}</if>
+			<if test="commissionStatus!=null">,${commissionStatus}</if>
+			<if test="accountInfo!=null and accountInfo!=''">,#{accountInfo}</if>
+			<if test="maxLowAmountClientCount!=null">,${maxLowAmountClientCount}</if>
+			<if test="lowAmountThreshold!=null">,${lowAmountThreshold}*1000000</if>
+			<if test="closeType!=null">,${closeType}</if>
+			<if test="isNoTice !=null">,${isNoTice}</if>
+			<if test="contractPrefix !=null and contractPrefix != ''">,#{contractPrefix}</if>
+			,concat(',',#{creatorUserId},',')
+			<choose>
+				<when test="salerType !=null">
+					,${salerType}
+				</when>
+				<otherwise>
+					,1
+				</otherwise>
+			</choose>
+			<if test="maxClientCount!=null">,${maxClientCount}</if>
+			,NOW()
+			,NOW()
+			<if test="creatorUserId!=null">,#{creatorUserId}</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">  
+        	SELECT LAST_INSERT_ID()
+    	</selectKey>
+	</insert>
+	<!-- 更新产品 -->
+	<update id="update" parameterMap="product">
+		update PM_Product
+		<set>
+			<trim prefixOverrides=",">
+				<if test="providerId!=null">,ProviderID = ${providerId}</if>
+				<if test="investCategoryId!=null">,InvestCategoryID = ${investCategoryId}</if>
+				<if test=" orgId !=null">,OrgID=${orgId}</if>
+				<if test=" code!=null and code!=''">,Code=#{code}</if>
+				<if test=" name!=null and name!=''">,Name=#{name}</if>
+				<if test=" shortName !=null and shortName != ''">,ShortName=#{shortName}</if>
+				<if test=" productImage !=null and productImage != ''">,ProductImage=#{productImage}</if>
+				<if test=" productImage ==null or productImage == ''">,ProductImage=null</if>
+				<if test=" raiseStartTime !=null and raiseStartTime != ''">,RaiseStartTime=#{raiseStartTime}</if>
+				<if test=" raiseFinishTime !=null and raiseFinishTime != ''">,RaiseFinishTime=#{raiseFinishTime}</if>
+				<if test=" type !=null">,Type=${type}</if>
+				<if test=" profitType !=null">,ProfitType=${profitType}</if>
+				<if test=" minProfitRatio !=null ">,MinProfitRatio=${minProfitRatio}</if>
+				<if test=" maxProfitRatio !=null ">,MaxProfitRatio=${maxProfitRatio}</if>
+				<if test=" beginningShare !=null and beginningShare !=''">,BeginningShare=#{beginningShare}</if>
+				<if test=" incrementalShare !=null">,IncrementalShare=${incrementalShare}*1000000</if>
+				<if test=" minTotalShare  !=null">,MinTotalShare=${minTotalShare}*1000000</if>
+				<if test=" maxTotalShare  !=null">,MaxTotalShare=${maxTotalShare}*1000000</if>
+				<if test=" isTotalShare  !=null">,IsTotalShare=${isTotalShare}</if>
+				<if test=" foundDate  !=null and foundDate != ''">,FoundDate=#{foundDate}</if>
+				<if test=" stopDate  !=null  and stopDate != ''">,StopDate=#{stopDate}</if>
+				<if test=" deadlineType  !=null">,DeadlineType=${deadlineType}</if>
+				<if test="deadlineDataType!=null">,DeadlineDataType=${deadlineDataType}</if>
+				<if test=" minDeadline  !=null">,MinDeadline=${minDeadline}</if>
+				<if test=" maxDeadline  !=null">,MaxDeadline=${maxDeadline}</if>
+				<if test=" sortNumber  !=null">,SortNumber=${sortNumber}</if>
+				<if test=" status !=null">,Status = ${status}</if>
+				<if test=" sellStatus !=null">,SellStatus = ${sellStatus}</if>
+				<if test=" sellType !=null">,SellType = ${sellType}</if>
+				<if test=" released  !=null">,Released = ${released}</if>
+				<if test=" profile  !=null and profile != ''">,Profile = #{profile}</if>
+				<if test=" description !=null and description != ''">,Description = #{description}</if>
+				<if test=" isRedeem !=null ">,IsRedeem = ${isRedeem}</if>
+				<if test=" isAdd !=null ">,IsAdd = ${isAdd}</if>
+				<if test=" commissionStatus !=null ">,CommissionStatus = ${commissionStatus}</if>
+				<if test=" accountInfo !=null and accountInfo != ''">,AccountInfo = #{accountInfo}</if>
+				<if test=" isTotalLowAmountClientCount != null ">,IsTotalLowAmountClientCount
+					=
+					${isTotalLowAmountClientCount}
+				</if>
+				<if test=" maxClientCount != null ">,MaxClientCount =
+					${maxClientCount}
+				</if>
+				<if test=" maxLowAmountClientCount != null ">,MaxLowAmountClientCount
+					= ${maxLowAmountClientCount}
+				</if>
+				<if test=" warningLowAmountClientCount != null ">,WarningLowAmountClientCount
+					=
+					${warningLowAmountClientCount}
+				</if>
+				<if test=" lowAmountThreshold != null ">,LowAmountThreshold =
+					${lowAmountThreshold}*1000000
+				</if>
+				<if test=" closeType != null ">,CloseType = ${closeType}</if>
+				<if test=" isNoTice != null ">,IsNoTice = ${isNoTice}</if>
+				<if test="contractPrefix !=null and contractPrefix != ''">,ContractPrefix = #{contractPrefix}</if>
+				<if test=" pushStatus != null ">,PushStatus = ${pushStatus}</if>
+				<if test=" raiseArea != null ">,RaiseArea = ${raiseArea}</if>
+				<choose>
+					<when test="salerType !=null">
+						,SalerType = ${salerType}
+					</when>
+					<otherwise>
+						,SalerType = 1
+					</otherwise>
+				</choose>
+				,ModifyTime=now()
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<update id="update_manager" parameterMap="product">
+		update PM_Product
+		<set>
+			<trim prefixOverrides=",">
+				<if test="pomanager !=null and pomanager != ''">,Pomanager = #{pomanager}</if>
+				<if test="scmanager !=null and scmanager != ''">,Scmanager = #{scmanager}</if>
+				,ModifyTime=now()
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<update id="update_isSpecial" parameterMap="product">
+		update PM_Product set IsSpecialProvisionProduct = ${isSpecialProvisionProduct} where ID = ${id}
+	</update>
+	
+	<!-- 修改发布状态 -->
+	<update id="update_by_status" parameterMap="product">
+		update PM_Product
+		<set>
+			<trim prefixOverrides=",">
+				<if test="released !=null"> Released=${released}</if>
+			</trim>
+		</set>
+		where ID=${id}
+	</update>
+
+	<!-- 删除产品 -->
+	<delete id="delete" parameterMap="product">
+		delete from PM_Product Where
+		ID=${id}
+	</delete>
+
+	<!-- 存续产品信息 -->
+	<select id="select_cunxu_product_paginated" resultMap="productWithoutProviderResult"
+		parameterMap="product">
+		select
+		p.ID,p.ShortName,p.Code,p.Type,p.SellStatus,p.RaiseFinishTime,pp.ShortName
+		ProviderShortName
+		from
+		PM_Product p right join TC_HoldingProduct hp on
+		p.ID=hp.ProductID
+		left join PC_Provider pp on p.ProviderID = pp.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+			</trim>
+		</where>
+		group by p.ID
+		limit ${start} , ${offset}
+	</select>
+
+	<select id="count_cunxu_product_paginated" resultType="long"
+		parameterMap="product">
+		select
+		count(distinct(p.ID))
+		from
+		PM_Product p right join
+		TC_HoldingProduct hp on p.ID=hp.ProductID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<select id="select_cleared_product_paginated" resultMap="productWithoutProviderResult"
+		parameterMap="product">
+		select
+		p.ID,p.ShortName,p.Code,p.Type,hp.ClearedTime
+		CreateTime,pp.ShortName ProviderShortName
+		from
+		PM_Product p right join
+		TC_ClearedProduct hp on p.ID=hp.ProductID
+		left join PC_Provider pp on
+		p.ProviderID = pp.ID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+			</trim>
+		</where>
+		group by p.ID
+		limit ${start} , ${offset}
+	</select>
+
+	<select id="count_cleared_product_paginated" resultType="long"
+		parameterMap="product">
+		select
+		count(distinct(p.ID))
+		from
+		PM_Product p right join
+		TC_ClearedProduct hp on p.ID=hp.ProductID
+		<where>
+			<trim prefixOverrides="and">
+				<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+				<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+				<if test="type!=null">and p.Type=${type} </if>
+				<if test="orgId!=null">and p.OrgID=${orgId}</if>
+			</trim>
+		</where>
+	</select>
+
+	<!-- 销售管控 相关 -->
+
+	<select id="select_saling_product" resultMap="productWithoutProviderResult"
+		parameterMap="product">
+		select
+		p.ID,p.Name,p.Code,p.Type,p.isTotalShare
+		from
+		PM_Product p
+		where
+		p.Status = 2 and p.SellStatus != 0 and p.SellStatus != 7 and
+		p.SellStatus != 8
+		<if test="name!=null and name!=''">and p.Name like '%${name}%' </if>
+		<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+		<if test="type!=null">and p.Type=${type} </if>
+	</select>
+
+	<select id="select_saling_product_paginated" resultMap="productWithoutProviderResult"
+		parameterMap="product">
+		select
+		p.ID,p.Name,p.ShortName,p.Code,p.Type,p.isTotalShare,p.SellStatus,s.isRemittance,pp.ShortName
+		as ProviderShortName,NewOrderCount
+		from
+		PM_Product p
+		left join PM_SubProduct s on p.ID = s.productID
+		left join PC_Provider pp on p.ProviderID = pp.ID
+		left join (select count(ID) NewOrderCount,ProductID from TC_Order tc where TradeStatus = 1 group by ProductID) B on B.ProductID = p.ID
+		where
+		p.Status = 2 and p.SellStatus != 0 and p.SellStatus
+		!= 7 and
+		p.SellStatus != 8 and p.SellStatus != 4 and p.SellStatus !=3
+		<if test="name!=null and name!=''">and p.ShortName like '%${name}%' </if>
+		<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+		<if test="type!=null">and p.Type=${type} </if>
+		<if test="orgId !=null">and p.OrgID=${orgId} </if>
+		<if test="salerType !=null">and p.SalerType = #{salerType}</if>
+		<if test="isScManager != 1">and p.Scmanager like concat('%,',#{creatorUserId},',%')</if>
+		group by p.ID
+		<!-- order by p.SellStatus -->
+		order by p.SellStatus, p.CreateTime desc
+		limit ${start} , ${offset}
+	</select>
+
+	<select id="count_saling_product_paginated" resultType="long"
+		parameterMap="product">
+		select
+		count(p.ID)
+		from
+		PM_Product p
+		where
+		p.Status = 2
+		and p.SellStatus != 0 and p.SellStatus != 7 and
+		p.SellStatus != 8 and
+		p.SellStatus != 4 and p.SellStatus !=3
+		<if test="name!=null and name!=''">and (p.ShortName like '%${name}%') </if>
+		<if test="code!=null and code!=''">and p.Code like '%${code}%' </if>
+		<if test="type!=null">and p.Type=${type} </if>
+		<if test="orgId !=null">and p.OrgID=${orgId} </if>
+		<if test="salerType !=null">and p.SalerType = #{salerType}</if>
+		<if test="isScManager != 1">and p.Scmanager like concat('%,',#{creatorUserId},',%')</if>
+	</select>
+	<!--// 销售管控 相关 -->
+
+	<select id="select_sellstatus" resultMap="productResult"
+		parameterMap="product">
+		select shortName from PM_Product where sellStatus in (2,6)
+		<if test="orgId !=null">and OrgID=${orgId} </if>
+	</select>
+
+	<!-- 查询认购类型产品 -->
+	<select id="select_offerPay_list" resultMap="productResult"
+		parameterMap="product">
+		select ID,ShortName,ProviderID from PM_Product where sellStatus in
+		(1,2,9) and Status=2
+		<if test="orgId!=null">and OrgId=${orgId}</if>
+	</select>
+	<!-- 查询申购类型产品 -->
+	<select id="select_subPay_list" resultMap="productResult"
+		parameterMap="product">
+		select ID,ShortName,ProviderID from PM_Product where sellStatus in
+		(5,6) and Status=2 and Type in (2,5)
+		<if test="orgId!=null">and OrgId=${orgId}</if>
+	</select>
+
+	<!-- 核算产品列表 -->
+	<select id="select_commission_product" resultMap="productResult"
+		parameterMap="product">
+		select distinct p.ID, p.ShortName
+		from PM_Product p
+		where
+		((p.Type in
+		(2,5) and p.SellStatus in (5,6)) or (p.Type not in (2,5) and
+		p.SellStatus in (5)))
+		<if test="orgId!=null">and p.OrgID=${orgId} </if>
+	</select>
+</mapper>

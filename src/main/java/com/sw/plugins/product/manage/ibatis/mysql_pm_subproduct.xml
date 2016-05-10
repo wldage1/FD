@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="subProduct">
+
+	<parameterMap id="subProduct" type="com.sw.plugins.product.manage.entity.SubProduct" />
+
+	<resultMap id="subProductResult" type="com.sw.plugins.product.manage.entity.SubProduct">
+		<result property="id" column="ID" />
+		<result property="productId" column="ProductID" />
+		<result property="type" column="Type" />
+		<result property="deadline" column="Deadline" />
+		<result property="minTotalShare" column="MinTotalShare" javaType="java.math.BigDecimal"/>
+		<result property="maxTotalShare" column="MaxTotalShare" javaType="java.math.BigDecimal"/>
+		<result property="salesFactor" column="SalesFactor" javaType="java.math.BigDecimal"/>
+		<result property="warningShare" column="WarningShare" javaType="java.math.BigDecimal"/>
+		<result property="isRemittance" column="IsRemittance"/>
+		<result property="isFavorites" column="IsFavorites" />
+		<result property="isOrder" column="isOrder"/>
+		<result property="payWay" column="PayWay"/>
+		<result property="maxLowAmountClientCount" column="MaxLowAmountClientCount" />
+		<result property="warningLowAmountClientCount" column="WarningLowAmountClientCount" />
+		<result property="profitType" column="ProfitType" />
+		<result property="profitRatioDesc" column="ProfitRatioDesc" />
+		<result property="beginningShare" column="BeginningShare" javaType="java.math.BigDecimal"/>
+	</resultMap>
+	
+	<select id="select_sub_product" resultMap="subProductResult" parameterMap="subProduct">
+		select 
+			ID,ProductID,Type,Deadline,MinTotalShare/1000000 MinTotalShare,MaxTotalShare/1000000 MaxTotalShare
+			,ROUND(BeginningShare/1000000 ) BeginningShare,SalesFactor,WarningShare/1000000 WarningShare,IsRemittance,IsFavorites,IsOrder,PayWay
+			,MaxLowAmountClientCount,WarningLowAmountClientCount,ProfitType,ProfitRatioDesc
+			from PM_SubProduct 
+		<where>
+			<if test="id != null">and ID = ${id}</if>
+			<if test="productId != null">and ProductID = ${productId}</if>
+		</where>
+	</select>
+	
+	<!-- 打款状态不为停止打款的子产品显示 -->
+	<select id="select_sub_product_isRemittance" resultMap="subProductResult" parameterMap="subProduct">
+		select 
+			ID,ProductID,Type,Deadline,MinTotalShare/1000000 MinTotalShare,MaxTotalShare/1000000 MaxTotalShare
+			,ROUND(BeginningShare/1000000 ) BeginningShare,SalesFactor,WarningShare/1000000 WarningShare,IsRemittance,IsFavorites,IsOrder,PayWay
+			,MaxLowAmountClientCount,WarningLowAmountClientCount,ProfitType,ProfitRatioDesc
+			from PM_SubProduct
+		<where>
+			IsRemittance = 0
+			<if test="id != null">and ID = ${id}</if>
+			<if test="productId != null">and ProductID = ${productId}</if>
+			
+		</where>
+	</select>
+	
+	<select id="count_sub_product" resultType="Long" parameterMap="subProduct">
+		select count(ID) from PM_SubProduct
+		where ProductID = ${productId}
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insert_sub_product" parameterMap="subProduct">
+		insert into PM_SubProduct
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" productId !=null ">,ProductID</if>
+			<if test=" type !=null ">,Type</if>
+			<if test=" deadline !=null ">,Deadline</if>
+			<if test=" minTotalShare !=null ">,MinTotalShare</if>
+			<if test=" maxTotalShare !=null ">,maxTotalShare</if>
+			<if test=" salesFactor !=null ">,SalesFactor</if>
+			<if test=" warningShare !=null ">,WarningShare</if>
+			<if test=" isRemittance !=null ">,IsRemittance</if>
+			<if test=" isFavorites !=null ">,IsFavorites</if>
+			<if test=" isOrder !=null ">,IsOrder</if>
+			<if test=" payWay !=null ">,PayWay</if>
+			<if test=" maxLowAmountClientCount !=null ">,MaxLowAmountClientCount</if>
+			<if test=" warningLowAmountClientCount !=null ">,WarningLowAmountClientCount</if>
+			<if test=" profitType !=null ">,ProfitType</if>
+			<if test=" profitRatioDesc !=null ">,ProfitRatioDesc</if>
+			<if test=" beginningShare !=null ">,BeginningShare</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" productId !=null ">,${productId}</if>
+			<if test=" type !=null ">,#{type}</if>
+			<if test=" deadline !=null ">,#{deadline}</if>
+			<if test=" minTotalShare !=null ">,${minTotalShare}*1000000</if>
+			<if test=" maxTotalShare !=null ">,${maxTotalShare}*1000000</if>
+			<if test=" salesFactor !=null ">,${salesFactor}</if>
+			<if test=" warningShare !=null ">,${warningShare}*1000000</if>
+			<if test=" isRemittance !=null ">,${isRemittance}</if>
+			<if test=" isFavorites !=null ">,${isFavorites}</if>
+			<if test=" isOrder !=null ">,${isOrder}</if>
+			<if test=" payWay !=null ">,${payWay}</if>
+			<if test=" maxLowAmountClientCount !=null ">,${maxLowAmountClientCount}</if>
+			<if test=" warningLowAmountClientCount !=null ">,${warningLowAmountClientCount}</if>
+			<if test=" profitType !=null ">,${profitType}</if>
+			<if test=" profitRatioDesc !=null ">,#{profitRatioDesc}</if>
+			<if test=" beginningShare !=null ">,#{beginningShare}*1000000</if>
+		</trim>
+		<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey     
+		</selectKey>
+	</insert>
+
+	<!-- 更新产品 -->
+	<update id="update_sub_product" parameterMap="subProduct">
+		update PM_SubProduct
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" type !=null ">,Type = #{type}</if>
+				<if test=" deadline !=null ">,Deadline = #{deadline}</if>
+				<if test=" minTotalShare !=null ">,MinTotalShare = ${minTotalShare}*1000000</if>
+				<if test=" maxTotalShare !=null ">,MaxTotalShare = ${maxTotalShare}*1000000</if>
+				<if test=" salesFactor !=null ">,SalesFactor = ${salesFactor}</if>
+				<if test=" warningShare !=null ">,WarningShare = ${warningShare}*1000000</if>
+				<if test=" isRemittance !=null ">,IsRemittance = ${isRemittance}</if>
+				<if test=" isFavorites !=null ">,IsFavorites = ${isFavorites}</if>
+				<if test=" isOrder !=null ">,IsOrder = ${isOrder}</if>
+				<if test=" payWay !=null ">,PayWay = ${payWay}</if>
+				<if test=" maxLowAmountClientCount !=null ">,MaxLowAmountClientCount = ${maxLowAmountClientCount}</if>
+				<if test=" warningLowAmountClientCount !=null ">,WarningLowAmountClientCount = ${warningLowAmountClientCount}</if>
+				<if test=" profitType !=null ">,ProfitType = ${profitType}</if>
+				<if test=" profitRatioDesc !=null ">,ProfitRatioDesc = #{profitRatioDesc}</if>
+				<if test=" beginningShare !=null ">,BeginningShare = ${beginningShare}*1000000</if>
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete_sub_product" parameterMap="subProduct">
+		delete from PM_SubProduct Where ID=${id}
+	</delete>
+	
+</mapper>

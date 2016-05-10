@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productNetValue">
+
+	<parameterMap id="productNetValue" type="com.sw.plugins.product.manage.entity.ProductNetValue" />
+
+	
+	<resultMap id="productNetValueResult" type="com.sw.plugins.product.manage.entity.ProductNetValue">
+		<result property="id" column="ID" />
+		<result property="subProductId" column="SubProductID" />
+		<result property="openDay" column="OpenDay" />
+		<result property="netValue" column="NetValue" javaType="java.math.BigDecimal"/>
+	</resultMap>
+	
+	
+	<select id="select_product_netvalue" resultMap="productNetValueResult" parameterMap="productNetValue">
+		select ID,SubProductID,NetValue,date_format(OpenDay,'%Y-%m-%d') as OpenDay  from PM_ProductNetValue
+		<where>
+			<if test="subProductId != null">SubProductID = ${subProductId}</if>
+		</where>
+	</select>
+	
+	<select id="select_product_netvalue_paginated" resultMap="productNetValueResult" parameterMap="productNetValue">
+		select ID,SubProductID,NetValue,date_format(OpenDay,'%Y-%m-%d') as OpenDay  
+		from PM_ProductNetValue
+		where SubProductID = ${subProductId}
+		order by OpenDay DESC
+		limit ${start} , ${offset}
+	</select>
+	
+	<select id="count" resultType="Long" parameterMap="productNetValue">
+		select  count(ID)  
+		from PM_ProductNetValue 
+		where SubProductID = ${subProductId}
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insert_product_netvalue" parameterMap="productNetValue">
+		insert into PM_ProductNetValue
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" subProductId !=null ">,SubProductID</if>
+			<if test=" openDay !=null ">,OpenDay</if>
+			<if test=" netValue !=null ">,NetValue</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" subProductId !=null ">,${subProductId}</if>
+			<if test=" openDay !=null ">,#{openDay}</if>
+			<if test=" netValue !=null ">,${netValue}</if>
+		</trim>
+	</insert>
+	
+	
+	<!-- 更新产品 -->
+	<update id="update_product_netvalue" parameterMap="productNetValue">
+		update PM_ProductNetValue
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" openDay !=null ">,OpenDay = #{openDay}</if>
+				<if test=" netValue !=null ">,NetValue = ${netValue}</if>
+			</trim>
+		</set>
+		Where ID=${id}
+	</update>
+	
+	
+	<!-- 删除 -->
+	<delete id="delete_product_netvalue" parameterMap="productNetValue">
+		delete from PM_ProductNetValue Where SubProductID=${subProductId}
+	</delete>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterMap="productNetValue">
+		delete from PM_ProductNetValue Where ID=${id}
+	</delete>
+	
+</mapper>

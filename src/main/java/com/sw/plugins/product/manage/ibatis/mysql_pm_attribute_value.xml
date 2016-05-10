@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productAttributeValue">
+
+	<parameterMap id="productAttributeValue" type="com.sw.plugins.product.manage.entity.ProductAttributeValue" />
+
+	<resultMap id="productAttributeValueResult" type="com.sw.plugins.product.manage.entity.ProductAttributeValue">
+		<result property="id" column="ID" />
+		<result property="productId" column="ProductID" />
+		<result property="attributeId" column="AttributeID" />
+		<result property="value" column="Value" />
+		<result property="createTime" column="CreateTime" />
+		<result property="modifyTime" column="ModifyTime" />
+		<result property="creatorUserId" column="CreatorUserID" />
+		<!--   产品属性表   -->
+		<association property="productAttribute" column="attributeId" javaType="com.sw.plugins.product.manage.entity.ProductAttribute" resultMap="productAttributeResult"/>
+	</resultMap>
+	
+	<resultMap id="productAttributeResult" type="com.sw.plugins.product.manage.entity.ProductAttribute">
+		<result property="code" column="Code" />
+		<result property="name" column="Name" />
+	</resultMap>
+	
+	<!-- 产品通用查询 -->
+	<select id="select" resultMap="productAttributeValueResult" parameterMap="productAttributeValue">
+		select  PM_ProductAttributeValue.ID , PM_ProductAttributeValue.ProductID , PM_ProductAttributeValue.AttributeID , PM_ProductAttributeValue.Value
+		,pt.Name,pt.PageShowType  from PM_ProductAttributeValue  left join PM_ProductAttribute pt on PM_ProductAttributeValue.AttributeID=pt.ID 
+		<where>
+			<trim prefixOverrides="and">
+				<if test="productId!=null">and ProductID=${productId}</if>
+				<if test="attributeId!=null">and AttributeID=${attributeId} </if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 产品统计查询 -->
+	<select id="count" resultType="long" parameterMap="productAttributeValue">
+		select  count(id) 
+		from PM_ProductAttributeValue
+		<where>
+			<trim prefixOverrides="and">
+				<if test="productId!=null">and ProductID=${productId}</if>
+				<if test="attributeId!=null">and AttributeID=${attributeId} </if>
+			</trim>
+		</where>
+	</select>
+	
+	<!-- 新增产品 -->
+	<insert id="insert" parameterMap="productAttributeValue">
+		insert into PM_ProductAttributeValue
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productId!=null">,ProductID</if>
+			<if test="attributeId!=null">,AttributeID</if>
+			<if test="value!=null and value!=''">,Value</if>
+			,CreateTime
+			<if test="creatorUserId!=null">,CreatorUserID</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test="productId!=null">,${productId}</if>
+			<if test="attributeId!=null">,${attributeId}</if>
+			<if test="value!=null and value!=''">,#{value}</if>
+			,now()
+			<if test="creatorUserId!=null">,${creatorUserId}</if>
+		</trim>
+	</insert>
+
+	<!-- 更新产品 -->
+	<update id="update" parameterMap="productAttributeValue">
+		update PM_ProductAttributeValue
+		<set>
+			<trim prefixOverrides=",">
+				<if test="value!=null and value!=''">,Value=#{value}</if>
+				,ModifyTime=now() 
+			</trim>
+		</set>
+		Where ProductID=${productId} and AttributeID=${attributeId}
+	</update>
+	
+	<!-- 删除产品 -->
+	<delete id="delete" parameterMap="productAttributeValue">
+		delete from PM_ProductAttributeValue Where ProductID=${productId}
+		<if test="attributeId!=null">and AttributeID=${attributeId} </if>
+	</delete>
+	
+</mapper>

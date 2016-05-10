@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="productDocConfig">
+
+	<parameterMap id="productDocConfig" type="com.sw.plugins.product.manage.entity.ProductDocConfig" />
+
+	
+	<resultMap id="productDocConfigResult" type="com.sw.plugins.product.manage.entity.ProductDocConfig">
+		<result property="productId" column="ID" />
+		<result property="type" column="Type" />
+		<result property="contact" column="Contact" />
+		<result property="address" column="Address" />
+		<result property="telephone" column="Telephone" />
+		<result property="postcode" column="Postcode" />
+	</resultMap>
+	
+	
+	<select id="select_product_docconfig" resultMap="productDocConfigResult" parameterMap="productDocConfig">
+		select 
+			*
+		from 
+			PM_ProductDocConfig
+		where
+			ID = ${productId}
+	</select>
+	
+	<select id="count_product_docconfig" resultType="long" parameterMap="productDocConfig">
+		select 
+			count(ID)
+		from 
+			PM_ProductDocConfig
+		where
+			ID = ${productId}
+	</select>
+	
+
+	
+	<!-- 新增 -->
+	<insert id="insert_product_docconfig" parameterMap="productDocConfig">
+		insert into PM_ProductDocConfig
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" productId !=null ">,ID</if>
+			<if test=" type !=null ">,Type</if>
+			<if test=" contact !=null and contact != ''">,Contact</if>
+			<if test=" address !=null and address !=''">,Address</if>
+			<if test=" telephone !=null and telephone != ''">,Telephone</if>
+			<if test=" cellphone !=null and cellphone != ''">,Cellphone</if>
+			<if test=" postcode !=null and postcode != ''">,Postcode</if>
+		</trim>
+		values
+		<trim prefix="(" prefixOverrides="," suffix=")">
+			<if test=" productId !=null ">,${productId}</if>
+			<if test=" type !=null ">,${type}</if>
+			<if test=" contact !=null and contact != ''">,#{contact}</if>
+			<if test=" address !=null and address !=''">,#{address}</if>
+			<if test=" telephone !=null and telephone != ''">,#{telephone}</if>
+			<if test=" cellphone !=null and cellphone != ''">,#{cellphone}</if>
+			<if test=" postcode !=null and postcode != ''">,#{postcode}</if>
+		</trim>
+	</insert>
+	
+	
+	<!-- 更新产品 -->
+	<update id="update_product_docconfig" parameterMap="productDocConfig">
+		update PM_ProductDocConfig
+		<set>
+			<trim prefixOverrides=",">
+				<if test=" type !=null ">,Type = ${type}</if>
+				<if test=" contact !=null and contact != ''">,Contact = #{contact}</if>
+				<if test=" address !=null and address !=''">,Address = #{address}</if>
+				<if test=" postcode !=null and postcode != ''">,Postcode = #{postcode}</if>
+				<choose>
+					<when test="telephone == '' or telephone == null">,Telephone = null</when>
+					<otherwise>,Telephone = #{telephone}</otherwise>
+				</choose>
+				<choose>
+					<when test="cellphone == '' or cellphone == null">,Cellphone = null</when>
+					<otherwise>,Cellphone = #{cellphone}</otherwise>
+				</choose>
+			</trim>
+		</set>
+		Where ID=${productId}
+	</update>
+	
+	
+	
+	
+</mapper>
