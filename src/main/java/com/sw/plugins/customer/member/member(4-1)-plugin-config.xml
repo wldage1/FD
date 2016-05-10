@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+-->
+<plugins>
+	<customer name="客户中心" icon="images/menu/customer-center.png">
+		<member isNav="true" isSetAuth="all" isStatus="true" name="理财顾问管理" icon="images/menu/customer-center-lcs manage.png">
+			<language>
+				<value>/language/memberMessages_zh_CN.properties</value>
+				<value>/language/memberMessages_en_US.properties</value>
+			</language>
+			
+			<checklist isNav="true" isLog="true"  isSetAuth="true" name="审核列表">
+				<attestationcheck isNav="true" isLog="true"  isSetAuth="true" name="认证审核"/>
+				<cancelcheck isNav="true" isLog="true"  isSetAuth="true" name="注销审核"/>
+				<attestationdetail isNav="true" isLog="true"  isSetAuth="true" name="认证详细"/>
+				<canceldetail isNav="true" isLog="true"  isSetAuth="true" name="注销详细"/>
+			</checklist>
+			<memberclient isNav="true" isLog="true"  isSetAuth="true" name="理财顾问客户">
+			   <clientdetail isNav="true" isLog="true"  isSetAuth="true" name="详细" />
+			</memberclient>
+			<suspendtask isNav="true" isLog="true" isSetAuth="true" name="暂停业务"/>
+			<detail isNav="true" isLog="true" isSetAuth="true" name="详细"/>
+			<resetpassword isNav="true" isLog="true" isSetAuth="true" name="重置密码"/>
+			<delete isNav="true" isLog="true" isSetAuth="true" name="删除"/>
+			<cancel isNav="true" isLog="true" isSetAuth="true" name="注销"/>
+			
+			<mobilephone isNav="true" isLog="true" isSetAuth="true" name="移动电话"/>
+			<homephone isNav="true" isLog="true" isSetAuth="true" name="座机电话"/>
+			<account isNav="true" isLog="true" isSetAuth="true" name="登陆帐号"/>
+			<idcard isNav="true" isLog="true" isSetAuth="true" name="身份证号"/>
+			
+			<export isNav="true" isLog="true" name="导出" icon="images/icon/EXPort.png"/>
+		</member>
+		<memberquitorg isNav="true" isSetAuth="all" isStatus="true" name="理财顾问管理" icon="images/menu/customer-center-lcs manage.png">
+			<quit isNav="true" isLog="true" isSetAuth="true" name="退组受理"/>
+		</memberquitorg>
+	</customer>
+</plugins>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="memberChangeApplication">
+	<parameterMap id="memberChangeApplication" type="com.sw.plugins.customer.member.entity.MemberChangeApplication"/>
+	
+	<!-- 理财师机构结果集 -->
+	<resultMap id="memberChangeApplicationResult" type="com.sw.plugins.customer.member.entity.MemberChangeApplication">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="type" column="Type" />
+		<result property="memberID" column="MemberID" />
+		<result property="userID" column="UserID" />
+		<result property="status" column="Status" />
+		<result property="applicantFeedback" column="ApplicantFeedback" />
+		<result property="changedTime" column="ChangedTime" />
+	</resultMap>
+	<!-- 理财师变更申请表查询 -->
+	<select id="select_paginated" resultMap="memberChangeApplicationResult" parameterMap="memberChangeApplication">
+			select mca.id,mm.name,mm.nickname,mca.type,mca.status
+			from MC_MemberChangeApplication mca left join MC_Member mm on mca.memberID=mm.id
+			<where>
+				<trim prefixOverrides="and">
+					<if test="memberID!=null and memberID!=''">
+					and memberID = ${memberID}
+					</if>
+				</trim>
+			</where>
+			order by mca.status asc
+	</select>
+	<!-- 理财师审核信息统计 -->
+	<select id="count" resultType="long" parameterMap="memberChangeApplication">	
+		select count(ID) from MC_MemberChangeApplication 
+		<where>
+				<trim prefixOverrides="and">
+					<if test="memberID!=null and memberID!=''">
+					and memberID = ${memberID}
+					</if>
+				</trim>
+		</where>	
+	</select>
+	<!-- 更新理财师变更申请表 -->
+	<update id="update" parameterMap="memberChangeApplication">
+		update MC_MemberChangeApplication
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null">,Status=#{status}</if>
+				<if test="applicantFeedback !=null and applicantFeedback!=''">,ApplicantFeedback=#{applicantFeedback}</if>
+				,ChangedTime=now()
+			</trim>
+		</set>
+			where ID = ${id}			
+	</update>
+	<update id="updateForCan" parameterMap="memberChangeApplication">
+		update MC_MemberChangeApplication
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null">,Status=#{status}</if>
+			</trim>
+		</set>
+			where  memberID = ${memberID} and status=0			
+	</update>
+</mapper>

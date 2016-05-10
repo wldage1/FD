@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="memberTeamOrOrgHistory">
+	<parameterMap id="memberTeamOrOrgHistory" type="com.sw.plugins.customer.member.entity.MemberTeamOrOrgHistory"/>
+	
+	<!-- 理财师机构结果集 -->
+	<resultMap id="memberTeamOrOrgHistoryResult" type="com.sw.plugins.customer.member.entity.MemberTeamOrOrgHistory">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="type" column="Type" />
+		<result property="memberID" column="MemberID" />
+		<result property="teamOrOrgID" column="TeamOrOrgID" />
+		<result property="status" column="Status" />
+		<result property="joinTime" column="JoinTime" />
+		<result property="quitTime" column="QuitTime" />
+	</resultMap>
+	<!-- 更新理财师组织经历表 -->
+	<update id="update" parameterMap="memberTeamOrOrgHistory">
+		update MC_MemberTeamOrOrgHistory
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null">,Status=#{status}</if>
+				,quitTime=now() 
+			</trim>
+		</set>
+		where teamOrOrgID= ${teamOrOrgID}			
+	</update>
+	<!-- 更新理财师组织经历表 -->
+	<update id="updateForStatus" parameterMap="memberTeamOrOrgHistory">
+		update MC_MemberTeamOrOrgHistory
+		<set>
+			<trim prefixOverrides=",">
+				<if test="status!=null">,Status=#{status}</if>
+			</trim>
+		</set>
+		where teamOrOrgID= ${teamOrOrgID}			
+	</update>
+	<!-- 新增理财师组织经历表  -->
+    <insert id="insertHistory" parameterMap="memberTeamOrOrgHistory">
+        insert into MC_MemberTeamOrOrgHistory
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="teamOrOrgID!=null and teamOrOrgID!=''">,teamOrOrgID</if>
+            <if test="type!=null and type!=''">,Type</if>
+            <if test="memberID!=null and memberID!=''">,memberID</if>
+            <if test="status!=null and status!=''">,status</if>
+            ,jointime
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="teamOrOrgID!=null and teamOrOrgID!=''">,#{teamOrOrgID}</if>
+            <if test="type!=null and type!=''">,#{type}</if>
+            <if test="memberID!=null and memberID!=''">,#{memberID}</if>
+            <if test="status!=null and status!=''">,#{status}</if>
+            ,now()
+        </trim>
+        <selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>
+    </insert>
+</mapper>

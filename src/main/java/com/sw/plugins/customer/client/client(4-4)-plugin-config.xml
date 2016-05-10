@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<customer name="客户中心" icon="images/menu/customer-center.png">
+		<client isNav="true" isSetAuth="sub" isStatus="true" name="投资者管理" icon="images/menu/customer-center-investor management .png">
+			<language>
+				<value>/language/clientMessages_zh_CN.properties</value>
+			</language>
+			<detail isNav="true" isLog="true" name="详细" icon="images/icon/detail.png"/>
+			<product isNav="true" isLog="true" name="存续产品" icon="images/icon/shangjia.png"/>
+		</client>
+	</customer>
+</plugins>

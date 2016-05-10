@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="client">
+    
+    <parameterMap type="com.sw.plugins.customer.client.entity.Client" id="client"></parameterMap>
+    
+    <!-- 理财顾问客户结果集 -->
+    <resultMap type="com.sw.plugins.customer.client.entity.Client" id="clientResult">
+        <result property="id" column="ID"/>
+        <result property="memberId" column="MemberId"/>
+        <result property="type" column="Type"/>
+        <result property="name" column="Name"/>
+        <result property="sex" column="Sex"/>
+        <result property="birthday" column="Birthday"/>
+        <result property="idCardType" column="IdCardType"/>
+        <result property="idCard" column="IdCard"/>
+        <result property="idCardValid" column="IdCardValid"/>
+        <result property="belief" column="Belief"/>
+        <result property="nationality" column="Nationality"/>
+        <result property="mobilePhone" column="MobilePhone"/>
+        <result property="phone" column="Phone"/>
+        <result property="province" column="Province"/>
+        <result property="city" column="City"/>
+        <result property="sourceIndustry" column="SourceIndustry"/>
+        <result property="married" column="Married"/>
+        <result property="occupation" column="Occupation"/>
+        <result property="education" column="Education"/>
+        <result property="memberPosition" column="MemberPosition"/>
+        <result property="workStatus" column="WorkStatus"/>
+        <result property="income" column="Income"/>
+        <result property="incomeRangeID" column="IncomeRangeID"/>
+        <result property="hobby" column="Hobby"/>
+        <result property="email" column="Email"/>
+        <result property="homeAddress" column="HomeAddress"/>
+        <result property="contactAddress" column="ContactAddress"/>
+        <result property="postCode" column="PostCode"/>
+        <result property="ventureTrend" column="VentureTrend"/>
+        <result property="company" column="Company"/>
+        <result property="companyIndustry" column="CompanyIndustry"/>
+        <result property="intentionProduct" column="IntentionProduct"/>
+        <result property="investmentSituation" column="InvestmentSituation"/>
+        <result property="createTime" column="CreateTime"/>
+        <result property="modifyTime" column="ModifyTime"/>
+        <result property="creatorUserID" column="CreatorUserID"/>
+    </resultMap>
+    
+    <!-- 理财顾问客户统计查询 -->
+    <select id="count" resultType="long" parameterMap="client">
+    	select count(c.ID) from MC_Client c
+   			left join MC_Member m on c.MemberID = m.ID 
+   				<where>
+	   				<trim prefixOverrides="and">
+			       	    <if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+			       	    <if test="name!=null and name!=''">and c.Name like '%${name}%'</if>
+			       	    <if test="memberId!=null and memberId!=''">and c.memberId =${memberId}</if>
+	    			</trim>
+	    		</where>
+    </select>
+    
+    
+    <!-- 理财顾问客户分页查询 -->
+    <select id="selectPaginatedList" resultMap="clientResult" parameterMap="client">
+        select c.ID, c.MemberID, m.Name MemberName, m.NickName MemberNickName, c.Type, c.Name, c.IDCardType, c.IDCard, c.Status
+        	from MC_Client c left join MC_Member m on c.MemberID = m.ID
+	        	<where>
+	   				<trim prefixOverrides="and">
+			       	    <if test="memberName!=null and memberName!=''">and m.Name like '%${memberName}%'</if>
+			       	    <if test="name!=null and name!=''">and c.Name like '%${name}%'</if>
+			       	    <if test="memberId!=null and memberId!=''">and c.memberId =${memberId}</if>
+			       	</trim>
+			    </where>
+   	    		limit ${start},${offset}
+    </select>
+    
+    <!-- 理财顾问客户单个查询 -->
+    <select id="selectOne" resultMap="clientResult" parameterMap="client">
+        select c.*,date_format(c.Birthday,'%Y-%c-%d') as formatBirthday,date_format(c.IDCardValid,'%Y-%c-%d') as formatIDCardValid, m.Name MemberName, m.NickName MemberNickName from MC_Client c left join MC_Member m on c.MemberID = m.ID
+       	    <where>
+	       	    <if test="id!=null">c.ID = ${id}</if>
+       	    </where>
+    </select>
+    
+    <!-- 验证客户是否属于 该理财师 -->
+    <select id="check_client_one" resultMap="clientResult" parameterMap="client">
+        select * from MC_Client c
+       	    <where>
+       	    	<trim prefixOverrides="and">
+	       	    	<if test="type!=null">and c.Type = ${type}</if>
+	       	    	<if test="memberId!=null">and c.MemberId = ${memberId}</if>
+	       	    	<if test="idCardType!=null">and c.IdCardType = ${idCardType}</if>
+	       	    	<if test="idCard!=null and idCard!=''">and c.IdCard = #{idCard}</if>
+       	    	</trim>
+       	    </where>
+    </select>
+    
+    <!-- 保存客户 -->
+    <insert id="insert" parameterMap="client">
+    	insert into MC_Client 
+    	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="memberId!=null">, MemberId</if>
+	 		<if test="type!=null">, Type</if>
+	 		<if test="name!=null and name!=''">, Name</if>
+	 		<if test="idCardType!=null">, IdCardType</if>
+	 		<if test="idCard!=null and idCard!=''">, IdCard</if>
+	 		<if test="status!=null">, Status</if>
+	 		<if test="isOpenToOrg!=null">, IsOpenToOrg</if>
+	 		<if test="creatorUserID!=null">, CreatorUserID</if>
+	 		, CreateTime
+    	</trim>
+    	values 
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="memberId!=null">, ${memberId}</if>
+	 		<if test="type!=null">, ${type}</if>
+	 		<if test="name!=null and name!=''">, #{name}</if>
+	 		<if test="idCardType!=null">, ${idCardType}</if>
+	 		<if test="idCard!=null and idCard!=''">, #{idCard}</if>
+	 		<if test="status!=null">, ${status}</if>
+	 		<if test="isOpenToOrg!=null">, ${isOpenToOrg}</if>
+	 		<if test="creatorUserID!=null">, ${creatorUserID}</if>
+	 		,now()
+	 	</trim>
+	 	<selectKey keyProperty="generatedKey" resultType="Long">
+		  select LAST_INSERT_ID() as generatedKey      
+	 	</selectKey>
+    </insert>
+    
+    <!-- 修改客户 -->
+    <update id="update" parameterMap="client">
+    	update MC_Client 
+    	<set>
+    		<trim prefixOverrides=",">
+    			<if test="status!=null">,status=#{status}</if>
+    			,ModifyTime=now()
+    		</trim>
+    	</set>
+    	<where>
+    		ID=#{id}
+    	</where>
+    </update>
+</mapper>

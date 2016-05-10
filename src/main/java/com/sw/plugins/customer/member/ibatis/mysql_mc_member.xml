@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="member">
+	<parameterMap id="member" type="com.sw.plugins.customer.member.entity.Member"/>
+	
+	<!-- 理财师机构结果集 -->
+	<resultMap id="memberResult" type="com.sw.plugins.customer.member.entity.Member">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="teamID" column="TeamID" />
+		<result property="account" column="Account" />
+		<result property="password" column="Password" />
+		<result property="name" column="Name" />
+		<result property="nickName" column="NickName" />
+		<result property="portrait" column="Portrait" />
+		<result property="individualitySignature" column="IndividualitySignature" />
+		<result property="type" column="Type" />
+		<result property="level" column="Level" />
+		<result property="points" column="Points" />
+		<result property="postCode" column="PostCode " />
+		<result property="iDCardType" column="IDCardType" />
+		<result property="iDCard" column="IDCard" />
+		<result property="cardImage" column="CardImage" />
+		<result property="province" column="Province" />
+		<result property="city" column="City" />
+		<result property="position" column="Position" />
+		<result property="gender" column="Gender" />
+		<result property="birthday" column="Birthday" />
+		<result property="mobilePhone" column="MobilePhone" />
+		<result property="homePhone" column="HomePhone" />
+		<result property="email" column="Email" />
+		<result property="qQ" column="QQ" />
+		<result property="weiXin" column="WeiXin" />
+		<result property="weiBo" column="WeiBo" />
+		<result property="emailValidateCode" column="EmailValidateCode" />
+		<result property="sMValidateCode" column="SMValidateCode" />
+		<result property="address" column="Address" />
+		<result property="bank" column="Bank" />
+		<result property="bankAccout" column="BankAccout" />
+		<result property="card" column="Card" />
+		<result property="status" column="Status" />
+		<result property="delStatus" column="DelStatus" />
+		<result property="style" column="Style" />
+		<result property="question" column="Question" />
+		<result property="answer" column="Answer" />
+		<result property="registerTime" column="RegisterTime" />
+		<result property="lastLoginIP" column="LastLoginIP" />
+		<result property="lastLoginTime" column="LastLoginTime" />
+		<result property="clientCount" column="clientCount" />
+		<result property="provinceName" column="provinceName" />
+		<result property="cityName" column="cityName" />
+		
+	</resultMap>
+	
+	<!-- 理财师统计 -->
+	<select id="select_send_message_member_count" resultType="long" parameterMap="member">	
+		select count(1) 
+		<choose>
+	      <when test="teamID!=null and teamID != '' and teamID !=0 and orgID != null and orgID != '' and orgID != 0">
+	         FROM MC_Member mm 
+	         left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id 
+		     left join MC_Organization mo on mto.orgid=mo.id  
+		     <include refid="join1"/>
+	         where (mo.ID = ${orgID} or mt.ID = ${teamID}) 
+	      </when>
+	      <when test="teamID!=null and teamID != '' and teamID != 0  and (orgID == null or orgID == '' or orgID == 0)">
+	        from (MC_Member mm, MC_TeamOrOrg mto , MC_Team mt) 
+	        <include refid="join1"/>
+	        where
+	        mto.orgid=mt.id and mm.TeamID=mto.ID and mto.OrgType=1 and  mt.id=${teamID}
+	      </when>
+	      <when test="orgID!=null and orgID != '' and orgID !=0  and (teamID == null or teamID == '' or teamID ==0)">
+	        from (MC_Member mm, MC_TeamOrOrg mto , MC_Organization mo) 
+	        <include refid="join1"/>
+	        where 
+	        mto.orgid=mo.id and mm.TeamID=mto.ID and mto.OrgType=0 and mo.id=${orgID}
+	      </when>
+	      <otherwise>
+	         FROM MC_Member mm 
+	         left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id 
+		     left join MC_Organization mo on mto.orgid=mo.id  
+		     <include refid="join1"/>
+	         where 1=1
+	      </otherwise>
+	   </choose>
+	      and ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status in (1,2,3,5)
+	      	<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="status!=null and status!=''">
+				     and mm.status = ${status} 
+				</if>
+				<if test="province!=null and province!=''">
+				     and mm.Province = ${province} 
+				</if>
+				<if test="city!=null and city!=''">
+				     and mm.City = ${city} 
+				</if>
+				<if test="gender!=null and gender!=''">
+				     and mm.Gender = ${gender} 
+				</if>
+	</select>
+	<!-- 获取理财师分页查询 -->
+	<sql id="selectColumn">select mm.id,mm.account,mm.name,mm.type,mm.nickname,mm.iDCard,mm.birthday,mm.mobilePhone,mm.gender,mm.address,mm.status, mm.teamID,
+	              mm.Province,city,OrgType,area1.name as provinceName,area2.name as cityName</sql>
+	<sql id="join1">LEFT JOIN SC_Area area1 on area1.id=mm.Province 
+                    LEFT JOIN SC_Area area2 on area2.id=mm.City</sql>           
+	<select id="select_send_message_member" resultMap="memberResult" parameterMap="member">
+	   <include refid="selectColumn"/>
+	   <choose>
+          <when test="teamID!=null and teamID != '' and teamID !=0 and orgID != null and orgID != '' and orgID != 0">
+	    <!--     ,teamandorg.name as teamname
+	        from (MC_Member mm ,
+            (select mto.id,name,OrgType  from MC_TeamOrOrg mto ,MC_Team mt where mto.OrgID=mt.ID and mt.ID = ${teamID}
+             union all 
+             select mto.id,name,OrgType teamname from MC_TeamOrOrg mto , MC_Organization mo  where mto.OrgID=mo.ID and mo.ID = ${orgID}) teamandorg)
+             <include refid="join1"/>
+             where  mm.teamID = teamandorg.id  -->
+             ,case when mto.OrgType=1 then mt.name when mto.OrgType=0 then mo.name end as teamname
+	         FROM MC_Member mm 
+	         left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id 
+		     left join MC_Organization mo on mto.orgid=mo.id  
+		     <include refid="join1"/>
+	         where (mo.ID = ${orgID} or mt.ID = ${teamID}) 
+	      </when> 
+	      <when test="teamID!=null and teamID != '' and teamID != 0  and (orgID == null or orgID == '' or orgID == 0)">
+	        ,mt.name as teamname
+	        from (MC_Member mm, MC_TeamOrOrg mto , MC_Team mt) 
+	        <include refid="join1"/>
+	        where
+	        mto.orgid=mt.id and mm.TeamID=mto.ID and mto.OrgType=1 and  mt.id=${teamID}
+	      </when>
+	      <when test="orgID!=null and orgID != '' and orgID !=0  and (teamID == null or teamID == '' or teamID ==0)">
+	        ,mo.name as teamname
+	        from (MC_Member mm, MC_TeamOrOrg mto , MC_Organization mo) 
+	        <include refid="join1"/>
+	        where 
+	        mto.orgid=mo.id and mm.TeamID=mto.ID and mto.OrgType=0 and mo.id=${orgID}
+	      </when>
+	      <otherwise>
+	         ,case when mto.OrgType=1 then mt.name when mto.OrgType=0 then mo.name end as teamname
+	         FROM MC_Member mm 
+	         left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id 
+		     left join MC_Organization mo on mto.orgid=mo.id  
+		     <include refid="join1"/>
+	         where 1=1
+	      </otherwise>
+	   </choose>
+	      and ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status in (1,2,3,5)
+	      	<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="status!=null and status!=''">
+				     and mm.status = ${status} 
+				</if>
+				<if test="province!=null and province!=''">
+				     and mm.Province = ${province} 
+				</if>
+				<if test="city!=null and city!=''">
+				     and mm.City = ${city} 
+				</if>
+				<if test="gender!=null and gender!=''">
+				     and mm.Gender = ${gender} 
+				</if>
+	            limit ${start},${offset}
+	</select>
+	<!-- 查询所有的理财师id -->
+	<select id="select_send_message_all_member" parameterMap="member" resultMap="memberResult">
+	   select id from MC_Member mm where mm.status in (0,1,2,3,5) and ifnull(mm.DelStatus,0)<![CDATA[<>2]]>
+	</select>
+	<!-- 查询组织下的所有理财师 -->
+	<select id="select_teamOrOrg_member" parameterMap="member" resultMap="memberResult">
+			select id,type
+			from MC_Member mm
+			<where>
+			mm.status in (0,1,2,3,5)
+			<if test="teamID!=null">
+			and mm.teamID = ${teamID}
+			</if>
+			</where>
+	</select>
+	<!-- 根据检索条件查询理财师id -->
+	<select id="select_send_message_member_by_search" resultMap="memberResult" parameterMap="member">
+		select mm.id 
+	   <choose>
+	      <when test="teamID!=null and teamID != '' and teamID !=0 and orgID != null and orgID != '' and orgID != 0">
+	        from (MC_Member mm ,
+            (select mto.id,name,OrgType  from MC_TeamOrOrg mto ,MC_Team mt where mto.OrgID=mt.ID and mt.ID = ${teamID}
+             union all 
+             select mto.id,name,OrgType teamname from MC_TeamOrOrg mto , MC_Organization mo  where mto.OrgID=mo.ID and mo.ID = ${orgID}) teamandorg)
+             where  mm.teamID = teamandorg.id 
+	      </when>
+	      <when test="teamID!=null and teamID != '' and teamID != 0  and (orgID == null or orgID == '' or orgID == 0)">
+	        from (MC_Member mm, MC_TeamOrOrg mto , MC_Team mt) 
+	        where
+	        mto.orgid=mt.id and mm.TeamID=mto.ID and mto.OrgType=1 and  mt.id=${teamID}
+	      </when>
+	      <when test="orgID!=null and orgID != '' and orgID !=0  and (teamID == null or teamID == '' or teamID ==0)">
+	        from (MC_Member mm, MC_TeamOrOrg mto , MC_Organization mo) 
+	        where 
+	        mto.orgid=mo.id and mm.TeamID=mto.ID and mto.OrgType=0 and mo.id=${orgID}
+	      </when>
+	      <otherwise>
+	         FROM MC_Member mm 
+	         left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id 
+		     left join MC_Organization mo on mto.orgid=mo.id  
+		     <include refid="join1"/>
+	         where 1=1
+	      </otherwise>
+	   </choose>
+	      and ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status in (1,2)
+	      	<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="status!=null and status!=''">
+				     and mm.status = ${status} 
+				</if>
+				<if test="province!=null and province!=''">
+				     and mm.Province = ${province} 
+				</if>
+				<if test="city!=null and city!=''">
+				     and mm.City = ${city} 
+				</if>
+				<if test="gender!=null and gender!=''">
+				     and mm.Gender = ${gender} 
+				</if>
+	</select>
+	
+	
+	<!-- 理财师分页查询 -->
+	<select id="select_paginated" resultMap="memberResult" parameterMap="member">
+		select mm.id,mm.name,mm.nickname,mm.account,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,DATE_FORMAT(mm.RegisterTime,'%Y-%m-%d %T') as RegisterTime
+		,case when mto.OrgType=1 then mt.name when mto.OrgType=0 then mo.name end as teamname,mm.type 
+		,count(mma.id) as checkCount , CASE WHEN ccount IS NULL THEN 0 ELSE ccount END AS clientCount
+		,CASE WHEN ocount IS NULL THEN 0 ELSE ocount END AS orderCount,mm.teamid FROM 
+		MC_Member mm left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id left join  MC_Organization mo on mto.orgid=mo.id  
+		left join MC_MemberChangeApplication mma
+		on mm.id=mma.memberID and mma.Status=0 
+		left join  (select count(id) as ccount,MemberID from MC_Client group by MemberID )  cc on cc.MemberID = mm.id
+		left join  (select count(id) as ocount,memberid from TC_Order where TradeStatus in (1,2,3,4,5) group by MemberID) oo on oo.memberid=mm.id
+        where ifnull(mm.DelStatus,0)<![CDATA[<>2]]>
+				<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="teamID!=null">
+				and mm.teamID = ${teamID}
+				</if>
+		GROUP BY mm.id,mm.name,mm.nickname,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,mt.name 
+		order by mma.id desc,mm.status asc,mm.RegisterTime desc
+		limit ${start},${offset}		
+	</select>
+	<!-- 团队理财师分页查询 -->
+	<select id="select_paginated_for_team_member" resultMap="memberResult" parameterMap="member">
+		select mm.id,mm.name,mm.type,mm.nickname,mm.account,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,mt.name as teamName,mm.teamID FROM 
+		MC_Member mm left join MC_TeamOrOrg mto on mm.teamid=mto.id join MC_Team mt on mto.orgid=mt.id
+           where ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status<![CDATA[<>4]]>
+				<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="teamID!=null">
+				and mm.teamID = ${teamID}
+				</if>
+		limit ${start},${offset}
+	</select>
+	<!-- 机构理财师分页查询 -->
+	<select id="select_paginated_for_org_member" resultMap="memberResult" parameterMap="member">
+		select mm.id,mm.name,mm.type,mm.nickname,mm.account,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,mt.name as teamName,mm.teamID FROM 
+		MC_Member mm left join MC_TeamOrOrg mto on mm.teamid=mto.id join MC_Organization mt on mto.orgid=mt.id  
+           where ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status<![CDATA[<>4]]>
+				<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="teamID!=null">
+				and mm.teamID = ${teamID}
+				</if>
+		limit ${start},${offset}
+	</select>
+	<!-- 订单获取理财师分页查询 -->
+	<select id="select_paginated_for_order_member" resultMap="memberResult" parameterMap="member">
+		select mm.id,mm.name,mm.type,mm.nickname,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,case when mto.OrgType=1 
+		then mt.name when mto.OrgType=0 then mo.name end as teamname,mm.teamID,mto.OrgType FROM 
+		MC_Member mm left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id left join  MC_Organization mo on mto.orgid=mo.id  
+           where ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status in(2,3)
+				<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="teamID!=null">
+				and mm.teamID = ${teamID}
+				</if>
+		limit ${start},${offset}
+	</select>
+	
+	<!-- 订单获取理财师统计查询 -->
+	<select id="select_count_for_order_member" resultType="long" parameterMap="member">
+		select count(*) FROM 
+		MC_Member mm left join MC_TeamOrOrg mto on mm.teamid=mto.id left join MC_Team mt on mto.orgid=mt.id left join  MC_Organization mo on mto.orgid=mo.id  
+           where ifnull(mm.DelStatus,0)<![CDATA[<>2]]> and mm.status in(2,3)
+				<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="teamID!=null">
+				and mm.teamID = ${teamID}
+				</if>
+	</select>
+	<!-- 理财师审核查询 -->
+	<select id="select_for_check" resultMap="memberResult" parameterMap="member">
+			select mm.name,mm.idcard,date_format(mm.Birthday,'%Y-%c-%d') as Birthday,mm.MobilePhone,mma.type as checkType,mm.id,mma.id as checkId,sa.name as provinceName,saa.name as cityName,mm.nickname,
+			mm.name as checkMemberName,mma.applicantFeedback,date_format(mma.changedTime,'%Y-%c-%d %H:%I:%S') as changedTime,mm.cardImage,mm.bank,mm.card as Card,mm.gender
+			from MC_Member mm  join MC_MemberChangeApplication mma 
+			on mm.id=mma.memberID left join SC_Area sa on mm.Province=sa.id left join 
+			SC_Area saa on mm.city=saa.id
+			<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and mma.ID = ${id}
+					</if>
+					<if test="checkType!=null">
+					and mma.type = ${checkType}
+					</if>
+				</trim>
+			</where>
+	</select>
+	<!-- 查询理财师账号信息 -->
+	<select id="select_cardInfo" resultMap="memberResult" parameterMap="member">
+			select bank,bankAccout,card
+			from MC_Member
+			<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and ID = ${id}
+					</if>
+				</trim>
+			</where>
+	</select>
+
+	<!-- 理财师通用查询查询 -->
+	<select id="select" resultMap="memberResult" parameterMap="member">
+			select date_format(mm.RegisterTime,'%Y-%m-%d %H:%I:%S') as RegisterTime,mm.*,date_format(mm.Birthday,'%Y-%m-%d') as BirthdayFormat,sa.name as provinceName,saa.name as cityName,case when mto.OrgType=1 
+			then mt.name when mto.OrgType=0 then mo.name end as teamname, mm.CardImage,mci.address as contractaddress
+			from MC_Member mm left join SC_Area sa on mm.Province=sa.id left join 
+			SC_Area saa on mm.city=saa.id left join MC_TeamOrOrg mto on mm.teamid=mto.id and mto.status not in (0)
+			 left join MC_Team mt on mto.orgid=mt.id left join  MC_Organization mo on mto.orgid=mo.id left join MC_ContactInformation mci on 
+			 mm.id=mci.memberid and mci.isdefault=1
+			<where>
+				<trim prefixOverrides="and"> 
+					<if test="id!=null and id!=''">
+					and mm.ID = ${id}
+					</if>
+				</trim>
+			</where>
+	</select>
+	<!-- 理财师统计 -->
+	<select id="count" resultType="long" parameterMap="member">	
+		select count(ID) from  MC_Member where ifnull(DelStatus,0)<![CDATA[<>2]]>
+		<if test="name!=null and name!=''"> and Name like '%${name}%' </if>
+		<if test="teamID!=null and teamID!=''">
+		and teamID = ${teamID}
+		</if>
+	</select>
+	<!-- 团队理财师统计 -->
+	<select id="count_for_team_or_org_member" resultType="long" parameterMap="member">	
+		select count(mm.ID) from  MC_Member mm left join MC_TeamOrOrg mto on mm.teamid=mto.id  where ifnull(mm.DelStatus,0)<![CDATA[<>2]]>
+		and mm.status<![CDATA[<>4]]>
+		<if test="name!=null and name!=''"> and Name like '%${name}%' </if>
+		<if test="teamID!=null and teamID!=''">
+		and teamID = ${teamID}
+		</if>
+	</select>
+	<!-- 更新理财师 -->
+	<update id="update" parameterMap="member">
+		update MC_Member
+		<set>
+			<trim prefixOverrides=",">
+				<if test="name!=null and name!=''">,Name=#{name}</if>
+				<if test="postCode!=null and postCode!=''">,PostCode=#{postCode}</if>
+				<if test="status!=null">,Status=${status}</if>
+				<if test="password !=null and password!=''">,Password=#{password}</if>
+				<if test="type !=null">,Type=${type}</if>
+				<if test="delStatus!=null">,DelStatus=${delStatus}</if>
+				<if test="agreeStatus!=null">,AgreeStatus=${agreeStatus}</if>
+			</trim>
+		</set>
+		<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and ID = ${id}
+					</if>
+					<if test="teamID!=null">
+					and TeamID = ${teamID}
+					</if>
+				</trim>
+		</where>
+	</update>
+		<!-- 更新理财师所在组织 -->
+	<update id="updateForOrgOrTeam" parameterMap="member">
+	update MC_Member
+		<set>
+			<trim prefixOverrides=",">
+				<if test="type !=null">,Type=${type}</if>
+				<if test="teamID !=null">,TeamID=${teamID}</if>
+			</trim>
+		</set>
+		<where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">
+					and ID = ${id}
+					</if>
+				</trim>
+		</where>
+	</update>
+	<!-- 更新理财师状态为个人状态 -->
+	<update id="updateTeamId" parameterMap="member">
+		update MC_Member
+		<set>
+			TeamID=null,
+			type=1,
+			AgreeStatus=0
+		</set>
+		<where>
+				<trim prefixOverrides="and">
+					<if test="teamID!=null">
+					and TeamID = ${teamID}
+					</if>
+				</trim>
+		</where>
+	</update>
+	<!-- 机构暂停状态引起的人员暂停 -->
+	<update id="updateStatusForOrg" parameterMap="member">
+		update MC_Member
+		<set>
+			<if test="status!=null">Status=${status}</if>
+		</set>
+		where status=2 and TeamID = ${teamID}
+	</update>
+	<!-- 年检通过或注销成功更新理财师禁用状态为正常状态 -->
+	<update id="updateStatus" parameterMap="member">
+		update MC_Member
+		<set>
+			<if test="status!=null">Status=${status}</if>
+		</set>
+		where status=0 and TeamID = ${teamID}
+	</update>
+	<!-- 年检不通过更新理财师正常状态为禁用状态 -->
+	<update id="updateAnnualBack" parameterMap="member">
+		update MC_Member
+		<set>
+			<if test="status!=null">Status=${status}</if>
+		</set>
+		where status=2 and TeamID = ${teamID}
+	</update>
+	<!-- 更新理财师状态从团队到机构 -->
+	<update id="updateTeamToOrg" parameterMap="member">
+		update MC_Member
+		<set>
+			TeamID=${orgID}
+		</set>
+		<where>
+				<trim prefixOverrides="and">
+					<if test="teamID!=null">
+					and TeamID = ${teamID}
+					</if>
+				</trim>
+		</where>
+	</update>
+	
+	<!-- 判断理财师是否属于机构  -->
+	<select id="select_member_is_org" resultMap="memberResult"  parameterMap="member">
+		SELECT OrgID teamID FROM MC_TeamOrOrg WHERE id=${id} AND OrgType=0 AND `Status`=1 AND DelStatus=1
+	</select>
+	
+	<select id="select_member_org_for_commission" resultMap="memberResult"  parameterMap="member">
+		SELECT OrgID teamID FROM MC_TeamOrOrg WHERE id=${id} AND OrgType=0 AND DelStatus=1
+	</select>
+	
+	<!-- 判断理财师是否属于机构  -->
+	<select id="select_member_org" resultMap="memberResult"  parameterMap="member">
+		SELECT id FROM MC_Member WHERE type=2 and TeamID = ${teamID}
+	</select>
+	
+	<!-- 查询理财师联系方式 -->
+	<select id="select_member_contact" resultMap="memberResult" parameterMap="member">
+		select Name as ContactName, Address as ContactAddress, Phone as ContactPhone, Telphone as ContactTelphone, PostCode as ContactPostCode
+			from MC_ContactInformation where MemberID=${id} and IsDefault=1
+	</select>
+	
+	<!-- 理财师顾问管理导出 -->
+	<select id="select_export" resultType="java.util.Map"  parameterMap="member">
+		select 
+			mm.id,mm.name,mm.nickname,mm.account,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,DATE_FORMAT(mm.RegisterTime,'%Y-%m-%d %T') as RegisterTime
+			,case when mto.OrgType=1 then mt.name when mto.OrgType=0 then mo.name end as teamname,mm.type 
+			,count(mma.id) as checkCount , CASE WHEN ccount IS NULL THEN 0 ELSE ccount END AS clientCount
+			,CASE WHEN ocount IS NULL THEN 0 ELSE ocount END AS orderCount,mm.teamid,
+			CONCAT("********",right(IFNULL(mm.mobilePhone,""),4)) as excelMobilePhone,
+			CONCAT("*****",SUBSTRING(IFNULL(mm.account,""),INSTR(IFNULL(mm.account,""), '@'))) as excelAccount
+		FROM 
+			MC_Member mm 
+			left join MC_TeamOrOrg mto on mm.teamid=mto.id 
+			left join MC_Team mt on mto.orgid=mt.id 
+			left join MC_Organization mo on mto.orgid=mo.id  
+			left join MC_MemberChangeApplication mma on mm.id=mma.memberID and mma.Status=0 
+			left join  (select count(id) as ccount,MemberID from MC_Client group by MemberID )  cc on cc.MemberID = mm.id
+			left join  (select count(id) as ocount,memberid from TC_Order where TradeStatus in (1,2,3,4,5) group by MemberID) oo on oo.memberid=mm.id
+        where 
+        	ifnull(mm.DelStatus,0)<![CDATA[<>2]]>
+				<if test="name!=null and name!=''">
+				and mm.Name like '%${name}%' 
+				</if>
+				<if test="teamID!=null">
+				and mm.teamID = ${teamID}
+				</if>
+		GROUP BY 
+			mm.id,mm.name,mm.nickname,mm.iDCard,mm.birthday,mm.mobilePhone,mm.address,mm.status,mt.name 
+		order by 
+			mma.id desc,mm.status asc,mm.RegisterTime desc
+	</select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="memberApplication">
+	<parameterMap id="memberApplication" type="com.sw.plugins.customer.member.entity.MemberApplication"/>
+	
+	<!-- 理财师机构申请表结果集 -->
+	<resultMap id="memberApplicationResult" type="com.sw.plugins.customer.member.entity.MemberApplication">
+		<id property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="teamID" column="teamID" />
+		<result property="memeberName" column="MemeberName" />
+		<result property="nickName" column="NickName" />
+		<result property="teamName" column="TeamName" />
+		<result property="applicationTime" column="ApplicationTime" />
+		<result property="status" column="Status" />
+	</resultMap>
+	<!-- 更新理财师机构申请表申请中的状态为不通过 -->
+	<update id="update" parameterMap="memberApplication">
+		update MC_MemberApplication
+		<set>
+			status=2
+		</set>
+			where teamID = ${teamID} and status=0	
+	</update>
+	
+	<!-- 更新理财师退出机构申请 -->
+	<update id="update_member_quit_org" parameterMap="memberApplication">
+		update MC_MemberApplication
+		set status = 1
+		where ID = ${id}	
+	</update>
+	
+	<!-- 查询申请退出机构的理财师 -->
+	<select id="select_quit_org_member" resultMap="memberApplicationResult" parameterMap="memberApplication">
+		select 
+		     ma.ID,m.`Name` MemberName,m.NickName,DATE_FORMAT(ma.ApplicationTime,'%Y-%m-%d') ApplicationTime,mto.OrgType,   
+		     (case when mto.OrgType = 0 then mo.`Name` else mt.`Name` end) TeamName
+		from 
+		     MC_MemberApplication ma 
+		     left join MC_Member m on ma.ApplicationMemberID = m.ID 
+		     left join MC_TeamOrOrg mto on ma.TeamID = mto.OrgID     
+		     left join MC_Team mt on mt.ID = ma.TeamID     
+		     left join MC_Organization mo on mo.ID = ma.TeamID
+		where ma.Type = 2 and ma.Status = 3
+		<if test="memberName != null and memberName != ''">and m.`Name` like '%${memberName}%'</if>
+		order by ma.ApplicationTime DESC
+		limit ${start},${offset}
+	</select>
+	
+	<!-- 统计退出机构理财师 -->
+	<select id="count_quit_org_member" resultType="Long" parameterMap="memberApplication">
+		select 
+		     count(ma.ID)
+		from 
+		    MC_MemberApplication ma 
+		    left join MC_Member m on ma.ApplicationMemberID = m.ID 
+		where ma.Type = 2 and ma.Status = 3
+		<if test="memberName != null and memberName != ''">and m.`Name` like '%${memberName}%'</if>
+	</select>
+	
+</mapper>
