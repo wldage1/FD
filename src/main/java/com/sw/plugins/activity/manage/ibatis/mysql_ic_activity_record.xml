@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="activityRecord">
+    
+    <parameterMap type="com.sw.plugins.activity.manage.entity.ActivityRecord" id="activityRecord"/>
+    
+    <resultMap type="com.sw.plugins.activity.manage.entity.ActivityRecord" id="activityRecordResult">
+        <result property="id" column="ID"/>
+        <result property="activityId" column="ActivityID"/>
+        <result property="joinType" column="JoinType"/>
+        <result property="joinId" column="JoinID"/>
+        <result property="reserved1" column="Reserved1"/>
+        <result property="reserved2" column="Reserved2"/>
+        <result property="reserved3" column="Reserved3"/>
+        <result property="reserved4" column="Reserved4"/>
+        <result property="reserved5" column="Reserved5"/>
+        <result property="reserved6" column="Reserved6"/>
+        <result property="reserved7" column="Reserved7"/>
+        <result property="reserved8" column="Reserved8"/>
+        <result property="reserved9" column="Reserved9"/>
+        <result property="reserved10" column="Reserved10"/>
+        <result property="reserved11" column="Reserved11"/>
+        <result property="reserved12" column="Reserved12"/>
+        <result property="reserved13" column="Reserved13"/>
+        <result property="reserved14" column="Reserved14"/>
+        <result property="reserved15" column="Reserved15"/>
+        <result property="reserved16" column="Reserved16"/>
+        <result property="reserved17" column="Reserved17"/>
+        <result property="reserved18" column="Reserved18"/>
+        <result property="reserved19" column="Reserved19"/>
+        <result property="reserved20" column="Reserved20"/>
+        <result property="reserved21" column="Reserved21"/>
+        <result property="reserved22" column="Reserved22"/>
+        <result property="reserved23" column="Reserved23"/>
+        <result property="reserved24" column="Reserved24"/>
+        <result property="reserved25" column="Reserved25"/>
+        <result property="reserved26" column="Reserved26"/>
+        <result property="reserved27" column="Reserved27"/>
+        <result property="reserved28" column="Reserved28"/>
+        <result property="reserved29" column="Reserved29"/>
+        <result property="reserved30" column="Reserved30"/>
+        <result property="reserved31" column="Reserved31"/>
+        <result property="reserved32" column="Reserved32"/>
+        <result property="reserved33" column="Reserved33"/>
+        <result property="reserved34" column="Reserved34"/>
+        <result property="reserved35" column="Reserved35"/>
+        <result property="reserved36" column="Reserved36"/>
+        <result property="reserved37" column="Reserved37"/>
+        <result property="reserved38" column="Reserved38"/>
+        <result property="reserved39" column="Reserved39"/>
+        <result property="reserved40" column="Reserved40"/>
+        <result property="reserved41" column="Reserved41"/>
+        <result property="reserved42" column="Reserved42"/>
+        <result property="reserved43" column="Reserved43"/>
+        <result property="reserved44" column="Reserved44"/>
+        <result property="reserved45" column="Reserved45"/>
+    </resultMap>
+    
+</mapper>

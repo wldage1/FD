@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<activity name="活动中心" icon="images/menu/website-management.png">
+		<manage isNav="true" isSetAuth="sub" isStatus="true" name="活动管理" icon="images/menu/parameter-management-information management.png">
+			<language>
+				<value>/language/activityMessages_zh_CN.properties</value>
+			</language>
+			<create isNav="true" isLog="true" name="创建" icon="images/icon/create.png"/>
+			<modify isNav="true" isLog="true" name="修改" icon="images/icon/modify.png"/> 
+			<delete isNav="true" isLog="true" name="删除" icon="images/icon/delete.png"/>
+			<statistics isNav="true" isLog="true" name="统计" icon="images/icon/detail.png"/>
+			<switch isNav="true" isLog="true" name="活动开始" icon="images/icon/detail.png"/>
+		</manage>
+	</activity>
+</plugins>

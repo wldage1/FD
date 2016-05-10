@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="activityRecordN5">
+    
+    <parameterMap type="com.sw.plugins.activity.manage.entity.ActivityRecord" id="activityRecord"/>
+    
+    <resultMap type="com.sw.plugins.activity.manage.entity.ActivityRecord" id="activityRecordResult">
+        <result property="id" column="ID"/>
+        <result property="activityId" column="ActivityID"/>
+        <result property="joinType" column="JoinType"/>
+        <result property="joinId" column="JoinID"/>
+        <result property="reserved1" column="Reserved1"/>
+        <result property="reserved2" column="Reserved2"/>
+        <result property="reserved3" column="Reserved3"/>
+        <result property="reserved4" column="Reserved4"/>
+        <result property="reserved5" column="Reserved5"/>
+        <result property="reserved6" column="Reserved6"/>
+        <result property="reserved7" column="Reserved7"/>
+        <result property="reserved8" column="Reserved8"/>
+        <result property="reserved9" column="Reserved9"/>
+        <result property="reserved10" column="Reserved10"/>
+        <result property="reserved11" column="Reserved11"/>
+        <result property="reserved12" column="Reserved12"/>
+        <result property="reserved13" column="Reserved13"/>
+        <result property="reserved14" column="Reserved14"/>
+        <result property="reserved15" column="Reserved15"/>
+        <result property="reserved16" column="Reserved16"/>
+        <result property="reserved17" column="Reserved17"/>
+        <result property="reserved18" column="Reserved18"/>
+        <result property="reserved19" column="Reserved19"/>
+        <result property="reserved20" column="Reserved20"/>
+        <result property="reserved21" column="Reserved21"/>
+        <result property="reserved22" column="Reserved22"/>
+        <result property="reserved23" column="Reserved23"/>
+        <result property="reserved24" column="Reserved24"/>
+        <result property="reserved25" column="Reserved25"/>
+        <result property="reserved26" column="Reserved26"/>
+        <result property="reserved27" column="Reserved27"/>
+        <result property="reserved28" column="Reserved28"/>
+        <result property="reserved29" column="Reserved29"/>
+        <result property="reserved30" column="Reserved30"/>
+        <result property="reserved31" column="Reserved31"/>
+        <result property="reserved32" column="Reserved32"/>
+        <result property="reserved33" column="Reserved33"/>
+        <result property="reserved34" column="Reserved34"/>
+        <result property="reserved35" column="Reserved35"/>
+        <result property="reserved36" column="Reserved36"/>
+        <result property="reserved37" column="Reserved37"/>
+        <result property="reserved38" column="Reserved38"/>
+        <result property="reserved39" column="Reserved39"/>
+        <result property="reserved40" column="Reserved40"/>
+        <result property="reserved41" column="Reserved41"/>
+        <result property="reserved42" column="Reserved42"/>
+        <result property="reserved43" column="Reserved43"/>
+        <result property="reserved44" column="Reserved44"/>
+        <result property="reserved45" column="Reserved45"/>
+    </resultMap>
+    
+    <select id="select_paginated_list" resultMap="activityRecordResult" parameterMap="activityRecord">
+        select a.ID, a.JoinID, a.Reserved6, a.Reserved41, a.Reserved42, Reserved43, Reserved44,
+        	m.Name as MemberName, m.NickName as MemberNickName, m.MobilePhone as MemberPhone, m.Status as MemberStatus,
+        	a.Reserved36, a.Reserved37, a.Reserved38, a.Reserved39, a.Reserved40,
+        	a.Reserved1, a.Reserved2, a.Reserved3, a.Reserved4, a.Reserved5
+        from IC_ActivityRecord a left join MC_Member m on a.JoinID = m.ID
+        where a.ActivityID = ${activityId}
+        <if test="memberPhone!=null and memberPhone!=''">and m.MobilePhone = #{memberPhone}</if>
+        <if test="reserved41!=null">and a.Reserved41 = ${reserved41}</if>
+        <if test="reserved44!=null">and a.Reserved44 = ${reserved44}</if>
+        <if test="reserved36!=null">
+            and a.Reserved36 = ${reserved36}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved26 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved26 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved26 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved37!=null">
+            and a.Reserved37 = ${reserved37}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved27 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved27 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved27 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved38!=null">
+            and a.Reserved38 = ${reserved38}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved28 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved28 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved28 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved39!=null">
+            and a.Reserved39 = ${reserved39}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved29 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved29 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved29 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved40!=null">
+            and a.Reserved40 = ${reserved40}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved30 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved30 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved30 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+    </select>
+    
+    <select id="select_paginated_count" resultType="long" parameterMap="activityRecord">
+        select count(a.ID) from IC_ActivityRecord a left join MC_Member m on a.JoinID = m.ID
+        where ActivityID = ${activityId}
+        <if test="memberPhone!=null and memberPhone!=''">and m.MobilePhone = #{memberPhone}</if>
+        <if test="reserved41!=null">and a.Reserved41 = ${reserved41}</if>
+        <if test="reserved44!=null">and a.Reserved44 = ${reserved44}</if>
+        <if test="reserved36!=null">
+            and a.Reserved36 = ${reserved36}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved26 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved26 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved26 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved37!=null">
+            and a.Reserved37 = ${reserved37}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved27 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved27 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved27 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved38!=null">
+            and a.Reserved38 = ${reserved38}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved28 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved28 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved28 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved39!=null">
+            and a.Reserved39 = ${reserved39}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved29 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved29 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved29 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+        <if test="reserved40!=null">
+            and a.Reserved40 = ${reserved40}
+            <if test="(reserved34 != null and reserved34 != '') and (reserved35 == null or reserved35 == '')">
+			    and a.Reserved30 >= #{reserved34}
+			</if>
+			<if test="(reserved35 != null and reserved35 != '') and (reserved34 == null or reserved34 == '')">
+			    <![CDATA[and a.Reserved30 <= #{reserved35}]]>
+			</if>
+			<if test="reserved34 != null and reserved34 != '' and reserved35 != null and reserved35 != ''">
+			    <![CDATA[and a.Reserved30 between #{reserved34} and #{reserved35}]]>
+			</if>
+        </if>
+    </select>
+    
+    <select id="select_order_time" resultType="string" parameterMap="activityRecord">
+        select min(PayTime) from TC_Order
+        where MemberID = ${joinId} and TradeStatus = 4 
+        	and OrderTime between #{activityStartTime} and #{activityEndTime}
+			and PayTime between #{activityStartTime} and #{reserved33}
+    </select>
+    
+    <select id="select_order_history_time" resultType="string" parameterMap="activityRecord">
+        select min(PayTime) from TC_OrderHistory
+        where MemberID = ${joinId} and TradeStatus = 7
+        	and OrderTime between #{activityStartTime} and #{activityEndTime}
+			and PayTime between #{activityStartTime} and #{reserved33}
+    </select>
+    
+    <select id="select_quartz" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select *
+		from  MC_Member
+		where  now() between DATE_ADD(RegisterTime,INTERVAL 2 DAY) and  DATE_ADD(RegisterTime,INTERVAL 3 DAY)
+		and   Status = 1
+    </select>
+    
+    <update id="update" parameterMap="activityRecord">
+        update IC_ActivityRecord
+        <set>
+            <trim prefixOverrides=",">
+	            <if test="reserved1!=null and reserved1!=''">,Reserved1=#{reserved1}</if>
+	            <if test="reserved2!=null and reserved2!=''">,Reserved2=#{reserved2}</if>
+	            <if test="reserved3!=null and reserved3!=''">,Reserved3=#{reserved3}</if>
+	            <if test="reserved4!=null and reserved4!=''">,Reserved4=#{reserved4}</if>
+	            <if test="reserved5!=null and reserved5!=''">,Reserved5=#{reserved5}</if>
+	            <if test="reserved6!=null and reserved6!=''">,Reserved6=#{reserved6}</if>
+	            <if test="reserved11!=null and reserved11!=''">,Reserved11=#{reserved11}</if>
+	            <if test="reserved12!=null and reserved12!=''">,Reserved12=#{reserved12}</if>
+	            <if test="reserved13!=null and reserved13!=''">,Reserved13=#{reserved13}</if>
+	            <if test="reserved14!=null and reserved14!=''">,Reserved14=#{reserved14}</if>
+	            <if test="reserved15!=null and reserved15!=''">,Reserved15=#{reserved15}</if>
+	            <if test="reserved26!=null and reserved26!=''">,Reserved26=#{reserved26}</if>
+	            <if test="reserved27!=null and reserved27!=''">,Reserved27=#{reserved27}</if>
+	            <if test="reserved28!=null and reserved28!=''">,Reserved28=#{reserved28}</if>
+	            <if test="reserved29!=null and reserved29!=''">,Reserved29=#{reserved29}</if>
+	            <if test="reserved30!=null and reserved30!=''">,Reserved30=#{reserved30}</if>
+	            <if test="reserved31!=null and reserved31!=''">,Reserved31=#{reserved31}</if>
+	            <if test="reserved32!=null and reserved32!=''">,Reserved32=#{reserved32}</if>
+	            <if test="reserved36!=null">,Reserved36=${reserved36}</if>
+	            <if test="reserved37!=null">,Reserved37=${reserved37}</if>
+	            <if test="reserved38!=null">,Reserved38=${reserved38}</if>
+	            <if test="reserved39!=null">,Reserved39=${reserved39}</if>
+	            <if test="reserved40!=null">,Reserved40=${reserved40}</if>
+	            <if test="reserved41!=null">,Reserved41=${reserved41}</if>
+	            <if test="reserved42!=null">,Reserved42=${reserved42}</if>
+	            <if test="reserved43!=null">,Reserved43=${reserved43}</if>
+	            <if test="reserved44!=null">,Reserved44=${reserved44}</if>
+            </trim>
+        </set>
+        where ID=${id}
+    </update>
+    
+    <update id="update_n4_n5" parameterMap="activityRecord">
+        update IC_ActivityRecord
+        <set>
+            <trim prefixOverrides=",">
+	            <if test="reserved4!=null and reserved4!=''">,Reserved4=#{reserved4}</if>
+	            <if test="reserved5!=null and reserved5!=''">,Reserved5=#{reserved5}</if>
+	            <if test="reserved29!=null and reserved29!=''">,Reserved29=#{reserved29}</if>
+	            <if test="reserved30!=null and reserved30!=''">,Reserved30=#{reserved30}</if>
+	            <if test="reserved39!=null">,Reserved39=${reserved39}</if>
+	            <if test="reserved40!=null">,Reserved40=${reserved40}</if>
+            </trim>
+        </set>
+        where JoinID=${joinId}
+    </update>
+    
+    <select id="select_n4" resultMap="activityRecordResult" parameterMap="activityRecord">
+        select distinct a.JoinID, a.Reserved42 from (
+        	select c.JoinID, c.Reserved42, d.PayAmount from IC_ActivityRecord c left join (
+	       		(select MemberID, PayAmount from TC_Order
+	       		where TradeStatus=4 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+	   			union all
+	   			(select MemberID, PayAmount from TC_OrderHistory
+	   			where TradeStatus=7 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+        	) d on c.JoinID = d.MemberID and c.Reserved44 = 1
+		) a where a.PayAmount = (
+        	select max(b.PayAmount) from (
+        		select e.JoinID, e.Reserved42, f.PayAmount from IC_ActivityRecord e left join (
+	        		(select MemberID, PayAmount from TC_Order
+		       		where TradeStatus=4 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+		   			union all
+		   			(select MemberID, PayAmount from TC_OrderHistory
+		   			where TradeStatus=7 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+        		) f on e.JoinID = f.MemberID and e.Reserved44 = 1
+   			) b
+       	) and a.PayAmount >= 500000000
+    </select>
+   
+    <select id="select_n5" resultMap="activityRecordResult" parameterMap="activityRecord">
+        select a.JoinID, a.Reserved42 from (
+			select b.JoinID, b.Reserved42, sum(b.PayAmount)AS PayAmount from (
+				select e.JoinID, e.Reserved42, f.PayAmount from IC_ActivityRecord e left join (
+					(select MemberID, PayAmount from TC_Order
+		       		where TradeStatus=4 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+		   			union all 
+		   			(select MemberID, PayAmount from TC_OrderHistory
+		   			where TradeStatus=7 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+				) f on e.JoinID = f.MemberID and e.Reserved44 = 1
+			)b group by b.JoinID
+		) a where a.PayAmount =(
+			select max(d.PayAmount) from (
+				select c.JoinID, c.Reserved42, sum(c.PayAmount)AS PayAmount from (
+					select g.JoinID, g.Reserved42, h.PayAmount from IC_ActivityRecord g left join (
+						(select MemberID, PayAmount from TC_Order
+			       		where TradeStatus=4 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+			   			union all 
+			   			(select MemberID, PayAmount from TC_OrderHistory
+			   			where TradeStatus=7 and OrderTime between #{activityStartTime} and #{activityEndTime} and PayTime between #{activityStartTime} and #{reserved33})
+			   		) h on g.JoinID = h.MemberID and g.Reserved44 = 1
+				) c group by c.JoinID
+			) d
+		) and a.PayAmount >= 5000000000
+    </select>
+    
+</mapper>
