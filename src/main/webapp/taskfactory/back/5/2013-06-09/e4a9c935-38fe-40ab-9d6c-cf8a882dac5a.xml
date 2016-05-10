@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<taskdoc id="e4a9c935-38fe-40ab-9d6c-cf8a882dac5a">
+  <info>
+    <createTime>2013-06-09</createTime>
+    <creator>5</creator>
+    <handleBalance>1</handleBalance>
+  </info>
+  <task type="2">
+    <operation>UPDATE</operation>
+    <tableName>SM_Role</tableName>
+    <fieldValues>Name='v1',Description='test task bean insert',OrgId='1'</fieldValues>
+    <params>Name='v1'</params>
+  </task>
+</taskdoc>
