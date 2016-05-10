@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	index: 权限英文编码
+	code:权限代码
+	name:权限中文描述
+	level:权限层级 
+	isLog:是否需要写入系统日志（true/false）
+	isNav:是否有导航信息（true/false）
+	isHelp:是否有帮助信息（true/false）
+	isSetAuth:是否具有下级子权限
+	isStatus:是否记录状态
+	controller:权限控制URL
+	isDynamic="true?false":是否是动态创建功能，数据库中对应type: 1：是 0：不是(默认)
+	isAuthority:是否需要功能授权
+-->
+<plugins>
+	<cooperate name="合作公司管理" icon="images/menu/jjgs-management.png"> 
+		<user isNav="true"  isSetAuth="sub" isStatus="true" name="居间公司用户管理" isHelp="true" icon="images/menu/jjgs-management-user management.png">
+			<language>
+				<value>/language/userMessages_zh_CN.properties</value>
+				<value>/language/userMessages_en_US.properties</value>
+			</language>
+			<create isDynamic="false" isNav="true" isLog="true" name="创建"/>
+			<modify isNav="true" isLog="true" name="修改"/>
+			<bind isNav="true" isLog="true" name="绑定角色"/>
+			<cpwd isNav="true" isLog="true" name="修改密码"/>
+			<delete isNav="true" isLog="true" name="删除"/>
+			<dataauth isNav="true" isLog="true" name="数据授权"/>
+		</user>
+	</cooperate>
+</plugins>

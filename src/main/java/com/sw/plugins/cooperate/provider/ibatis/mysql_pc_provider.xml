@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="provider">
+    
+    <parameterMap type="com.sw.plugins.cooperate.provider.entity.Provider" id="provider" />
+	
+    <!-- 供应商结果集 -->
+    <resultMap type="com.sw.plugins.cooperate.provider.entity.Provider" id="providerResult">
+        <result property="id" column="ID"/>
+        <result property="name" column="Name"/>
+        <result property="shortName" column="ShortName"/>
+        <result property="logo" column="Logo"/>
+        <result property="discription" column="Discription"/>
+        <result property="companyType" column="CompanyType"/>
+        <result property="status" column="Status"/>
+        <result property="delStatus" column="DelStatus"/>
+        <result property="createDate" column="CreateDate"/>
+        <result property="substantialShareholder" column="SubstantialShareholder"/>
+        <result property="registeredCapital" column="RegisteredCapital"/>
+        <result property="latestAssetSize" column="LatestAssetSize"/>
+        <result property="companiesRegistryAddress" column="CompaniesRegistryAddress"/>
+        <result property="awards" column="Awards"/>
+        <result property="sortNum" column="SortNum"/>
+    </resultMap>
+    
+    <!-- 供应商统计查询 -->
+    <select id="count" resultType="long" parameterMap="provider">
+        select count(id) from PC_Provider
+        	where DelStatus = ${delStatus}
+            	<if test="name!=null and name!=''">and Name like '%${name}%'</if>
+    </select>
+    
+    <!-- 供应商分页查询 -->
+    <select id="selectPagintedList" resultMap="providerResult" parameterMap="provider"> 
+	 select ID, Name, ShortName, companyType, Status,(select count(1) from PM_Product pmp where pmp.ProviderID= pcp.id) as Productcount ,SortNum
+	 from PC_Provider pcp
+	        where pcp.DelStatus = ${delStatus}
+	            <if test="name!=null and name!=''">and pcp.Name like '%${name}%'</if>
+	        		limit ${start},${offset}
+    </select>
+    
+    <!-- 供应商查询 -->
+    <select id="selectList" resultMap="providerResult" parameterMap="provider"> 
+	 select ID, Name, ShortName, CompanyType
+	 from PC_Provider pcp
+	 where pcp.DelStatus = ${delStatus} and pcp.Status = ${status}       
+    </select>
+    
+    <!-- 供应商单个查询 -->
+    <select id="selectOne" resultMap="providerResult" parameterMap="provider">
+        select ID, Name, ShortName, Logo, Discription, companyType, Status,CreateDate,SubstantialShareholder,RegisteredCapital,LatestAssetSize,CompaniesRegistryAddress,Awards from PC_Provider
+        <where>
+            <if test="id!=null and id!=''">ID = ${id}</if>
+        </where>
+    </select>
+    
+    <!-- 新增供应商 -->
+    <insert id="insert" parameterMap="provider">
+        insert into PC_Provider
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="name!=null and name!=''">,Name</if>
+            <if test="shortName!=null and shortName!=''">,ShortName</if>
+            <if test="logo!=null and logo!=''">,Logo</if>
+            <if test="discription!=null and discription!=''">,Discription</if>
+            <if test="companyType!=null and companyType!=''">,CompanyType</if>
+            <if test="status!=null">,Status</if>
+            <if test="delStatus!=null">,DelStatus</if>
+            <if test="createDate!=null and createDate!=''">,CreateDate</if>
+            <if test="substantialShareholder!=null and substantialShareholder!=''">,SubstantialShareholder</if>
+            <if test="registeredCapital!=null and registeredCapital!=''">,RegisteredCapital</if>
+            <if test="latestAssetSize!=null and latestAssetSize!=''">,LatestAssetSize</if>
+            <if test="companiesRegistryAddress!=null and companiesRegistryAddress!=''">,CompaniesRegistryAddress</if>
+            <if test="awards!=null and awards!=''">,Awards</if>
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+            <if test="name!=null and name!=''">,#{name}</if>
+            <if test="shortName!=null and shortName!=''">,#{shortName}</if>
+            <if test="logo!=null and logo!=''">,#{logo}</if>
+            <if test="discription!=null and discription!=''">,#{discription}</if>
+            <if test="companyType!=null and companyType!=''">,${companyType}</if>
+            <if test="status!=null">,${status}</if>
+            <if test="delStatus!=null">,${delStatus}</if>
+            <if test="createDate!=null and createDate!=''">,#{createDate}</if>
+            <if test="substantialShareholder!=null and substantialShareholder!=''">,#{substantialShareholder}</if>
+            <if test="registeredCapital!=null and registeredCapital!=''">,#{registeredCapital}</if>
+            <if test="latestAssetSize!=null and latestAssetSize!=''">,#{latestAssetSize}</if>
+            <if test="companiesRegistryAddress!=null and companiesRegistryAddress!=''">,#{companiesRegistryAddress}</if>
+            <if test="awards!=null and awards!=''">,#{awards}</if>
+        </trim>
+    </insert>
+    
+    <!-- 供应商修改 -->
+    <update id="update" parameterMap="provider">
+        update PC_Provider
+        <set>
+            <trim prefixOverrides=",">
+	            <if test="name!=null and name!=''">,Name=#{name}</if>
+	            <if test="shortName!=null and shortName!=''">,ShortName=#{shortName}</if>
+	            <if test="logo!=null and logo!=''">,Logo=#{logo}</if>
+	            <if test="discription!=null">,Discription=#{discription}</if>
+	            <if test="companyType!=null and companyType!=''">,CompanyType=${companyType}</if>
+	            <if test="status!=null">,Status=${status}</if>
+	            <if test="createDate!=null and createDate!=''">,CreateDate=#{createDate}</if>
+	            <if test="substantialShareholder!=null">,SubstantialShareholder=#{substantialShareholder}</if>
+	            <if test="registeredCapital!=null">,RegisteredCapital=#{registeredCapital}</if>
+	            <if test="latestAssetSize!=null">,LatestAssetSize=#{latestAssetSize}</if>
+	            <if test="companiesRegistryAddress!=null">,CompaniesRegistryAddress=#{companiesRegistryAddress}</if>
+	            <if test="awards!=null">,Awards=#{awards}</if>
+	            <if test="sortNum!=null and sortNum!=''">,SortNum=#{sortNum}</if>
+            </trim>
+        </set>
+        where ID=${id}
+    </update>
+    
+    <!-- 删除供应商 -->
+    <update id="delete" parameterMap="provider">
+        update PC_Provider set DelStatus = ${delStatus} where ID = ${id}
+    </update>
+    
+    <!-- 查询供应商最大ID -->
+    <select id="selectMaxId" resultType="long" parameterMap="provider">
+        select max(id) from PC_Provider
+    </select>
+        
+</mapper>

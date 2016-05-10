@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+	"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="providerUser">
+    
+    <parameterMap type="com.sw.plugins.cooperate.provider.entity.ProviderUser" id="providerUser" />
+	
+    <!-- 供应商用户结果集 -->
+    <resultMap type="com.sw.plugins.cooperate.provider.entity.ProviderUser" id="providerUserResult">
+        <result property="id" column="ID"/>
+        <result property="providersID" column="ProvidersID"/>
+        <result property="account" column="Account"/>
+        <result property="name" column="Name"/>
+        <result property="type" column="Type"/>
+        <result property="authorization" column="Authorization"/>
+        <result property="password" column="Password"/>
+        <result property="gender" column="Gender"/>
+        <result property="status" column="Status"/>
+        <result property="birthday" column="Birthday"/>
+        <result property="head" column="Head"/>
+        <result property="individualitySignature" column="IndividualitySignature"/>
+        <result property="mobilePhone" column="MobilePhone"/>
+        <result property="officePhone" column="OfficePhone"/>
+        <result property="email" column="Email"/>
+        <result property="description" column="Description"/>
+        <result property="style" column="Style"/>
+        <result property="officePhone" column="OfficePhone"/>
+        <result property="receiverID" column="ReceiverID"/>
+    </resultMap>
+    
+    <!-- 供应商用户统计查询 -->
+    <select id="count" resultType="long" parameterMap="providerUser">
+        select count(id) from PC_ProviderUser
+            <where>
+				<trim prefixOverrides="and">
+					<if test="name!=null and name!=''">and Name like '%${name}%'</if>
+					<if test="providersID!=null and providersID!=''">and providersID=${providersID}</if>
+				</trim>
+			</where>
+			
+    </select>
+    <!-- 供应商用户登陆帐号统计查询 -->
+    <select id="countforaccount" resultType="long" parameterMap="providerUser">
+        select count(id) from PC_ProviderUser 
+        <where>
+			<trim prefixOverrides="and">
+			<if test="account!=null and account!=''">and account=#{account}</if>
+			<if test="id!=null and id!=''">and id!=${id}</if>
+			</trim>
+		</where>	
+    </select>
+    
+    <!-- 供应商用户分页查询 -->
+    <select id="selectPagintedList" resultMap="providerUserResult" parameterMap="providerUser">
+        select id,providersID,account,name,mobilePhone,authorization,password,gender,description,status from PC_ProviderUser
+        	<where>
+				<trim prefixOverrides="and">
+					<if test="name!=null and name!=''">and Name like '%${name}%'</if>
+					<if test="providersID!=null and providersID!=''">and providersID=${providersID}</if>
+				</trim>
+			</where>
+			order by id desc
+			limit ${start},${offset}
+    </select>
+    
+    <!-- 供应商用户单个查询 -->
+    <select id="selectOne" resultMap="providerUserResult" parameterMap="providerUser">
+        select * from PC_ProviderUser
+        <where>
+            <if test="id!=null and id!=''">ID = ${id}</if>
+        </where>
+        
+    </select>
+    
+    <!-- 新增供应商用户 -->
+    <insert id="insert" parameterMap="providerUser">
+        insert into PC_ProviderUser
+        <trim prefix="(" prefixOverrides="," suffix=")">
+        	<if test="providersID!=null">,ProvidersID</if>
+            <if test="account!=null and account!=''">,Account</if>
+            <if test="name!=null and name!=''">,Name</if>
+            <if test="mobilePhone!=null and mobilePhone!=''">,MobilePhone</if>
+            <if test="authorization!=null and authorization!=''">,Authorization</if>
+            <if test="password!=null and password!=''">,Password</if>
+            <if test="gender!=null">,Gender</if>
+            <if test="description!=null and description!=''">,Description</if>
+            ,Status,CreateTime
+            <!-- 
+            <if test="type!=null and type!=''">,type</if>
+            <if test="birthday!=null and birthday!=''">,birthday</if>
+            <if test="head!=null and head!=''">,head</if>
+            <if test="individualitySignature!=null and individualitySignature!=''">,individualitySignature</if>  
+            <if test="officePhone!=null and officePhone!=''">,officePhone</if>
+            <if test="email!=null and email!=''">,email</if>
+            <if test="style!=null and style!=''">,style</if> -->
+        </trim>
+        values
+        <trim prefix="(" prefixOverrides="," suffix=")">
+        	<if test="providersID!=null ">,#{providersID}</if>
+         	<if test="account!=null and account!=''">,#{account}</if>
+            <if test="name!=null and name!=''">,#{name}</if>
+       		<if test="mobilePhone!=null and mobilePhone!=''">,#{mobilePhone}</if>
+            <if test="authorization!=null and authorization!=''">,#{authorization}</if>
+            <if test="password!=null and password!=''">,#{password}</if>
+            <if test="gender!=null">,#{gender}</if>
+            <if test="description!=null and description!=''">,#{description}</if>
+            ,1,NOW()
+            <!-- 
+            
+            <if test="type!=null and type!=''">,#{type}</if>
+            <if test="birthday!=null and birthday!=''">,#{birthday}</if>
+            <if test="head!=null and head!=''">,#{head}</if>
+            <if test="individualitySignature!=null and individualitySignature!=''">,#{individualitySignature}</if>
+            <if test="officePhone!=null and officePhone!=''">,#{officePhone}</if>
+            <if test="email!=null and email!=''">,#{email}</if>
+            
+            <if test="style!=null and style!=''">,#{style}</if> -->
+        </trim>
+    </insert>
+    
+    <!-- 供应商用户修改 -->
+    <update id="update" parameterMap="providerUser">
+        update PC_ProviderUser
+        <set>
+            <trim prefixOverrides=",">
+            <if test="account!=null">,account=#{account}</if>
+            <if test="name!=null">,name=#{name}</if>
+            <if test="authorization!=null">,authorization=#{authorization}</if>
+            <if test="gender!=null">,gender=#{gender}</if>
+            <if test="password!=null">,password=#{password}</if>
+            <if test="mobilePhone!=null">,mobilePhone=#{mobilePhone}</if>
+            <if test="description!=null">,description=#{description}</if>
+            ,ModifyTime=NOW()
+            <if test="status!=null">,status=#{status}</if>
+            <!--  
+            <if test="type!=null and type!=''">,type=#{type}</if>
+            <if test="birthday!=null and birthday!=''">,birthday=#{birthday}</if>
+            <if test="head!=null and head!=''">,head=#{head}</if>
+            <if test="individualitySignature!=null and individualitySignature!=''">,individualitySignature=#{individualitySignature}</if>
+            <if test="officePhone!=null and officePhone!=''">,officePhone=#{officePhone}</if>
+            <if test="email!=null and email!=''">,email=#{email}</if>
+            <if test="style!=null and style!=''">,style=#{style}</if> -->
+            </trim>
+        </set>
+        <where>
+				<trim prefixOverrides="and">
+					<if test="id!=null and id!=''">and ID=${id}</if>
+					<if test="providersID!=null and providersID!=''">and providersID=${providersID}</if>
+				</trim>
+		</where>
+    </update>     
+    
+    <!-- 查询所有供应商用户 -->
+    <select id="selectList" resultMap="providerUserResult" parameterMap="providerUser">
+             select id,providersID,account,name,mobilePhone,authorization,password,gender,description,status,c.ReceiverID from PC_ProviderUser  p 
+             left join MM_MessageReceiverConfig c on p.ID = c.ReceiverID and c.ReceiverType=2 and c.MessageTaskID=${taskID} where p.Status=1
+			order by id desc
+    </select>
+    <!-- 供应商用户删除 -->
+	<delete id="delete" parameterMap="providerUser">
+		delete from PC_ProviderUser
+		<where>
+			<trim prefixOverrides="and">
+				<if test="providersID!=null">
+					and providersID=${providersID}
+				</if>		
+			</trim>
+		</where>		
+	</delete>
+</mapper>
