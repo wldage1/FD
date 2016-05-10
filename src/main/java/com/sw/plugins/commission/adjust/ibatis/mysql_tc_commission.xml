@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="commission">
+
+<parameterMap id="commission" type="com.sw.plugins.commission.adjust.entity.Commission" />
+
+	<resultMap id="commissionResult" type="com.sw.plugins.commission.adjust.entity.Commission">
+		<result property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="orderID" column="OrderID" />
+		<result property="memberID" column="MemberID" />
+		<result property="teamID" column="TeamID" />
+		<result property="orgID" column="OrgID" />
+		<result property="productID" column="ProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="holdlingPhase" column="HoldlingPhase" />
+		<result property="issuanceCostRate" column="IssuanceCostRate" />
+		<result property="timeCoefficient" column="TimeCoefficient" />
+		<result property="serviceChargeCoefficient" column="ServiceChargeCoefficient" />
+		<result property="incentiveFeeRate" column="IncentiveFeeRate" />
+		<result property="commissionProportion" column="CommissionProportion" />
+		<result property="commission" column="Commission" />
+		<result property="payCommission" column="PayCommission" />
+		<result property="agreementTemplateID" column="AgreementTemplateID" />
+		<result property="orgContractID" column="OrgContractID" />
+		<result property="payStatus" column="PayStatus" />
+		<result property="checkRatifyTime" column="CheckRatifyTime" />
+		<result property="auditingTime" column="AuditingTime" />
+		<result property="auditingRemark" column="AuditingRemark" />
+		<result property="exportStatus" column="ExportStatus" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="isPay" column="IsPay" />
+		<result property="deadlineDataType" column="DeadlineDataType" />
+		<!--   历史订单表   -->
+		<association property="orderHistory" column="orderID" javaType="com.sw.plugins.market.order.entity.Order" resultMap="orderResult"/>
+	</resultMap>
+	
+	<resultMap id="orderResult" type="com.sw.plugins.market.order.entity.Order">
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="clientName" column="ClientName" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="clientName" column="ClientName" />
+		<result property="deadline" column="Deadline" />
+		<result property="profitRatio" column="ProfitRatio" />
+		<result property="orderTime" column="OrderTime" />
+		<result property="payMoneyStopTime" column="PayMoneyStopTime" />
+		<result property="share" column="Share" />
+		<result property="payTime" column="payTime" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="assignedShare" column="assignedShare" />
+		<result property="payProgress" column="PayProgress" />
+		<result property="remark" column="Remark" />
+	</resultMap>
+	
+	<!-- 列出查询产品的所有收益权和存续阶段  -->
+	<select id="select_subProduct_holdlingPhase" resultMap="commissionResult"  parameterMap="commission">
+		select
+			pc.ID,
+			sp.ID subProductID,
+			pc.HoldlingPhase,
+			pc.EffectiveDate,
+			sp.type subProductName,
+			p.ShortName productName,
+			pc.MaxShareThreshold maxShareThreshold,
+			pc.MinShareThreshold minShareThreshold,p.id as ProductID
+		from PM_ProductCommissionRatio pc join PM_SubProduct sp on pc.SubProductID=sp.ID
+			join PM_Product p on p.ID=sp.ProductID 
+		WHERE
+			<if test="productID == null"> p.Type IN (2,5) </if>
+			<if test="productID != null"> ((p.Type NOT IN (2,5) AND pc.IsAvailable=1) or (p.Type IN (2,5))) </if>
+			<if test="productID != null"> and sp.ProductID = ${productID}</if>
+			<if test="orgID != null"> and p.OrgID = ${orgID}</if>
+			<if test="proMark== 2"> and <![CDATA[pc.EffectiveDate< now()]]><![CDATA[]]></if>
+	</select>
+	
+	<!-- 按状态查询订单数  -->
+	<select id="select_adjust_order_count" resultType="long"  parameterMap="commission">
+		select count(c.ID) 
+		from TC_Commission c join TC_OrderHistory oh on c.OrderID = oh.ID 
+		WHERE c.SubProductID = ${subProductID} 
+		<if test="minShareThreshold != null and maxShareThreshold != null">
+			and c.PayAmount>=${minShareThreshold}
+		<![CDATA[ and c.PayAmount<=${maxShareThreshold} ]]>
+		<![CDATA[]]>
+		</if>
+		<if test="minShareThreshold != null and maxShareThreshold == null">
+			and c.PayAmount>=${minShareThreshold}
+		</if>
+		<if test="payStatusCollection!=null">
+				<![CDATA[ and c.PayStatus in ]]> 
+					<foreach item="item" index="index" collection="payStatusCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+		</if>
+		<if test="tradeTypeCollection!=null">
+			<![CDATA[ and oh.tradeType in ]]> 
+				<foreach item="item" index="index" collection="tradeTypeCollection" open="(" separator="," close=")">   
+		       	 	${item}
+		    	</foreach> 
+			<![CDATA[]]>
+		</if>
+	</select>
+	<!-- 查询未处理订单数  -->
+	<select id="select_order_notdo" resultType="long"  parameterMap="commission">
+		select count(ID) 
+		from TC_Commission 
+		WHERE PayStatus in (0,1,2,3,5,6)
+		<if test="memberID != null and memberID !=''">
+			and memberID =${memberID}
+		</if>
+		<if test="teamID != null and teamID !=''">
+			and teamID =${teamID}
+		</if>
+		<if test="orgID != null and orgID !=''">
+			and orgID =${orgID}
+		</if>
+	</select>
+	
+	<!-- 子列表查询  -->
+	<select id="select_paginated" resultMap="commissionResult"  parameterMap="commission">
+		select c.ID, oh.OrderNumber orderNumber, oh.ContractNumber, oh.ClientName, CONCAT(m.Name,'(', m.NickName, ')') memberName, c.PayAmount/1000000 payAmount, 
+			concat(CAST(c.CommissionProportion*100 as decimal(38, 4)),'%') commissionProportionStr, c.Commission commission, c.PayStatus, sp.type subProductName, c.HoldlingPhase, 
+			p.ShortName productShortName, CASE WHEN so.OrgType = 0 then mo.ShortName END orgShortName, oh.ID orderID
+		from TC_Commission c LEFT JOIN TC_OrderHistory oh ON c.OrderID=oh.ID 
+			LEFT JOIN MC_Member m ON oh.MemberID=m.ID 
+			LEFT JOIN MC_TeamOrOrg so ON oh.teamID=so.ID
+			LEFT JOIN PM_SubProduct sp ON sp.ID=c.SubProductID 
+			LEFT JOIN PM_Product p ON p.ID=c.ProductID 
+			LEFT JOIN MC_Organization mo ON mo.ID=so.OrgID
+		<where>
+			oh.TradeStatus = 7 and oh.PayProgress=2
+			<if test="orgID != null">and c.OrgID=${ orgID}</if>
+			<if test="tradeTypeCollection!=null">
+				<![CDATA[ and oh.tradeType in ]]> 
+					<foreach item="item" index="index" collection="tradeTypeCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="payStatusCollection!=null">
+				<![CDATA[ and c.PayStatus in ]]> 
+					<foreach item="item" index="index" collection="payStatusCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="subProductID!=null ">and c.SubProductID = ${subProductID}</if>
+			<if test="minShareThreshold != null and maxShareThreshold != null">
+				and c.PayAmount>=${minShareThreshold}
+			<![CDATA[ and c.PayAmount<=${maxShareThreshold} ]]>
+			<![CDATA[]]>
+			</if>
+			<if test="minShareThreshold != null and maxShareThreshold == null">
+				and c.PayAmount>=${minShareThreshold}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterMap="commission">
+		insert into TC_Commission
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="orderID!=null">, OrderID</if>
+	 		<if test="memberID!=null">, MemberID</if>
+	 		<if test="teamID!=null">, TeamID</if>
+	 		<if test="orgID!=null">, OrgID</if>
+	 		<if test="productID!=null">, ProductID</if>
+	 		<if test="subProductID!=null">, SubProductID</if>
+	 		<if test="payAmount!=null">, PayAmount</if>
+	 		<if test="investAmount!=null and investAmount!=''">, InvestAmount</if>
+	 		<if test="holdlingPhase!=null and holdlingPhase!=''">, HoldlingPhase</if>
+	 		<if test="issuanceCostRate!=null and issuanceCostRate!=''">, IssuanceCostRate</if>
+	 		<if test="timeCoefficient!=null and timeCoefficient!=''">, TimeCoefficient</if>
+	 		<if test="serviceChargeCoefficient!=null and serviceChargeCoefficient!=''">, ServiceChargeCoefficient</if>
+	 		<if test="incentiveFeeRate!=null and incentiveFeeRate!=''">, IncentiveFeeRate</if>
+	 		<if test="commissionProportion!=null and commissionProportion!=''">, CommissionProportion</if>
+	 		<if test="commission!=null and commission!=''">, Commission</if>
+	 		<if test="payCommission!=null and payCommission!=''">, PayCommission</if>
+	 		<if test="agreementTemplateID!=null">, AgreementTemplateID</if>
+	 		<if test="orgContractID!=null">, OrgContractID</if>
+	 		<if test="payStatus!=null">, PayStatus</if>
+	 		<if test="exportStatus!=null">, ExportStatus</if>
+	 		, IsPay
+	 	</trim>
+	 	values 
+	 	<trim prefix="(" prefixOverrides="," suffix=")">
+	 		<if test="orderID!=null">, ${orderID}</if>
+	 		<if test="memberID!=null">, ${memberID}</if>
+	 		<if test="teamID!=null">, ${teamID}</if>
+	 		<if test="orgID!=null">, ${orgID}</if>
+	 		<if test="productID!=null">, ${productID}</if>
+	 		<if test="subProductID!=null">, ${subProductID}</if>
+	 		<if test="payAmount!=null">, ${payAmount}</if>
+	 		<if test="investAmount!=null and investAmount!=''">, ${investAmount}</if>
+	 		<if test="holdlingPhase!=null and holdlingPhase!=''">, #{holdlingPhase}</if>
+	 		<if test="issuanceCostRate!=null and issuanceCostRate!=''">, ${issuanceCostRate}</if>
+	 		<if test="timeCoefficient!=null and timeCoefficient!=''">, ${timeCoefficient}</if>
+	 		<if test="serviceChargeCoefficient!=null and serviceChargeCoefficient!=''">, ${serviceChargeCoefficient}</if>
+	 		<if test="incentiveFeeRate!=null and incentiveFeeRate!=''">, ${incentiveFeeRate}</if>
+	 		<if test="commissionProportion!=null and commissionProportion!=''">, ${commissionProportion}</if>
+	 		<if test="commission!=null and commission!=''">, ${commission}</if>
+	 		<if test="payCommission!=null and payCommission!=''">, ${payCommission}</if>
+	 		<if test="agreementTemplateID!=null">, ${agreementTemplateID}</if>
+	 		<if test="orgContractID!=null">, ${orgContractID}</if>
+	 		<if test="payStatus!=null">, ${payStatus}</if>
+	 		<if test="exportStatus!=null">, #{exportStatus}</if>
+	 		,0
+	 	</trim>
+	 	<selectKey keyProperty="generatedKey" resultType="Long">
+			select LAST_INSERT_ID() as generatedKey    
+		</selectKey>
+	</insert>
+	
+	<!-- (批量)重新核算居间费 -->
+	<update id="againAdjust_commission" parameterMap="commission">
+		update TC_Commission c
+		<set>
+			<trim prefixOverrides=",">
+				<if test="issuanceCostRate!=null and issuanceCostRate!=''">, issuanceCostRate=${issuanceCostRate}</if>
+		 		<if test="timeCoefficient!=null and timeCoefficient!=''">, timeCoefficient=${timeCoefficient}</if>
+		 		<if test="serviceChargeCoefficient!=null and serviceChargeCoefficient!=''">, serviceChargeCoefficient=${serviceChargeCoefficient}</if>
+		 		<if test="incentiveFeeRate!=null and incentiveFeeRate!=''">, incentiveFeeRate=${incentiveFeeRate}</if>
+		 		<if test="commissionProportion!=null and commissionProportion!=''">, commissionProportion=${commissionProportion}</if>
+		 		<if test="commission!=null and commission!=''">, commission=${commission}</if>
+			</trim>
+		</set>
+		<where>
+			<if test="id!=null">and ID=${id}</if>
+		</where>
+	</update>
+	
+	<!-- 修改居间费记录表 -->
+	<update id="update" parameterMap="commission">
+		update TC_Commission 
+		<set>
+			<trim prefixOverrides=",">
+				<if test="orderID!=null">, orderID=${orderID}</if>
+		 		<if test="memberID!=null">, memberID=${memberID}</if>
+		 		<if test="teamID!=null">, teamID=${teamID}</if>
+		 		<if test="orgID!=null">, orgID=${orgID}</if>
+		 		<if test="productID!=null">, productID=${productID}</if>
+		 		<if test="subProductID!=null">, subProductID=${subProductID}</if>
+		 		<if test="investAmount!=null and investAmount!=''">, investAmount=${investAmount}</if>
+		 		<if test="holdlingPhase!=null and holdlingPhase!=''">, holdlingPhase=#{holdlingPhase}</if>
+		 		<if test="issuanceCostRate!=null and issuanceCostRate!=''">, issuanceCostRate=${issuanceCostRate}</if>
+		 		<if test="timeCoefficient!=null and timeCoefficient!=''">, timeCoefficient=${timeCoefficient}</if>
+		 		<if test="serviceChargeCoefficient!=null and serviceChargeCoefficient!=''">, serviceChargeCoefficient=${serviceChargeCoefficient}</if>
+		 		<if test="incentiveFeeRate!=null and incentiveFeeRate!=''">, incentiveFeeRate=${incentiveFeeRate}</if>
+		 		<if test="commissionProportion!=null and commissionProportion!=''">, commissionProportion=${commissionProportion}</if>
+		 		<if test="commission!=null and commission!=''">, commission=${commission}</if>
+		 		<if test="payCommission!=null and payCommission!=''">, payCommission=${payCommission}</if>
+		 		<if test="agreementTemplateID!=null">, agreementTemplateID=${agreementTemplateID}</if>
+		 		<if test="orgContractID!=null">, orgContractID=${orgContractID}</if>
+		 		<if test="payStatus!=null">, payStatus=${payStatus}</if>
+		 		<if test="checkRatifyTime!=null">, CheckRatifyTime=#{checkRatifyTime}</if>
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="ids!=null">
+					<![CDATA[ id in ]]> 
+						<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+				       	 	${item}
+				    	</foreach> 
+					<![CDATA[]]>
+				</if>
+			</trim>
+		</where>
+	</update>
+
+	<select id="select_commission" resultMap="commissionResult"  parameterMap="commission">
+		select c.id, c.holdlingPhase, c.subProductID, c.payAmount, c.teamID, o.OrderTime orderTime
+		from TC_Commission c left join TC_OrderHistory o on c.OrderID=o.ID
+		WHERE c.ID=${id}
+	</select>
+
+	<select id="select_one" resultMap="commissionResult" parameterMap="commission">
+		select cast(t.PayAmount/1000000 as decimal(38, 2)) as PayAmount,t.HoldlingPhase,t.IssuanceCostRate,t.TimeCoefficient,t.ServiceChargeCoefficient,t.IncentiveFeeRate,
+			t.CommissionProportion,t.Commission,t.PayCommission,t.PayStatus,o.deadline,o.ProfitRatio,
+			o.OrderNumber,o.ClientName,o.clientType,o.IDCardType,o.IDCard,o.tradeType,cast(o.InvestAmount/1000000 as decimal(38, 2)) as InvestAmount,o.TradeStatus,
+			o.PayProgress,o.DocumentStatus,o.ContractNumber,o.Remark,t.auditingRemark,
+			DATE_FORMAT(o.CommissionPayTime,'%Y-%m-%d %T') as CommissionPayTime,
+			DATE_FORMAT(o.PayMoneyStopTime,'%Y-%m-%d') as PayMoneyStopTime,o.pushStatus,
+			DATE_FORMAT(o.orderTime,'%Y-%m-%d %T') as orderTime,cast(o.PushShare/1000000 as decimal(38, 2)) as PushShare,
+			cast(o.share/1000000 as decimal(38, 2)) as share,
+			DATE_FORMAT(o.PayTime,'%Y-%m-%d %T') as PayTime,
+			DATE_FORMAT(o.PushTime,'%Y-%m-%d %T') as PushTime,
+			o.netValue,
+			o.AssignedShare,
+			m.name as MemberName,
+			p.name as ProductName,
+			so.Name as orgShortName, 
+			pp.ShortName proShortName,
+			p.type productType,
+			(case when mt.OrgType=0 then	mn.Name else tt.`Name` end) as teamName
+		from TC_Commission t 
+			left join TC_OrderHistory o on t.orderID = o.ID 
+			left JOIN PC_Provider pp on o.ProviderID=pp.ID
+			left join PM_Product p on t.productID = p.ID 
+			left join MC_Member m on t.memberID = m.ID 
+			left join MC_TeamOrOrg mt on mt.ID = t.teamID 
+			left join MC_Team tt on tt.ID = mt.OrgID
+			left join MC_Organization mn on mt.OrgID=mn.ID 
+			left join SM_Organization so on o.OrgID=so.ID
+		where t.ID = ${id}
+	</select>
+	
+	<!-- 查询未核定订单id  -->
+	<select id="select_orderId_list" resultMap="commissionResult"  parameterMap="commission">
+		select id
+		from TC_Commission
+		WHERE ProductID=${productID} and PayStatus=${payStatus}
+	</select>
+	<!-- 更新理财师居间费税 -->
+	<update id="updateTax" parameterMap="commission">
+		update TC_Commission c
+		<set>
+			<trim prefixOverrides=",">
+				<if test="issuanceCostRate!=null and issuanceCostRate!=''">, issuanceCostRate=${issuanceCostRate}</if>
+		 		<if test="timeCoefficient!=null and timeCoefficient!=''">, timeCoefficient=${timeCoefficient}</if>
+		 		<if test="serviceChargeCoefficient!=null and serviceChargeCoefficient!=''">, serviceChargeCoefficient=${serviceChargeCoefficient}</if>
+		 		<if test="incentiveFeeRate!=null and incentiveFeeRate!=''">, incentiveFeeRate=${incentiveFeeRate}</if>
+		 		<if test="commissionProportion!=null and commissionProportion!=''">, commissionProportion=${commissionProportion}/100</if>
+		 		<if test="commission!=null and commission!=''">, commission=${commission}</if>
+		 		<if test="payAmount!=null and payAmount!=''">, payAmount=${payAmount}*1000000</if>
+			</trim>
+		</set>
+		 where ID=${id}
+	</update>
+	<!-- 更新理财师居间费税 -->
+	<update id="updateAuditingTime" parameterMap="commission">
+		update TC_Commission set  AuditingTime=now()
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="ids!=null">
+					<![CDATA[ id in ]]> 
+						<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+				       	 	${item}
+				    	</foreach> 
+					<![CDATA[]]>
+				</if>
+			</trim>
+		</where>
+	</update>
+	
+	<select id="select_commission_product" resultMap="commissionResult" parameterMap="commission">
+		select tc.ID,pp.OrgID,tc.PayAmount,tc.AuditingTime,pp.Type ProductType,pp.DeadlineDataType,ps.Deadline
+		 from TC_TeamOrOrgPayRecord tr
+		left join TC_TeamOrOrgPayDetail td on td.TeamPayID = tr.ID
+	<!--	left join MC_TeamOrOrg mt on mt.ID = tr.SourceID -->
+		left join TC_Commission tc on td.CommissionID = tc.ID
+		left join PM_Product pp on pp.ID = tc.ProductID
+		left join SM_Organization mo on mo.ID = pp.OrgID 
+		left join PM_SubProduct ps on ps.ID = tc.SubProductID where tc.IsPay = 0 and tr.Status in (1,2) and pp.OrgID = ${orgID} and tr.SourceID = ${teamID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${stageTime}
+	</select>
+		
+	<select id="select_commission_product1" resultMap="commissionResult" parameterMap="commission">
+		select tc.ID,pp.OrgID,tc.PayAmount,tc.AuditingTime,pp.Type ProductType,pp.DeadlineDataType,ps.Deadline
+		 from TC_MemberPayRecord tr
+		left join TC_MemberPayDetail td on td.MemberPayID = tr.ID
+		left join TC_Commission tc on td.CommissionID = tc.ID
+		left join MC_TeamOrOrg mt on mt.ID = tc.TeamID
+		left join PM_Product pp on pp.ID = tc.ProductID
+		left join SM_Organization mo on mo.ID = pp.OrgID 
+		left join PM_SubProduct ps on ps.ID = tc.SubProductID where tc.IsPay = 0 and tr.Status in (1,2) and pp.OrgID = ${orgID} and mt.OrgID = ${teamID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${stageTime}
+	</select>
+	
+	
+	<select id="select_incentiveorder" resultMap="commissionResult"  parameterMap="commission">
+		select tc.ID,tc.OrgID,tc.OrderID,th.OrderNumber,pp.ShortName as ProShortName,m.Name as MemberName, m.NickName as MemberNickName,
+		th.ClientName,tc.PayAmount/1000000 as PayAmount, tc.Commission ,pp.Type ProductType,pp.DeadlineDataType,ps.Deadline
+		from TC_TeamOrOrgPayRecord tr 
+		left join TC_TeamOrOrgPayDetail td on td.TeamPayID = tr.ID
+		left join MC_TeamOrOrg mt on mt.ID = tr.SourceID
+		left join TC_Commission tc on td.CommissionID = tc.ID
+		left join TC_OrderHistory th on tc.OrderID = th.ID
+		left join PM_Product pp on pp.ID = tc.ProductID
+		left join MC_Member m on tc.MemberID = m.ID
+		left join PM_SubProduct ps on ps.ID = tc.SubProductID
+		left join SM_Organization mo on mo.ID = tc.OrgID
+		where tc.IsPay = ${isPay} and mo.ID = ${orgID} and tr.Status in (1,2) and tr.SourceID = ${teamID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${auditingTime}
+	</select>
+	
+	<select id="select_incentiveorderXX" resultMap="commissionResult"  parameterMap="commission">
+		select tc.ID,tc.OrgID,tc.OrderID,oh.OrderNumber,pp.ShortName as ProShortName,m.Name as MemberName,m.NickName as MemberNickName,
+		oh.ClientName,tc.PayAmount/1000000 as PayAmount,tc.Commission,pp.Type ProductType,pp.DeadlineDataType,ps.Deadline
+		from TC_IncentiveFeeDetail td 
+		left join TC_IncentiveOrderHistory th on td.ID = th.IncentiveFeeID	
+		left join TC_OrderHistory oh on oh.OrderNumber = th.OrderNumber
+		left join TC_Commission tc on tc.OrderID =  oh.ID
+		left join MC_Member m on tc.MemberID = m.ID
+		left join PM_Product pp on pp.ID = tc.ProductID
+		left join PM_SubProduct ps on ps.ID = tc.SubProductID
+		where td.IsPay = ${isPay} and td.CompanyID = ${orgID} and td.OrgID = ${teamID} and td.Type = ${type} and td.PayStageTime = #{auditingTime}
+	</select>
+	
+	<select id="select_incentiveorder1" resultMap="commissionResult"  parameterMap="commission">
+		select tc.ID,tc.OrgID,tc.OrderID,th.OrderNumber,pp.ShortName as ProShortName,m.Name as MemberName, m.NickName as MemberNickName,
+		th.ClientName,tc.PayAmount/1000000 as PayAmount, tc.Commission,pp.Type ProductType,pp.DeadlineDataType,ps.Deadline
+		from TC_MemberPayRecord tr 
+		left join TC_MemberPayDetail td on td.MemberPayID = tr.ID
+		left join TC_Commission tc on td.CommissionID = tc.ID
+		left join MC_TeamOrOrg mt on mt.ID = tc.TeamID
+		left join TC_OrderHistory th on tc.OrderID = th.ID
+		left join PM_Product pp on pp.ID = tc.ProductID
+		left join MC_Member m on tc.MemberID = m.ID
+		left join PM_SubProduct ps on ps.ID = tc.SubProductID
+		left join SM_Organization mo on mo.ID = tc.OrgID
+		where tc.IsPay = ${isPay} and tr.Status in (1,2) and mo.ID = ${orgID} and mt.OrgID = ${teamID} and DATE_FORMAT(tr.PayTime,'%Y-%m-%d') BETWEEN ${auditingTime}
+	</select>	
+	
+	
+	<!-- 将居间费记录的激励费发放状态改为已发放 -->
+	<update id="update_isPay" parameterMap="commission">
+		update TC_Commission set IsPay = 1 where OrderID = ${orderID}
+	</update>
+	
+</mapper>

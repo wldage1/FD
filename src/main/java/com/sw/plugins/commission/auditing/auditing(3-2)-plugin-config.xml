@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<commission name="居间费管理" icon="images/menu/intermediary-fee-management.png">
+		<auditing name="居间费审核" isNav="true" isSetAuth="sub" isStatus="true" icon="images/menu/intermediary-fee-management-intermediary fee audit.png">
+			<language>
+				<value>/language/auditingMessages_zh_CN.properties</value>
+				<value>/language/auditingMessages_zh_CN.properties</value>
+			</language>
+			<detail isNav="true"  name="详细" icon="images/icon/detail.png"/>
+			<auditing isNav="true" isLog="true" name="审核" icon="images/icon/audit.png"/>
+			<batchAuditing isNav="true" isLog="true" name="一键审核" icon="images/icon/re-check.png"/>
+			<export isNav="true" isLog="true" name="导出" icon="images/icon/EXPort.png"/>
+			<viewerContract  isNav="true" isLog="true" name="查看合同" icon="images/icon/viewer contract.png"/>
+		</auditing>
+	</commission>
+</plugins>

@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+    "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="auditingCommission">
+
+<parameterMap id="auditingCommission" type="com.sw.plugins.commission.adjust.entity.Commission" />
+
+	<resultMap id="commissionResult" type="com.sw.plugins.commission.adjust.entity.Commission">
+		<result property="id" column="ID" javaType="java.lang.Long"/>
+		<result property="orderID" column="OrderID" />
+		<result property="memberID" column="MemberID" />
+		<result property="teamID" column="TeamID" />
+		<result property="orgID" column="OrgID" />
+		<result property="productID" column="ProductID" />
+		<result property="subProductID" column="SubProductID" />
+		<result property="investAmount" column="InvestAmount" />
+		<result property="holdlingPhase" column="HoldlingPhase" />
+		<result property="issuanceCostRate" column="IssuanceCostRate" />
+		<result property="timeCoefficient" column="TimeCoefficient" />
+		<result property="serviceChargeCoefficient" column="ServiceChargeCoefficient" />
+		<result property="incentiveFeeRate" column="IncentiveFeeRate" />
+		<result property="commissionProportion" column="CommissionProportion" />
+		<result property="commission" column="Commission" />
+		<result property="payCommission" column="PayCommission" />
+		<result property="agreementTemplateID" column="AgreementTemplateID" />
+		<result property="orgContractID" column="OrgContractID" />
+		<result property="payStatus" column="PayStatus" />
+		<result property="payAmount" column="PayAmount" />
+		<result property="auditingRemark" column="AuditingRemark" />
+		<!--   历史订单表   -->
+		<association property="orderHistory" column="orderID" javaType="com.sw.plugins.market.order.entity.Order" resultMap="orderResult"/>
+	</resultMap>
+	
+	<resultMap id="orderResult" type="com.sw.plugins.market.order.entity.Order">
+		<result property="orderNumber" column="OrderNumber" />
+		<result property="contractNumber" column="ContractNumber" />
+		<result property="clientName" column="ClientName" />
+	</resultMap>
+	
+	<!-- 分组列表查询  -->
+	<select id="select_paginated" resultMap="commissionResult"  parameterMap="auditingCommission">
+		select c.ID, c.OrgID, c.MemberID, c.TeamID, oh.OrderNumber, oh.ContractNumber, oh.ClientName, concat(m.Name,'(',m.nickName,')') memberName, 
+		c.PayAmount/1000000 payAmount, concat(CAST(c.CommissionProportion*100 as decimal(38, 4)),'%') commissionProportionStr,c.Commission commission, 
+		CASE WHEN so.OrgType = 0 then mo.ShortName END orgShortName, c.PayStatus, p.ShortName productName, sp.type subProductName,
+		c.OrgContractID, c.AgreementTemplateID,DATE_FORMAT(c.CheckRatifyTime,'%Y-%m-%d %T') as CheckRatifyTime,ExportStatus,
+		c.IssuanceCostRate*100 IssuanceCostRate,c.TimeCoefficient*100 TimeCoefficient,c.ServiceChargeCoefficient*100 ServiceChargeCoefficient,
+		c.IncentiveFeeRate*100 IncentiveFeeRate, c.CommissionProportion*100 commissionProportion
+		from TC_Commission c LEFT JOIN TC_OrderHistory oh ON c.OrderID=oh.ID 
+			LEFT JOIN MC_Member m ON oh.MemberID=m.ID 
+			LEFT JOIN MC_TeamOrOrg so ON oh.teamID=so.ID
+			LEFT JOIN PM_SubProduct sp ON sp.ID=c.SubProductID 
+			LEFT JOIN PM_Product p ON p.ID=c.ProductID 
+			LEFT JOIN MC_Organization mo ON mo.ID=so.OrgID
+		<where>
+			oh.TradeStatus = 7 and oh.PayProgress=2
+			<if test="productID!=null">
+				and c.ProductID = ${productID}
+			</if>
+			<if test="orgID != null">
+				and c.OrgID=${ orgID}
+			</if>
+			<if test="tradeTypeCollection!=null">
+				<![CDATA[ and oh.tradeType in ]]> 
+					<foreach item="item" index="index" collection="tradeTypeCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="payStatusCollection!=null">
+				<![CDATA[ and c.PayStatus in ]]> 
+					<foreach item="item" index="index" collection="payStatusCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="payStatus!=null">
+				and payStatus=${payStatus}
+			</if>
+		  	<if test="flag==1">
+				and  (mo.ShortName is null or so.orgtype=1)
+				<if test="startDate!=null and startDate!=''">
+					<![CDATA[ 
+			  			and  CheckRatifyTime>=#{startDate}
+			  		]]>
+			  	</if>
+			  	<if test="endDate!=null and endDate!=''">
+					<![CDATA[ 
+			  			and  CheckRatifyTime<=#{endDate}
+			  		]]>
+			  	</if>
+		  	</if>	 
+		  	<if test="flag==2">
+				and  mo.ShortName is not null and so.orgtype=0
+				<if test="startDate!=null and startDate!=''">					
+				 	<![CDATA[ 
+			  			and  CheckRatifyTime>=#{startDate}
+			  		]]>
+			  	</if>
+			  	<if test="endDate!=null and endDate!=''">					
+				 	<![CDATA[ 
+			  			and  CheckRatifyTime<=#{endDate}
+			  		]]>
+			  	</if>
+		  	</if>
+		</where>
+	</select>
+	
+	<!-- 统计到账金额和居间费  -->
+	<select id="select_commissionSum" resultMap="commissionResult"  parameterMap="auditingCommission">
+		select sum(c.PayAmount)/1000000 payAmountSum, sum(c.Commission)/100 commissionSum
+		from TC_Commission c LEFT JOIN TC_OrderHistory oh ON c.OrderID=oh.ID 
+			LEFT JOIN MC_Member m ON oh.MemberID=m.ID 
+			LEFT JOIN MC_TeamOrOrg so ON oh.teamID=so.ID
+			LEFT JOIN MC_Organization mo ON mo.ID=so.OrgID
+			LEFT JOIN PM_Product p ON p.ID=c.ProductID
+		<where>
+			oh.TradeStatus = 7 and oh.PayProgress=2
+			<if test="productID!=null">
+				and c.ProductID = ${productID}
+			</if>
+			<if test="orgID != null">
+				and c.OrgID=${ orgID}
+			</if>
+			<if test="tradeTypeCollection!=null">
+				<![CDATA[ and oh.tradeType in ]]> 
+					<foreach item="item" index="index" collection="tradeTypeCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="payStatusCollection!=null">
+				<![CDATA[ and c.PayStatus in ]]> 
+					<foreach item="item" index="index" collection="payStatusCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="payStatus!=null">
+				and payStatus=${payStatus}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 修改居间费记录表 -->
+	<update id="update" parameterMap="auditingCommission">
+		update TC_Commission 
+		<set>
+			<trim prefixOverrides=",">
+		 		<if test="payStatus!=null">, payStatus=${payStatus}</if>
+		 		<if test="auditingRemark!=null">, auditingRemark=#{auditingRemark}</if>
+			</trim>
+		</set>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="id!=null">and ID=${id}</if>
+				<if test="ids!=null">
+					<![CDATA[ id in ]]> 
+						<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">   
+				       	 	${item}
+				    	</foreach> 
+					<![CDATA[]]>
+				</if>
+			</trim>
+		</where>
+	</update>
+	<!-- 修改居间费记录表导出状态 -->
+	<update id="updateExportStatus" parameterMap="auditingCommission">
+		update TC_Commission 
+		<set>
+			<trim prefixOverrides=",">
+		 		<if test="exportStatus!=null">, exportStatus=${exportStatus}</if>
+			</trim>
+		</set>
+		<where>
+			id=${id}
+		</where>
+	</update>
+	<select id="select_one" resultMap="commissionResult"  parameterMap="auditingCommission">
+		select c.PayAmount, DATE_FORMAT(c.CheckRatifyTime,'%Y-%m-%d') as CheckRatifyTime,c.ID, c.MemberID, c.Commission, c.TeamID, c.OrgID, c.Commission, m.Bank bankName, m.Card accountID, m.Name memberName
+		from TC_Commission c LEFT JOIN  MC_TeamOrOrg t ON c.teamid = t.ID AND t.OrgType=0 AND t.`Status`=1 AND t.DelStatus=1
+			JOIN MC_Member m on c.MemberID = m.ID
+		where c.ID=${id}
+	</select>
+	
+	<select id="export_excel" resultType="java.util.Map" parameterMap="auditingCommission">
+		select c.ID, c.OrgID, c.MemberID, c.TeamID, oh.OrderNumber, oh.ContractNumber, oh.ClientName, concat(m.Name,'(',m.nickName,')') memberName, 
+		c.PayAmount/1000000 payAmount, concat(CAST(c.CommissionProportion*100 as decimal(38, 2)),'%') commissionProportionStr, c.Commission commission, 
+		CASE WHEN so.OrgType = 0 then mo.ShortName END orgShortName, c.PayStatus, p.Name productName, sp.type subProductName,
+		c.OrgContractID, c.AgreementTemplateID,DATE_FORMAT(c.CheckRatifyTime,'%Y-%m-%d %T') as CheckRatifyTime,ExportStatus,
+		c.IssuanceCostRate*100 IssuanceCostRate,c.TimeCoefficient*100 TimeCoefficient,c.ServiceChargeCoefficient*100 ServiceChargeCoefficient,
+		c.IncentiveFeeRate*100 IncentiveFeeRate,CAST(c.CommissionProportion*100 as decimal(38, 4)) commissionProportion
+		from TC_Commission c LEFT JOIN TC_OrderHistory oh ON c.OrderID=oh.ID 
+			LEFT JOIN MC_Member m ON oh.MemberID=m.ID 
+			LEFT JOIN MC_TeamOrOrg so ON oh.teamID=so.ID
+			LEFT JOIN PM_SubProduct sp ON sp.ID=c.SubProductID 
+			LEFT JOIN PM_Product p ON p.ID=c.ProductID 
+			LEFT JOIN MC_Organization mo ON mo.ID=so.OrgID
+		<where>
+			oh.TradeStatus = 7 and oh.PayProgress=2
+			<if test="productID!=null">
+				and c.ProductID = ${productID}
+			</if>
+			<if test="orgID != null">
+				and c.OrgID=${ orgID}
+			</if>
+			<if test="tradeTypeCollection!=null">
+				<![CDATA[ and oh.tradeType in ]]> 
+					<foreach item="item" index="index" collection="tradeTypeCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="payStatusCollection!=null">
+				<![CDATA[ and c.PayStatus in ]]> 
+					<foreach item="item" index="index" collection="payStatusCollection" open="(" separator="," close=")">   
+			       	 	${item}
+			    	</foreach> 
+				<![CDATA[]]>
+			</if>
+			<if test="payStatus!=null">
+				and payStatus=${payStatus}
+			</if>
+		  	<if test="flag==1">
+				and  (mo.ShortName is null or so.orgtype=1)
+				<if test="startDate!=null and startDate!=''">
+					<![CDATA[ 
+			  			and  CheckRatifyTime>=#{startDate}
+			  		]]>
+			  	</if>
+			  	<if test="endDate!=null and endDate!=''">
+					<![CDATA[ 
+			  			and  CheckRatifyTime<=#{endDate}
+			  		]]>
+			  	</if>
+		  	</if>	 
+		  	<if test="flag==2">
+				and  mo.ShortName is not null and so.orgtype=0
+				<if test="startDate!=null and startDate!=''">					
+				 	and  CheckRatifyTime like CONCAT(#{startDate},'%') 
+			  	</if>
+		  	</if>
+		</where>
+	</select>
+	
+</mapper>

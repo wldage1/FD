@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugins>
+	<commission name="居间费管理" icon="images/menu/intermediary-fee-management.png">
+		<adjust name="居间费核算" isNav="true" isSetAuth="sub" isStatus="true" icon="images/menu/intermediary-fee-management-intermediary fee accounting.png">
+			<language>
+				<value>/language/adjustMessages_zh_CN.properties</value>
+				<value>/language/adjustMessages_zh_CN.properties</value>
+			</language>
+			<detail isNav="true"  name="详细" icon="images/icon/detail.png"/>
+			<vouch isNav="true" isLog="true" name="核定" icon="images/icon/heding.png"/>
+			<adjust isNav="true" isLog="true" name="核算" icon="images/icon/check.png"/>
+			<batchVouch isNav="true" isLog="true" name="一键核定" icon="images/icon/check and ratify.png"/>
+			<againAdjust isNav="true" isLog="true" name="重新核算" icon="images/icon/modify.png"/>
+			<batchAdjust isNav="true" isLog="true" name="批量核算" icon="images/icon/modify.png"/>
+			<nonPayment isNav="true" isLog="true" name="拒发" icon="images/icon/rejection-sent.png"/>
+		</adjust>
+	</commission>
+</plugins>
