@@ -1,0 +1,63 @@
+@charset "utf-8";
+/* CSS Document */
+
+.listing_body {
+	border:#420260 solid 1px;
+	background-color:#FFF;
+	text-align:center;
+}
+
+.listing_body_01 {
+	height:21px;
+	border-bottom:#420260 solid 1px;
+	background-image:url(../../images/seatcenter/listing_title_bg.png);
+	background-repeat:repeat-x;
+	color:#FFF;
+	font-weight:600;
+	margin-top:4px;
+	padding-left:17px;
+}
+
+.listing_heading {
+	background-color:#fff992;
+	height:22px;
+	font-weight:900;
+}
+
+.heading_01 {
+	margin:10px 10px;
+	border-right:#53056a solid 1px;
+}
+
+.heading_row_01 {
+	height:22px;
+	border-right:solid #e4c932 1px;
+	color:#ff0000;
+}
+
+.heading_row_operate a{
+	color:#000;
+	text-decoration:none;
+}
+
+.heading_row_02 {
+	height:22px;
+	border-right:solid #e4c932 1px;
+}
+
+.heading_row_03 {
+	height:22px;
+	border-right:solid #e4c932 1px;
+	color:#33cc00;
+}
+
+.listbox_base {
+	background-image:url(../../images/seatcenter/listbox_base_bg.png);
+	height:28px;
+}
+
+.listbox_base_wenzi{
+	color:#53056a;
+	padding-left:5px;
+}
+

@@ -1,0 +1,65 @@
+@charset "utf-8";
+/* CSS Document */
+
+.form_picture {
+	width:100%;
+	height:124px;
+	float:left;
+}
+
+.form_picture_border {
+	width:99px;
+	height:124px;
+	background-image:url(../../images/seatcenter/picture_bg.png);
+	margin-left:15px;
+	float:left;
+}
+
+.form_picture_border img {
+	width:71px;
+	height:98px;
+	padding-top:11px;
+	padding-left:14px;
+}
+
+.form_picture_uploading {
+	width:70%;
+	height:20px;
+	padding-left:25px;
+	padding-top:24px;
+	float:left;
+}
+
+.form_picture_uploading_text {
+	width:80%;
+	height:20px;
+	padding:11px 0px 0px 25px;
+	float:left;
+	color:red;
+}
+
+.form_picture_uploading_file_text {
+	width:80%;
+	padding-left:25px;
+	float:left;
+}
+
+.form_picture_fileName{
+	position:absolute;
+	left:350px; 
+	top:30px; 
+	width:300px;
+}
+
+.form_picture_save {
+	width:25%;
+	height:20px;
+	padding-left:25px;
+	padding-top:26px;
+	float:left;
+}
+
+.form_02_options {
+	width:88%;
+	padding-left:25px;	
+}
